@@ -1,14 +1,26 @@
 import Providers from "@/components/providers";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { DM_Mono } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+import "@mantine/core/styles.css";
+
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps,
+  createTheme,
+} from "@mantine/core";
+
+const font = DM_Mono({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Farcaster Mini-app Starter",
-  description: "A starter for Farcaster mini-apps",
+  title: "beamr",
+  description: "beamr",
 };
+
+const theme = createTheme({
+  /** Put your mantine theme override here */
+});
 
 export default function RootLayout({
   children,
@@ -16,9 +28,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>{children}</Providers>
+    <html lang="en" {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
+      <body className={font.className}>
+        <Providers>
+          {" "}
+          <MantineProvider theme={theme}>{children}</MantineProvider>
+        </Providers>
       </body>
     </html>
   );

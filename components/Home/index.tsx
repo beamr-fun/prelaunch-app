@@ -1,74 +1,174 @@
 "use client";
 
 import { useUser } from "@/contexts/user-context";
+import { useWallet } from "@/contexts/wallet-context";
+import {
+  Flex,
+  Container,
+  Stack,
+  Text,
+  Title,
+  Button,
+  Paper,
+  Switch,
+  Group,
+} from "@mantine/core";
 import Image from "next/image";
 import { useAccount } from "wagmi";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import CountdownTimer from "@/components/countdown/CountdownTimer";
+import PreBeamsCounter from "@/components/points/PreBeamsCounter";
+import PointsDisplay from "@/components/points/PointsDisplay";
+import WalletSelector from "@/components/wallet/WalletSelector";
+import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
+import ReferralCode from "@/components/referral/ReferralCode";
+import ShareButton from "@/components/referral/ShareButton";
+import { Rainbow } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
   const { user, isLoading, error, signIn } = useUser();
-
   const { address } = useAccount();
+  const {
+    userPoints,
+    walletConfirmed,
+    isLoading: walletLoading,
+    confirmWallet,
+    toggleWalletState,
+    referrerFid,
+  } = useWallet();
+
+  // Mock data for testing
+  const mockUser = {
+    data: {
+      fid: "12345",
+      display_name: "Test User",
+      username: "testuser",
+      pfp_url: "https://via.placeholder.com/80x80/667eea/ffffff?text=T",
+    },
+  };
+
+  // Mock wallet addresses for testing
+  const mockWallets = [
+    "0x1234567890123456789012345678901234567890",
+    "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+    "0x9876543210987654321098765432109876543210",
+  ];
+
+  const [selectedWallet, setSelectedWallet] = useState<string>("");
+
+  // Mock launch date (30 days from now)
+  const launchDate = new Date();
+  launchDate.setDate(launchDate.getDate() + 30);
+
+  const handleFollowClick = () => {
+    // TODO: Link to Farcaster profile
+    console.log("Follow @beamer clicked");
+  };
+
+  const handleJoinClick = () => {
+    // TODO: Link to /beamer channel
+    console.log("Join /beamer clicked");
+  };
+
+  const handleCastClick = () => {
+    // TODO: Open Farcaster compose interface
+    console.log("Create Cast clicked");
+  };
+
+  // Use mock user for testing, fallback to real user
+  const currentUser = mockUser || user;
+
+  const currentPoints = userPoints?.totalPoints || 1250;
 
   return (
-    <div className="bg-white text-black flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">Welcome</h1>
-        <p className="text-lg text-muted-foreground">
-          {user?.data ? "You are signed in!" : "Sign in to get started"}
-        </p>
-        <p className="text-lg text-muted-foreground">
-          {address
-            ? `${address.substring(0, 6)}...${address.substring(
-                address.length - 4
-              )}`
-            : "No address found"}
-        </p>
+    <Flex
+      direction="column"
+      style={{ minHeight: "100vh" }}
+      bg="dark.8"
+      c="white"
+    >
+      <Header />
 
-        {!user?.data ? (
-          <button
-            onClick={signIn}
-            disabled={isLoading}
-            className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center space-x-2 min-w-[160px] min-h-[48px]"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                <span>Signing in...</span>
-              </>
-            ) : (
-              "Sign in"
-            )}
-          </button>
-        ) : (
-          <div className="space-y-4">
-            {user && (
-              <div className="flex flex-col items-center space-y-2 min-h-[160px] justify-center">
-                {user.isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  </div>
-                ) : (
-                  <>
-                    <Image
-                      src={user.data.pfp_url!}
-                      alt="Profile"
-                      className="w-20 h-20 rounded-full"
-                      width={80}
-                      height={80}
-                    />
-                    <div className="text-center">
-                      <p className="font-semibold">{user.data.display_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        @{user.data.username}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+      <Container style={{ flex: 1 }} px="md" py="xl">
+        <Stack align="center" gap="xl" style={{ height: "100%" }}>
+          <Rainbow size={140} />
+
+          {/* Countdown Timer */}
+          <CountdownTimer targetDate={launchDate} />
+
+          {/* User Profile Section */}
+          {currentUser?.data ? (
+            <Flex direction="column" align="center" gap="md">
+              <PreBeamsCounter points={currentPoints} />
+            </Flex>
+          ) : (
+            <Button
+              onClick={signIn}
+              disabled={isLoading}
+              color="white"
+              variant="outline"
+              size="xl"
+            >
+              {isLoading ? (
+                <>
+                  <div />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                "Sign in"
+              )}
+            </Button>
+          )}
+
+          {/* Wallet Section */}
+          {currentUser?.data && (
+            <Stack align="center" gap="md">
+              {!walletConfirmed && (
+                <>
+                  <WalletSelector
+                    wallets={mockWallets}
+                    selectedWallet={selectedWallet}
+                    onWalletSelect={setSelectedWallet}
+                    disabled={walletLoading}
+                  />
+
+                  <WalletConfirmButton
+                    onConfirm={confirmWallet}
+                    selectedWallet={selectedWallet}
+                    disabled={!selectedWallet}
+                    isLoading={walletLoading}
+                  />
+                </>
+              )}
+            </Stack>
+          )}
+
+          {/* Referral Section - Only show when wallet is confirmed */}
+          {currentUser?.data && walletConfirmed && (
+            <Flex
+              direction="column"
+              align="center"
+              gap="lg"
+              style={{ width: "100%", maxWidth: "400px" }}
+            >
+              <Flex direction="row" gap="md" wrap="wrap" justify="center">
+                <ShareButton
+                  referralCode={currentUser.data.fid}
+                  onShare={(platform) => console.log(`Shared via ${platform}`)}
+                />
+              </Flex>
+            </Flex>
+          )}
+        </Stack>
+      </Container>
+
+      <Footer
+        onFollowClick={handleFollowClick}
+        onJoinClick={handleJoinClick}
+        onCastClick={handleCastClick}
+      />
+    </Flex>
   );
 }

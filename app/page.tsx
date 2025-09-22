@@ -11,20 +11,20 @@ const frame = {
     title: "Launch App",
     action: {
       type: "launch_frame",
-      name: "Mini-app Starter",
+      name: "beamr",
       url: appUrl,
       splashImageUrl: `${appUrl}/images/splash.png`,
-      splashBackgroundColor: "#ffffff",
+      splashBackgroundColor: "#000000",
     },
   },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Mini-app Starter",
+    title: "beamr",
     openGraph: {
-      title: "Mini-app Starter",
-      description: "A starter for Farcastermini-apps",
+      title: "beamr",
+      description: "beamr",
     },
     other: {
       "fc:frame": JSON.stringify(frame),

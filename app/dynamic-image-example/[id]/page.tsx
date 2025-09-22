@@ -25,16 +25,16 @@ export async function generateMetadata({
         name: "Launch App",
         url: appUrl,
         splashImageUrl: `${appUrl}/images/splash.png`,
-        splashBackgroundColor: "#f7f7f7",
+        splashBackgroundColor: "#000000",
       },
     },
   };
 
   return {
-    title: "Mini App Starter",
+    title: "beamr",
     openGraph: {
-      title: "Mini App Starter",
-      description: "Mini App Next Template",
+      title: "beamr",
+      description: "beamr",
       images: [{ url: imageUrl.toString() }],
     },
     other: {
