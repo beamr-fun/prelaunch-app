@@ -101,7 +101,13 @@ export default function Home() {
           {/* User Profile Section */}
           {currentUser?.data ? (
             <Flex direction="column" align="center" gap="md">
-              <PreBeamsCounter points={currentPoints} />
+              {walletConfirmed && <PreBeamsCounter points={currentPoints} />}
+              {!walletConfirmed && (
+                <Text ta="center" size="sm">
+                  Confirm your preferred wallet to earn your first Beamer token
+                  stream at launch.
+                </Text>
+              )}
             </Flex>
           ) : (
             <Button

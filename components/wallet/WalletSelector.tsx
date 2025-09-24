@@ -1,6 +1,7 @@
 "use client";
 
 import { Select, Text } from "@mantine/core";
+import { Wallet } from "lucide-react";
 import { useState } from "react";
 
 interface WalletSelectorProps {
@@ -54,13 +55,18 @@ export default function WalletSelector({
         onChange={handleWalletChange}
         disabled={disabled}
         error={error}
+        leftSection={<Wallet size={16} />}
         size="md"
         style={{ width: "100%" }}
+        comboboxProps={{
+          transitionProps: { transition: "pop", duration: 200 },
+        }}
         styles={{
           input: {
             backgroundColor: "var(--mantine-color-dark-6)",
             border: "1px solid var(--mantine-color-gray-4)",
             color: "white",
+            fontFamily: "'DM Mono', monospace;",
           },
           label: {
             fontSize: "10px",

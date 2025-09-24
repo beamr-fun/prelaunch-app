@@ -34,7 +34,6 @@ export default function RootLayout({
       </head>
       <body className={font.className}>
         <Providers>
-          {" "}
           <MantineProvider theme={theme}>{children}</MantineProvider>
         </Providers>
       </body>

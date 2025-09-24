@@ -40,7 +40,6 @@ export default function WalletConfirmButton({
         onClick={handleConfirm}
         disabled={isDisabled}
         loading={isConfirming || isLoading}
-        leftSection={<Wallet size={16} />}
         size="md"
         variant="outline"
         color="white"
