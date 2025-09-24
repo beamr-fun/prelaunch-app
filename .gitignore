@@ -44,4 +44,4 @@ supabase/.temp
 
 .env
 dev/
-
+.vscode
