@@ -1,4 +1,4 @@
-import HomePage from "@/components/pages/Home";
+import Leaderboard from "@/components/pages/Leaderboard";
 import { env } from "@/lib/env";
 import { Metadata } from "next";
 
@@ -33,5 +33,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Home() {
-  return <HomePage />;
+  return <Leaderboard />;
 }

@@ -8,8 +8,8 @@ import {
   ColorSchemeScript,
   MantineProvider,
   mantineHtmlProps,
-  createTheme,
 } from "@mantine/core";
+import { theme } from "@/lib/theme";
 
 const font = DM_Mono({ weight: "400", subsets: ["latin"] });
 
@@ -17,10 +17,6 @@ export const metadata: Metadata = {
   title: "beamr",
   description: "beamr",
 };
-
-const theme = createTheme({
-  /** Put your mantine theme override here */
-});
 
 export default function RootLayout({
   children,
@@ -34,7 +30,8 @@ export default function RootLayout({
       </head>
       <body className={font.className}>
         <Providers>
-          <MantineProvider theme={theme}>{children}</MantineProvider>
+          <MantineProvider>{children}</MantineProvider>
+          {/* <MantineProvider theme={theme}>{children}</MantineProvider> */}
         </Providers>
       </body>
     </html>

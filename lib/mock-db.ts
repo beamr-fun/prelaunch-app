@@ -158,12 +158,3 @@ export const mockDB = {
     return transactions.some((tx) => tx.source === source);
   },
 };
-
-// Point values configuration
-export const POINT_VALUES = {
-  WALLET_CONFIRMATION: 250,
-  FOLLOW: 100,
-  CHANNEL_JOIN: 150,
-  REFERRAL: 500,
-  REFERRAL_BONUS: 100, // Bonus for the referrer
-} as const;

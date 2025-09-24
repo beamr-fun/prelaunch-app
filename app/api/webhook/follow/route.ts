@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mockDB, POINT_VALUES } from "@/lib/mock-db";
+import { mockDB } from "@/lib/mock-db";
+import { POINT_VALUES } from "@/lib/constants";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,31 +1,20 @@
 "use client";
 
 import { useUser } from "@/contexts/user-context";
-import { useWallet } from "@/contexts/wallet-context";
-import {
-  Flex,
-  Container,
-  Stack,
-  Text,
-  Title,
-  Button,
-  Paper,
-  Switch,
-  Group,
-} from "@mantine/core";
-import Image from "next/image";
+import { usePoints } from "@/contexts/points-context";
+import { Flex, Container, Stack, Text, Button, Anchor } from "@mantine/core";
 import { useAccount } from "wagmi";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import CountdownTimer from "@/components/countdown/CountdownTimer";
-import PreBeamsCounter from "@/components/points/PreBeamsCounter";
-import PointsDisplay from "@/components/points/PointsDisplay";
+import Header from "@/components/ui/Header";
+import Footer from "@/components/ui/Footer";
+import CountdownTimer from "@/components/ui/CountdownTimer";
+import PreBeamsCounter from "@/components/ui/PreBeamsCounter";
 import WalletSelector from "@/components/wallet/WalletSelector";
 import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
-import ReferralCode from "@/components/referral/ReferralCode";
-import ShareButton from "@/components/referral/ShareButton";
-import { Rainbow } from "lucide-react";
+import ShareButton from "@/components/ui/ShareButton";
+import { ChartNoAxesColumn, Rainbow } from "lucide-react";
 import { useState } from "react";
+import Link from "next/link";
+import { getLaunchDate } from "@/lib/constants";
 
 export default function Home() {
   const { user, isLoading, error, signIn } = useUser();
@@ -35,32 +24,32 @@ export default function Home() {
     walletConfirmed,
     isLoading: walletLoading,
     confirmWallet,
-    toggleWalletState,
     referrerFid,
-  } = useWallet();
+  } = usePoints();
 
-  // Mock data for testing
-  const mockUser = {
-    data: {
-      fid: "12345",
-      display_name: "Test User",
-      username: "testuser",
-      pfp_url: "https://via.placeholder.com/80x80/667eea/ffffff?text=T",
-    },
-  };
+  console.log("user", user);
 
-  // Mock wallet addresses for testing
-  const mockWallets = [
-    "0x1234567890123456789012345678901234567890",
-    "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
-    "0x9876543210987654321098765432109876543210",
-  ];
+  // // Mock data for testing
+  // const mockUser = {
+  //   data: {
+  //     fid: "12345",
+  //     display_name: "Test User",
+  //     username: "testuser",
+  //     pfp_url: "https://via.placeholder.com/80x80/667eea/ffffff?text=T",
+  //   },
+  // };
+
+  // // Mock wallet addresses for testing
+  // const mockWallets = [
+  //   "0x1234567890123456789012345678901234567890",
+  //   "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
+  //   "0x9876543210987654321098765432109876543210",
+  // ];
 
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
   // Mock launch date (30 days from now)
-  const launchDate = new Date();
-  launchDate.setDate(launchDate.getDate() + 30);
+  const launchDate = getLaunchDate();
 
   const handleFollowClick = () => {
     // TODO: Link to Farcaster profile
@@ -78,7 +67,7 @@ export default function Home() {
   };
 
   // Use mock user for testing, fallback to real user
-  const currentUser = mockUser || user;
+  const currentUser = user;
 
   const currentPoints = userPoints?.totalPoints || 1250;
 
@@ -134,7 +123,8 @@ export default function Home() {
               {!walletConfirmed && (
                 <>
                   <WalletSelector
-                    wallets={mockWallets}
+                    // wallets={mockWallets}
+                    wallets={currentUser.data.verified_addresses.eth_addresses}
                     selectedWallet={selectedWallet}
                     onWalletSelect={setSelectedWallet}
                     disabled={walletLoading}
@@ -159,6 +149,18 @@ export default function Home() {
               gap="lg"
               style={{ width: "100%", maxWidth: "400px" }}
             >
+              <Anchor
+                component={Link}
+                href="/leaderboard"
+                c="white"
+                fw={500}
+                mx="lg"
+              >
+                <Flex direction="row" align="center" gap="xs">
+                  <ChartNoAxesColumn size={16} />
+                  <Text size="xs"> Leaderboard</Text>
+                </Flex>
+              </Anchor>
               <Flex direction="row" gap="md" wrap="wrap" justify="center">
                 <ShareButton
                   referralCode={currentUser.data.fid}

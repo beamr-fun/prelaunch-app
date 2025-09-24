@@ -35,6 +35,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.env
+# Supabase
+.branches
+.temp
+supabase/.branches
+supabase/.temp
 
+
+.env
 dev/
+

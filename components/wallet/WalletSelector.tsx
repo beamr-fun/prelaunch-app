@@ -66,7 +66,7 @@ export default function WalletSelector({
             backgroundColor: "var(--mantine-color-dark-6)",
             border: "1px solid var(--mantine-color-gray-4)",
             color: "white",
-            fontFamily: "'DM Mono', monospace;",
+            fontFamily: "'DM Mono', monospace",
           },
           label: {
             fontSize: "10px",

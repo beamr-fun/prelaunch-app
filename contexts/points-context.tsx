@@ -28,19 +28,19 @@ export interface WalletState {
   referrerFid?: string;
 }
 
-interface WalletContextType extends WalletState {
+interface PointsContextType extends WalletState {
   confirmWallet: (walletAddress: string) => Promise<void>;
   toggleWalletState: () => void;
   setReferrerFid: (fid: string) => void;
 }
 
-const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const PointsContext = createContext<PointsContextType | undefined>(undefined);
 
-interface WalletProviderProps {
+interface PointsProviderProps {
   children: ReactNode;
 }
 
-export function WalletProvider({ children }: WalletProviderProps) {
+export function PointsProvider({ children }: PointsProviderProps) {
   const [state, setState] = useState<WalletState>({
     userPoints: null,
     isAuthenticated: false,
@@ -140,6 +140,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     };
 
     loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const confirmWallet = async (walletAddress: string) => {
@@ -176,7 +177,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
   };
 
   return (
-    <WalletContext.Provider
+    <PointsContext.Provider
       value={{
         ...state,
         confirmWallet,
@@ -185,14 +186,14 @@ export function WalletProvider({ children }: WalletProviderProps) {
       }}
     >
       {children}
-    </WalletContext.Provider>
+    </PointsContext.Provider>
   );
 }
 
-export function useWallet() {
-  const context = useContext(WalletContext);
+export function usePoints() {
+  const context = useContext(PointsContext);
   if (context === undefined) {
-    throw new Error("useWallet must be used within a WalletProvider");
+    throw new Error("usePoints must be used within a PointsProvider");
   }
   return context;
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mockDB, POINT_VALUES } from "@/lib/mock-db";
+import { supabase } from "@/lib/supabase";
+import { POINT_VALUES } from "@/lib/constants";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,85 +23,179 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In a real app, you'd get the FID from authentication
-    const fid = "12345"; // Mock FID for now
+    // Get FID from authentication middleware
+    const fid = request.headers.get("x-user-fid");
+    if (!fid) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
 
-    // Get or create user
-    let user = mockDB.getUser(fid);
-    if (!user) {
-      user = mockDB.createUser(fid, referrerFid);
+    // Get or create user in Supabase
+    const { data: existingUser, error: getUserError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("fid", parseInt(fid))
+      .single();
+
+    if (getUserError && getUserError.code !== "PGRST116") {
+      console.error("Error fetching user:", getUserError);
+      return NextResponse.json(
+        { error: "Failed to fetch user" },
+        { status: 500 }
+      );
     }
 
     // Check if wallet is already confirmed
-    if (user.walletAddress) {
+    if (existingUser?.preferred_wallet) {
       return NextResponse.json(
         { error: "Wallet already confirmed" },
         { status: 400 }
       );
     }
 
-    // Update user with wallet address
-    const updatedUser = mockDB.updateUser(fid, {
-      walletAddress,
-      referrerFid: referrerFid || user.referrerFid,
-    });
+    // Create or update user
+    let user;
+    if (existingUser) {
+      // Update existing user
+      const { data: updatedUser, error: updateError } = await supabase
+        .from("users")
+        .update({
+          preferred_wallet: walletAddress,
+          referrer_fid: referrerFid
+            ? parseInt(referrerFid)
+            : existingUser.referrer_fid,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("fid", parseInt(fid))
+        .select()
+        .single();
 
-    if (!updatedUser) {
-      return NextResponse.json(
-        { error: "Failed to update user" },
-        { status: 500 }
-      );
+      if (updateError) {
+        console.error("Error updating user:", updateError);
+        return NextResponse.json(
+          { error: "Failed to update user" },
+          { status: 500 }
+        );
+      }
+      user = updatedUser;
+    } else {
+      // Create new user
+      const { data: newUser, error: createError } = await supabase
+        .from("users")
+        .insert({
+          fid: parseInt(fid),
+          preferred_wallet: walletAddress,
+          referrer_fid: referrerFid ? parseInt(referrerFid) : null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error("Error creating user:", createError);
+        return NextResponse.json(
+          { error: "Failed to create user" },
+          { status: 500 }
+        );
+      }
+      user = newUser;
     }
 
     // Award points for wallet confirmation
-    const walletTransaction = mockDB.addPoints(
-      fid,
-      POINT_VALUES.WALLET_CONFIRMATION,
-      "wallet_confirmation",
-      "Wallet confirmation bonus"
-    );
+    const { error: walletPointsError } = await supabase.from("points").insert({
+      user_id: user.id,
+      amount: POINT_VALUES.WALLET_CONFIRMATION,
+      source: "wallet_confirmation",
+      metadata: { description: "Wallet confirmation bonus" },
+      created_at: new Date().toISOString(),
+    });
+
+    if (walletPointsError) {
+      console.error(
+        "Error adding wallet confirmation points:",
+        walletPointsError
+      );
+    }
 
     // If there's a referrer, award referral points
     let referralTransaction = null;
-    if (referrerFid || user.referrerFid) {
-      const referrer = referrerFid || user.referrerFid;
-      if (referrer) {
-        // Award points to the new user for being referred
-        const userReferralTransaction = mockDB.addPoints(
-          fid,
-          POINT_VALUES.REFERRAL,
-          "referral",
-          `Referred by ${referrer}`
-        );
+    const finalReferrerFid = referrerFid || user.referrer_fid;
 
-        // Award bonus points to the referrer
-        const referrerUser = mockDB.getUser(referrer);
-        if (referrerUser) {
-          referralTransaction = mockDB.addPoints(
-            referrer,
-            POINT_VALUES.REFERRAL_BONUS,
-            "referral",
-            `Referral bonus for ${fid}`
+    if (finalReferrerFid) {
+      // // Award points to the new user for being referred
+      // const { error: userReferralError } = await supabase
+      //   .from("points")
+      //   .insert({
+      //     user_id: user.id,
+      //     amount: POINT_VALUES.REFERRAL,
+      //     source: "referral",
+      //     metadata: { description: `Referred by ${finalReferrerFid}` },
+      //     created_at: new Date().toISOString(),
+      //   });
+
+      // if (userReferralError) {
+      //   console.error("Error adding user referral points:", userReferralError);
+      // }
+
+      // Award bonus points to the referrer
+      const { data: referrerUser, error: referrerError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("fid", finalReferrerFid)
+        .single();
+
+      if (!referrerError && referrerUser) {
+        const { error: referrerPointsError } = await supabase
+          .from("points")
+          .insert({
+            user_id: referrerUser.id,
+            amount: POINT_VALUES.REFERRAL_BONUS,
+            source: "referral",
+            metadata: { description: `Referral bonus for ${fid}` },
+            created_at: new Date().toISOString(),
+          });
+
+        if (referrerPointsError) {
+          console.error(
+            "Error adding referrer bonus points:",
+            referrerPointsError
           );
+        } else {
+          referralTransaction = { amount: POINT_VALUES.REFERRAL_BONUS };
         }
       }
     }
 
-    // Get updated user data
-    const finalUser = mockDB.getUser(fid);
-    const transactions = mockDB.getUserTransactions(fid);
+    // Get updated user data with total points
+    const { data: userWithPoints, error: pointsError } = await supabase
+      .from("user_points_total")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    const { data: recentTransactions, error: transactionsError } =
+      await supabase
+        .from("points")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+    const totalPoints = userWithPoints?.total_points || 0;
 
     return NextResponse.json({
-      fid: finalUser!.fid,
-      walletAddress: finalUser!.walletAddress,
-      totalPoints: finalUser!.totalPoints,
-      referrerFid: finalUser!.referrerFid,
+      fid: user.fid,
+      walletAddress: user.preferred_wallet,
+      totalPoints: totalPoints,
+      referrerFid: user.referrer_fid,
       walletConfirmed: true,
-      lastUpdated: finalUser!.lastUpdated,
-      transactions: transactions.slice(-5), // Last 5 transactions
+      lastUpdated: user.updated_at,
+      transactions: recentTransactions || [],
       awardedPoints: {
         walletConfirmation: POINT_VALUES.WALLET_CONFIRMATION,
-        referral: referrerFid || user.referrerFid ? POINT_VALUES.REFERRAL : 0,
         referrerBonus: referralTransaction ? POINT_VALUES.REFERRAL_BONUS : 0,
       },
     });
