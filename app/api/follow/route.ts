@@ -7,6 +7,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { fid, targetFid, action } = body;
 
+    console.log("body", body);
+
     // Validate required fields
     if (!fid || !targetFid || !action) {
       return NextResponse.json(

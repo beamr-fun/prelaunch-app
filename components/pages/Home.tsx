@@ -29,26 +29,8 @@ export default function Home() {
 
   console.log("user", user);
 
-  // // Mock data for testing
-  // const mockUser = {
-  //   data: {
-  //     fid: "12345",
-  //     display_name: "Test User",
-  //     username: "testuser",
-  //     pfp_url: "https://via.placeholder.com/80x80/667eea/ffffff?text=T",
-  //   },
-  // };
-
-  // // Mock wallet addresses for testing
-  // const mockWallets = [
-  //   "0x1234567890123456789012345678901234567890",
-  //   "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
-  //   "0x9876543210987654321098765432109876543210",
-  // ];
-
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
-  // Mock launch date (30 days from now)
   const launchDate = getLaunchDate();
 
   const handleFollowClick = () => {
@@ -82,7 +64,7 @@ export default function Home() {
 
       <Container style={{ flex: 1 }} px="md" py="xl">
         <Stack align="center" gap="xl" style={{ height: "100%" }}>
-          <Rainbow size={140} />
+          <Rainbow size={75} />
 
           {/* Countdown Timer */}
           <CountdownTimer targetDate={launchDate} />
