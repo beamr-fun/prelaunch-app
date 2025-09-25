@@ -118,16 +118,14 @@ export function PointsProvider({ children }: PointsProviderProps) {
         // Get stored referral code
         const storedReferral = getReferralCode();
 
-        if (userData) {
-          setState((prev) => ({
-            ...prev,
-            userPoints: userData,
-            isAuthenticated: true,
-            walletConfirmed: !!userData.walletAddress,
-            referrerFid: storedReferral || undefined,
-            isLoading: false,
-          }));
-        }
+        setState((prev) => ({
+          ...prev,
+          userPoints: userData || null,
+          isAuthenticated: true,
+          walletConfirmed: !!userData?.walletAddress,
+          referrerFid: storedReferral || undefined,
+          isLoading: false,
+        }));
       } catch (error) {
         console.error("Failed to load profile:", error);
         setState((prev) => ({ ...prev, isLoading: false }));

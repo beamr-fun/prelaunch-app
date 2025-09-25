@@ -29,6 +29,8 @@ export default function Home() {
   console.log("userPoints", userPoints);
   console.log("walletConfirmed", walletConfirmed);
 
+  console.log("walletLoading", walletLoading);
+
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
   const launchDate = getLaunchDate();
