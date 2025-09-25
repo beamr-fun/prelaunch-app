@@ -28,6 +28,8 @@ export default function Home() {
   } = usePoints();
 
   console.log("user", user);
+  console.log("userPoints", userPoints);
+  console.log("walletConfirmed", walletConfirmed);
 
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
@@ -48,10 +50,9 @@ export default function Home() {
     console.log("Create Cast clicked");
   };
 
-  // Use mock user for testing, fallback to real user
   const currentUser = user;
 
-  const currentPoints = userPoints?.totalPoints || 1250;
+  const currentPoints = userPoints?.totalPoints || 0;
 
   return (
     <Flex

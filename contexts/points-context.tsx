@@ -13,7 +13,6 @@ import {
   getReferralCode,
 } from "@/lib/storage";
 
-// Interfaces from the spec
 export interface UserPoints {
   fid: string;
   walletAddress?: string;
@@ -30,7 +29,6 @@ export interface WalletState {
 
 interface PointsContextType extends WalletState {
   confirmWallet: (walletAddress: string) => Promise<void>;
-  toggleWalletState: () => void;
   setReferrerFid: (fid: string) => void;
 }
 
@@ -49,14 +47,15 @@ export function PointsProvider({ children }: PointsProviderProps) {
     referrerFid: undefined,
   });
 
-  // Real API calls
-  const fetchUserProfile = async (): Promise<UserPoints> => {
+  const fetchUserProfile = async (): Promise<UserPoints | undefined> => {
     try {
-      const response = await fetch(`/api/users/profile?fid=12345`);
+      const response = await fetch(`/api/users/profile`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+
+      console.log("user points fetch data", data);
       return {
         fid: data.fid,
         walletAddress: data.walletAddress,
@@ -64,12 +63,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
       };
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
-      // Fallback to mock data
-      return {
-        fid: "12345",
-        walletAddress: state.walletConfirmed ? "0x1234...5678" : undefined,
-        totalPoints: 1250,
-      };
     }
   };
 
@@ -125,14 +118,16 @@ export function PointsProvider({ children }: PointsProviderProps) {
         // Get stored referral code
         const storedReferral = getReferralCode();
 
-        setState((prev) => ({
-          ...prev,
-          userPoints: userData,
-          isAuthenticated: true,
-          walletConfirmed: !!userData.walletAddress,
-          referrerFid: storedReferral || undefined,
-          isLoading: false,
-        }));
+        if (userData) {
+          setState((prev) => ({
+            ...prev,
+            userPoints: userData,
+            isAuthenticated: true,
+            walletConfirmed: !!userData.walletAddress,
+            referrerFid: storedReferral || undefined,
+            isLoading: false,
+          }));
+        }
       } catch (error) {
         console.error("Failed to load profile:", error);
         setState((prev) => ({ ...prev, isLoading: false }));
@@ -159,19 +154,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
     }
   };
 
-  const toggleWalletState = () => {
-    setState((prev) => ({
-      ...prev,
-      walletConfirmed: !prev.walletConfirmed,
-      userPoints: prev.userPoints
-        ? {
-            ...prev.userPoints,
-            walletAddress: !prev.walletConfirmed ? "0x1234...5678" : undefined,
-          }
-        : null,
-    }));
-  };
-
   const setReferrerFid = (fid: string) => {
     setState((prev) => ({ ...prev, referrerFid: fid }));
   };
@@ -181,7 +163,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
       value={{
         ...state,
         confirmWallet,
-        toggleWalletState,
         setReferrerFid,
       }}
     >
