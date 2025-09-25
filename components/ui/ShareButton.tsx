@@ -1,5 +1,6 @@
 "use client";
 
+import { sdk } from "@farcaster/miniapp-sdk";
 import { Button, Text, Flex, Paper } from "@mantine/core";
 import { useState } from "react";
 import { Share2, Link, Check, Copy } from "lucide-react";
@@ -7,29 +8,33 @@ import { generateReferralURL } from "@/lib/storage";
 
 interface ShareButtonProps {
   referralCode: string;
-  onShare?: (platform?: string) => void;
 }
 
-export default function ShareButton({
-  referralCode,
-  onShare,
-}: ShareButtonProps) {
+export default function ShareButton({ referralCode }: ShareButtonProps) {
   const [isSharing, setIsSharing] = useState(false);
-  const [shared, setShared] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  const handleNativeShare = async () => {
+  const handleCastClick = async () => {
+    setIsSharing(true);
+
+    await sdk.actions.composeCast({
+      text: "beamr",
+      embeds: [process.env.NEXT_PUBLIC_URL || ""],
+    });
+
+    setIsSharing(false);
+  };
+
+  const handleNativeCopy = async () => {
     const referralURL = generateReferralURL(referralCode);
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join me on Beamer!",
-          text: "Check out Beamer - the future of decentralized communication!",
           url: referralURL,
         });
-        setShared(true);
-        onShare?.("native");
-        setTimeout(() => setShared(false), 3000);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
       } catch (error) {
         if (error instanceof Error && error.name !== "AbortError") {
           console.error("Share failed:", error);
@@ -48,9 +53,8 @@ export default function ShareButton({
 
     try {
       await navigator.clipboard.writeText(referralURL);
-      setShared(true);
-      onShare?.("copy");
-      setTimeout(() => setShared(false), 3000);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
     } catch (error) {
       console.error("Copy failed:", error);
       // Final fallback for older browsers
@@ -60,16 +64,15 @@ export default function ShareButton({
       textArea.select();
       document.execCommand("copy");
       document.body.removeChild(textArea);
-      setShared(true);
-      onShare?.("copy");
-      setTimeout(() => setShared(false), 3000);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
     }
   };
 
   const handleShare = async () => {
     setIsSharing(true);
     try {
-      await handleNativeShare();
+      await handleNativeCopy();
     } finally {
       setIsSharing(false);
     }
@@ -78,7 +81,7 @@ export default function ShareButton({
   return (
     <Flex direction="column" align="center" gap="md">
       <Button
-        onClick={handleShare}
+        onClick={handleCastClick}
         loading={isSharing}
         variant="outline"
         color="white"
@@ -90,22 +93,19 @@ export default function ShareButton({
 
       <Button
         onClick={handleShare}
-        loading={isSharing}
         variant="transparent"
         color="white"
         leftSection={<Copy size={16} />}
         size="xs"
-        style={{
-          transition: "all 0.3s ease",
-          transform: shared ? "scale(1.05)" : "scale(1)",
-          minWidth: "200px",
+        styles={{
+          root: {
+            transition: "all 0.3s ease",
+            transform: copied ? "scale(1.05)" : "scale(1)",
+            minWidth: "200px",
+          },
         }}
       >
-        {isSharing
-          ? "Copying..."
-          : shared
-          ? "Copied to clipboard"
-          : "Copy Referral Link"}
+        {copied ? "Copied to clipboard" : "Copy Referral Link"}
       </Button>
     </Flex>
   );

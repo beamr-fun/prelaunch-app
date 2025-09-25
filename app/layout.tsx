@@ -1,6 +1,9 @@
 import Providers from "@/components/providers";
 import type { Metadata } from "next";
 import { DM_Mono } from "next/font/google";
+import { Flex } from "@mantine/core";
+import Header from "@/components/ui/Header";
+import Footer from "@/components/ui/Footer";
 
 import "@mantine/core/styles.css";
 
@@ -30,7 +33,20 @@ export default function RootLayout({
       </head>
       <body className={font.className}>
         <Providers>
-          <MantineProvider>{children}</MantineProvider>
+          <MantineProvider>
+            <Flex
+              direction="column"
+              style={{ minHeight: "100vh" }}
+              bg="dark.8"
+              c="white"
+            >
+              <Header />
+              <Flex style={{ flex: 1 }} direction="column">
+                {children}
+              </Flex>
+              <Footer />
+            </Flex>
+          </MantineProvider>
           {/* <MantineProvider theme={theme}>{children}</MantineProvider> */}
         </Providers>
       </body>

@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabase";
+import { fetchUsersByEthAddress } from "@/lib/neynar";
 
 export interface LeaderboardEntry {
   fid: string;
@@ -9,99 +11,114 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-// Mock data for now - will eventually fetch from neynar API
-const mockLeaderboardData: LeaderboardEntry[] = [
-  {
-    fid: "1",
-    username: "vitalik",
-    displayName: "Vitalik Buterin",
-    pfpUrl: "https://warpcast.com/~/api/avatar/vitalik.eth",
-    points: 1250,
-    rank: 1,
-  },
-  {
-    fid: "2",
-    username: "dwr",
-    displayName: "Dan Romero",
-    pfpUrl: "https://warpcast.com/~/api/avatar/dwr.eth",
-    points: 980,
-    rank: 2,
-  },
-  {
-    fid: "3",
-    username: "jessepollak",
-    displayName: "Jesse Pollak",
-    pfpUrl: "https://warpcast.com/~/api/avatar/jessepollak.eth",
-    points: 875,
-    rank: 3,
-  },
-  {
-    fid: "4",
-    username: "sarah",
-    displayName: "Sarah Chen",
-    pfpUrl: "https://warpcast.com/~/api/avatar/sarah.eth",
-    points: 742,
-    rank: 4,
-  },
-  {
-    fid: "5",
-    username: "mike",
-    displayName: "Mike Johnson",
-    pfpUrl: "https://warpcast.com/~/api/avatar/mike.eth",
-    points: 691,
-    rank: 5,
-  },
-  {
-    fid: "6",
-    username: "alex",
-    displayName: "Alex Rodriguez",
-    pfpUrl: "https://warpcast.com/~/api/avatar/alex.eth",
-    points: 634,
-    rank: 6,
-  },
-  {
-    fid: "7",
-    username: "emma",
-    displayName: "Emma Wilson",
-    pfpUrl: "https://warpcast.com/~/api/avatar/emma.eth",
-    points: 587,
-    rank: 7,
-  },
-  {
-    fid: "8",
-    username: "david",
-    displayName: "David Kim",
-    pfpUrl: "https://warpcast.com/~/api/avatar/david.eth",
-    points: 543,
-    rank: 8,
-  },
-  {
-    fid: "9",
-    username: "lisa",
-    displayName: "Lisa Zhang",
-    pfpUrl: "https://warpcast.com/~/api/avatar/lisa.eth",
-    points: 498,
-    rank: 9,
-  },
-  {
-    fid: "10",
-    username: "tom",
-    displayName: "Tom Anderson",
-    pfpUrl: "https://warpcast.com/~/api/avatar/tom.eth",
-    points: 456,
-    rank: 10,
-  },
-];
-
 export async function GET() {
   try {
-    // TODO: Eventually replace with actual data fetching from neynar API
-    // const addresses = await getLeaderboardAddresses(); // Get from your database
-    // const userData = await fetchUsersByEthAddress(addresses.join(','));
+    // Get top 20 users with their total points from the database
+    const { data: leaderboardData, error: leaderboardError } = await supabase
+      .from("user_points_total")
+      .select(
+        `
+        fid,
+        total_points,
+        user_id
+      `
+      )
+      .order("total_points", { ascending: false })
+      .limit(20);
+
+    if (leaderboardError) {
+      console.error("Error fetching leaderboard data:", leaderboardError);
+      return NextResponse.json(
+        { success: false, error: "Failed to fetch leaderboard data" },
+        { status: 500 }
+      );
+    }
+
+    if (!leaderboardData || leaderboardData.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+      });
+    }
+
+    // Get user IDs to fetch user data with wallet addresses
+    const userIds = leaderboardData
+      .map((entry) => entry.user_id)
+      .filter((id): id is string => id !== null);
+
+    // Fetch user data with wallet addresses
+    const { data: usersData, error: usersError } = await supabase
+      .from("users")
+      .select("id, fid, preferred_wallet")
+      .in("id", userIds)
+      .not("preferred_wallet", "is", null); // Only users with confirmed wallets
+
+    if (usersError) {
+      console.error("Error fetching users data:", usersError);
+      return NextResponse.json(
+        { success: false, error: "Failed to fetch users data" },
+        { status: 500 }
+      );
+    }
+
+    if (!usersData || usersData.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+      });
+    }
+
+    // Create a map of user_id to user data for quick lookup
+    const userMap = new Map(usersData.map((user) => [user.id, user]));
+
+    // Filter leaderboard data to only include users with confirmed wallets
+    const filteredLeaderboardData = leaderboardData.filter(
+      (entry) => entry.user_id && userMap.has(entry.user_id)
+    );
+
+    // Get wallet addresses for fetching user data from Neynar
+    const walletAddresses = filteredLeaderboardData
+      .map((entry) =>
+        entry.user_id ? userMap.get(entry.user_id)?.preferred_wallet : null
+      )
+      .filter(Boolean)
+      .join(",");
+
+    // Fetch user data from Neynar API
+    const userDataByAddress = await fetchUsersByEthAddress(walletAddresses);
+
+    // Create leaderboard entries with rank
+    const leaderboardEntries: LeaderboardEntry[] = filteredLeaderboardData
+      .map((entry, index) => {
+        const user = entry.user_id ? userMap.get(entry.user_id) : null;
+        const walletAddress = user?.preferred_wallet;
+
+        if (!walletAddress || !entry.fid) {
+          return null;
+        }
+
+        const neynarUsers = userDataByAddress[walletAddress] || [];
+        const neynarUser = neynarUsers[0]; // Take the first user if multiple
+
+        if (!neynarUser) {
+          console.warn(`No Neynar data found for wallet ${walletAddress}`);
+          return null;
+        }
+
+        return {
+          fid: entry.fid.toString(),
+          username: neynarUser.username,
+          displayName: neynarUser.display_name,
+          pfpUrl: neynarUser.pfp_url,
+          points: entry.total_points || 0,
+          rank: index + 1,
+        };
+      })
+      .filter(Boolean) as LeaderboardEntry[];
 
     return NextResponse.json({
       success: true,
-      data: mockLeaderboardData,
+      data: leaderboardEntries,
     });
   } catch (error) {
     console.error("Failed to fetch leaderboard data:", error);

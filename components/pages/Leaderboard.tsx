@@ -11,7 +11,7 @@ import {
   Group,
   Anchor,
 } from "@mantine/core";
-import Header from "@/components/ui/Header";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export interface LeaderboardEntry {
@@ -42,15 +42,12 @@ export default function Leaderboard() {
   const leaderboardData = response?.data || [];
 
   return (
-    <Flex
-      direction="column"
-      style={{ minHeight: "100vh" }}
-      bg="dark.8"
-      c="white"
-    >
-      <Header />
+    <>
       <Anchor component={Link} href="/" c="white" fw={500} mx="lg">
-        <Text size="sm">← Back</Text>
+        <Flex align="center" gap="xs">
+          <ArrowLeft size={12} />
+          <Text size="xs">Back</Text>
+        </Flex>
       </Anchor>
       <Container
         py="sm"
@@ -127,6 +124,6 @@ export default function Leaderboard() {
           </Stack>
         </Stack>
       </Container>
-    </Flex>
+    </>
   );
 }
