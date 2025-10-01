@@ -3,6 +3,7 @@ import {
   deleteUserNotificationDetails,
   setUserNotificationDetails,
 } from "@/lib/notifications";
+import { deletePointRecord } from "@/lib/points-utils";
 import { createPublicClient, http } from "viem";
 import { optimism } from "viem/chains";
 
@@ -83,11 +84,11 @@ export async function POST(request: Request) {
       );
       if (event.notificationDetails) {
         await setUserNotificationDetails(fid, event.notificationDetails);
-        await sendFrameNotification({
-          fid,
-          title: `Welcome to beamr`,
-          body: `Thank you for adding beamr`,
-        });
+        // await sendFrameNotification({
+        //   fid,
+        //   title: `Welcome to beamr`,
+        //   body: `Thank you for adding beamr`,
+        // });
       } else {
         await deleteUserNotificationDetails(fid);
       }
@@ -96,16 +97,18 @@ export async function POST(request: Request) {
     case "frame_removed": {
       console.log("frame_removed");
       await deleteUserNotificationDetails(fid);
+      // Remove APP_ADD points if they exist
+      await deletePointRecord(fid, "app_add");
       break;
     }
     case "notifications_enabled": {
       console.log("notifications_enabled", event.notificationDetails);
       await setUserNotificationDetails(fid, event.notificationDetails);
-      await sendFrameNotification({
-        fid,
-        title: `Welcome to beamr`,
-        body: `Thank you for enabling notifications for beamr`,
-      });
+      // await sendFrameNotification({
+      //   fid,
+      //   title: `Welcome to beamr`,
+      //   body: `Thank you for enabling notifications for beamr`,
+      // });
 
       break;
     }

@@ -12,7 +12,7 @@ import {
   MantineProvider,
   mantineHtmlProps,
 } from "@mantine/core";
-import { theme } from "@/lib/theme";
+// import { cssVariablesResolver, theme } from "@/lib/theme";
 
 const font = DM_Mono({ weight: "400", subsets: ["latin"] });
 
@@ -34,6 +34,12 @@ export default function RootLayout({
       <body className={font.className}>
         <Providers>
           <MantineProvider>
+            {/* <MantineProvider
+            theme={theme}
+            // withCssVariables
+            // defaultColorScheme="dark"
+            // cssVariablesResolver={cssVariablesResolver}
+          > */}
             <Flex
               direction="column"
               style={{ minHeight: "100vh" }}
@@ -47,7 +53,6 @@ export default function RootLayout({
               <Footer />
             </Flex>
           </MantineProvider>
-          {/* <MantineProvider theme={theme}>{children}</MantineProvider> */}
         </Providers>
       </body>
     </html>

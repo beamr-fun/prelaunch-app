@@ -1,7 +1,6 @@
 "use client";
 
 import { useUser } from "@/contexts/user-context";
-import { usePoints } from "@/contexts/points-context";
 import { Flex, Container, Stack, Text, Button, Anchor } from "@mantine/core";
 import { useAccount } from "wagmi";
 import CountdownTimer from "@/components/ui/CountdownTimer";
@@ -13,13 +12,13 @@ import { ChartNoAxesColumn, Rainbow } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { getLaunchDate } from "@/lib/constants";
+import { usePoints } from "@/contexts/points-context";
 
 export default function Home() {
   const { user, isLoading, error, signIn } = useUser();
   const { address } = useAccount();
   const {
     userPoints,
-    walletConfirmed,
     isLoading: walletLoading,
     confirmWallet,
     referrerFid,
@@ -27,7 +26,7 @@ export default function Home() {
 
   console.log("user", user);
   console.log("userPoints", userPoints);
-  console.log("walletConfirmed", walletConfirmed);
+  console.log("walletConfirmed", userPoints?.walletConfirmed);
 
   console.log("walletLoading", walletLoading);
 
@@ -50,8 +49,10 @@ export default function Home() {
         {/* User Profile Section */}
         {currentUser?.data && (
           <Flex direction="column" align="center" gap="md">
-            {walletConfirmed && <PreBeamsCounter points={currentPoints} />}
-            {!walletConfirmed && !walletLoading && (
+            {userPoints?.walletConfirmed && (
+              <PreBeamsCounter points={currentPoints} />
+            )}
+            {!userPoints?.walletConfirmed && !walletLoading && (
               <Text ta="center" size="sm">
                 Confirm your preferred wallet to earn your first Beamer token
                 stream at launch.
@@ -81,11 +82,14 @@ export default function Home() {
         {/* Wallet Section */}
         {currentUser?.data && (
           <Stack align="center" gap="md">
-            {!walletConfirmed && !walletLoading && (
+            {!userPoints?.walletConfirmed && !walletLoading && (
               <>
                 <WalletSelector
                   // wallets={mockWallets}
                   wallets={currentUser.data.verified_addresses.eth_addresses}
+                  primaryWallet={
+                    currentUser.data.verified_addresses.primary.eth_address
+                  }
                   selectedWallet={selectedWallet}
                   onWalletSelect={setSelectedWallet}
                   disabled={walletLoading}
@@ -103,7 +107,7 @@ export default function Home() {
         )}
 
         {/* Referral Section - Only show when wallet is confirmed */}
-        {currentUser?.data && walletConfirmed && (
+        {currentUser?.data && userPoints?.walletConfirmed && (
           <Flex
             direction="column"
             align="center"

@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { checkUserFollows, checkUserInChannel } from "@/lib/neynar";
+import {
+  awardFollowPoints,
+  awardChannelJoinPoints,
+  awardAppAddPoints,
+  getUserPoints,
+  getUserTotalPoints,
+} from "@/lib/points-utils";
+import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,6 +20,10 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Get miniapp addition status from query parameter
+    const { searchParams } = new URL(request.url);
+    const miniAppAdded = searchParams.get("miniAppAdded") === "true";
 
     // Get user from Supabase
     const { data: user, error: getUserError } = await supabase
@@ -30,26 +43,48 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get user's total points
-    const { data: userWithPoints, error: pointsError } = await supabase
-      .from("user_points_total")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
+    // Check social status and award points automatically
+    const awardedPoints = {
+      follow: false,
+      channelJoin: false,
+      appAdd: false,
+    };
 
-    // Get user's transaction history
-    const { data: transactions, error: transactionsError } = await supabase
-      .from("points")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
+    try {
+      // Check if user follows BEAMR account
+      const isFollowing = await checkUserFollows(
+        fid,
+        BEAMR_ACCOUNT_FID.toString()
+      );
 
-    if (transactionsError) {
-      console.error("Error fetching transactions:", transactionsError);
+      console.log("isFollowing", isFollowing);
+      if (isFollowing) {
+        awardedPoints.follow = await awardFollowPoints(user.id);
+      }
+
+      // Check if user is in BEAMR channel
+      const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
+      if (isInChannel) {
+        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id);
+      }
+
+      // Check if user has added the miniapp
+      if (miniAppAdded) {
+        awardedPoints.appAdd = await awardAppAddPoints(user.id);
+      }
+    } catch (error) {
+      console.error("Error checking social status:", error);
+      // Continue execution even if social checks fail
     }
 
-    const totalPoints = userWithPoints?.total_points || 0;
+    // Get user's total points and transaction history
+    const [totalPoints, transactions] = await Promise.all([
+      getUserTotalPoints(user.id),
+      getUserPoints(user.id),
+    ]);
+
+    // Get recent transactions (last 10)
+    const recentTransactions = transactions.slice(0, 10);
 
     return NextResponse.json({
       fid: user.fid,
@@ -59,7 +94,17 @@ export async function GET(request: NextRequest) {
       walletConfirmed: !!user.preferred_wallet,
       createdAt: user.created_at,
       lastUpdated: user.updated_at,
-      transactions: transactions || [],
+      transactions: recentTransactions,
+      socialStatus: {
+        following: awardedPoints.follow,
+        inChannel: awardedPoints.channelJoin,
+        appAdded: miniAppAdded,
+      },
+      newlyAwardedPoints: {
+        follow: awardedPoints.follow,
+        channelJoin: awardedPoints.channelJoin,
+        appAdd: awardedPoints.appAdd,
+      },
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);

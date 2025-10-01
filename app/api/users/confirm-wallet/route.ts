@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { POINT_VALUES } from "@/lib/constants";
+import {
+  POINT_VALUES,
+  BEAMR_ACCOUNT_FID,
+  BEAMR_CHANNEL_NAME,
+} from "@/lib/constants";
+import { checkUserFollows, checkUserInChannel } from "@/lib/neynar";
+import {
+  awardFollowPoints,
+  awardChannelJoinPoints,
+  awardAppAddPoints,
+} from "@/lib/points-utils";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { walletAddress, referrerFid } = body;
+    const { walletAddress, referrerFid, miniAppAdded } = body;
 
     // Validate required fields
     if (!walletAddress) {
@@ -29,6 +39,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
+      );
+    }
+
+    if (fid === referrerFid) {
+      return NextResponse.json(
+        { error: "FID and referrer FID match. NO NO!" },
+        { status: 400 }
       );
     }
 
@@ -120,26 +137,44 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check social status and award points automatically
+    const awardedPoints = {
+      follow: false,
+      channelJoin: false,
+      appAdd: false,
+    };
+
+    try {
+      // Check if user follows BEAMR account
+      const isFollowing = await checkUserFollows(
+        fid,
+        BEAMR_ACCOUNT_FID.toString()
+      );
+
+      if (isFollowing) {
+        awardedPoints.follow = await awardFollowPoints(user.id);
+      }
+
+      // Check if user is in BEAMR channel
+      const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
+      if (isInChannel) {
+        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id);
+      }
+
+      // Check if user has added the miniapp
+      if (miniAppAdded) {
+        awardedPoints.appAdd = await awardAppAddPoints(user.id);
+      }
+    } catch (error) {
+      console.error("Error checking social status:", error);
+      // Continue execution even if social checks fail
+    }
+
     // If there's a referrer, award referral points
     let referralTransaction = null;
     const finalReferrerFid = referrerFid || user.referrer_fid;
 
     if (finalReferrerFid) {
-      // // Award points to the new user for being referred
-      // const { error: userReferralError } = await supabase
-      //   .from("points")
-      //   .insert({
-      //     user_id: user.id,
-      //     amount: POINT_VALUES.REFERRAL,
-      //     source: "referral",
-      //     metadata: { description: `Referred by ${finalReferrerFid}` },
-      //     created_at: new Date().toISOString(),
-      //   });
-
-      // if (userReferralError) {
-      //   console.error("Error adding user referral points:", userReferralError);
-      // }
-
       // Award bonus points to the referrer
       const { data: referrerUser, error: referrerError } = await supabase
         .from("users")
@@ -194,8 +229,16 @@ export async function POST(request: NextRequest) {
       walletConfirmed: true,
       lastUpdated: user.updated_at,
       transactions: recentTransactions || [],
+      socialStatus: {
+        following: awardedPoints.follow,
+        inChannel: awardedPoints.channelJoin,
+        appAdded: !!miniAppAdded,
+      },
       awardedPoints: {
         walletConfirmation: POINT_VALUES.WALLET_CONFIRMATION,
+        follow: awardedPoints.follow ? POINT_VALUES.FOLLOW : 0,
+        channelJoin: awardedPoints.channelJoin ? POINT_VALUES.CHANNEL_JOIN : 0,
+        appAdd: awardedPoints.appAdd ? POINT_VALUES.APP_ADD : 0,
         referrerBonus: referralTransaction ? POINT_VALUES.REFERRAL_BONUS : 0,
       },
     });

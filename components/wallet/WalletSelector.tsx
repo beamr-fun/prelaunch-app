@@ -7,6 +7,7 @@ import { useState } from "react";
 interface WalletSelectorProps {
   wallets: string[];
   selectedWallet: string;
+  primaryWallet: string;
   onWalletSelect: (wallet: string) => void;
   disabled?: boolean;
 }
@@ -14,6 +15,7 @@ interface WalletSelectorProps {
 export default function WalletSelector({
   wallets,
   selectedWallet,
+  primaryWallet,
   onWalletSelect,
   disabled = false,
 }: WalletSelectorProps) {
@@ -37,7 +39,11 @@ export default function WalletSelector({
   };
 
   const truncateWallet = (wallet: string) => {
-    return `${wallet.substring(0, 6)}...${wallet.substring(wallet.length - 4)}`;
+    const truncAddy = `${wallet.substring(0, 6)}...${wallet.substring(
+      wallet.length - 4
+    )}`;
+
+    return wallet === primaryWallet ? `${truncAddy} (primary)` : truncAddy;
   };
 
   const walletOptions = wallets.map((wallet) => ({

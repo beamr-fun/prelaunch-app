@@ -7,6 +7,8 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { sdk } from "@farcaster/miniapp-sdk";
+import { useUser } from "./user-context";
 import {
   getReferralFromURL,
   setReferralCode,
@@ -17,19 +19,34 @@ export interface UserPoints {
   fid: string;
   walletAddress?: string;
   totalPoints: number;
+  referrerFid?: string;
+  walletConfirmed: boolean;
+  createdAt: string;
+  lastUpdated: string;
+  transactions: any[];
+  socialStatus: {
+    following: boolean;
+    inChannel: boolean;
+    appAdded: boolean;
+  };
+  newlyAwardedPoints: {
+    follow: boolean;
+    channelJoin: boolean;
+    appAdd: boolean;
+  };
 }
 
-export interface WalletState {
+export interface PointsState {
   userPoints: UserPoints | null;
-  isAuthenticated: boolean;
   isLoading: boolean;
-  walletConfirmed: boolean;
+  error: string | null;
   referrerFid?: string;
 }
 
-interface PointsContextType extends WalletState {
+interface PointsContextType extends PointsState {
   confirmWallet: (walletAddress: string) => Promise<void>;
   setReferrerFid: (fid: string) => void;
+  refetchPoints: () => Promise<void>;
 }
 
 const PointsContext = createContext<PointsContextType | undefined>(undefined);
@@ -39,17 +56,24 @@ interface PointsProviderProps {
 }
 
 export function PointsProvider({ children }: PointsProviderProps) {
-  const [state, setState] = useState<WalletState>({
+  const { user } = useUser();
+  const [state, setState] = useState<PointsState>({
     userPoints: null,
-    isAuthenticated: false,
-    isLoading: true,
-    walletConfirmed: false,
+    isLoading: false,
+    error: null,
     referrerFid: undefined,
   });
 
   const fetchUserProfile = async (): Promise<UserPoints | undefined> => {
     try {
-      const response = await fetch(`/api/users/profile`);
+      const context = await sdk.context;
+      const miniAppAdded = context?.client?.added;
+
+      // Pass miniapp status as query parameter
+      const url = `/api/users/profile${
+        miniAppAdded ? "?miniAppAdded=true" : ""
+      }`;
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -60,9 +84,25 @@ export function PointsProvider({ children }: PointsProviderProps) {
         fid: data.fid,
         walletAddress: data.walletAddress,
         totalPoints: data.totalPoints,
+        referrerFid: data.referrerFid,
+        walletConfirmed: data.walletConfirmed,
+        createdAt: data.createdAt,
+        lastUpdated: data.lastUpdated,
+        transactions: data.transactions || [],
+        socialStatus: data.socialStatus || {
+          following: false,
+          inChannel: false,
+          appAdded: false,
+        },
+        newlyAwardedPoints: data.newlyAwardedPoints || {
+          follow: false,
+          channelJoin: false,
+          appAdd: false,
+        },
       };
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
+      throw error;
     }
   };
 
@@ -70,6 +110,8 @@ export function PointsProvider({ children }: PointsProviderProps) {
     walletAddress: string
   ): Promise<UserPoints> => {
     try {
+      const context = await sdk.context;
+      const miniAppAdded = context?.client?.added;
       const response = await fetch("/api/users/confirm-wallet", {
         method: "POST",
         headers: {
@@ -78,6 +120,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         body: JSON.stringify({
           walletAddress,
           referrerFid: state.referrerFid,
+          miniAppAdded,
         }),
       });
 
@@ -90,22 +133,43 @@ export function PointsProvider({ children }: PointsProviderProps) {
         fid: data.fid,
         walletAddress: data.walletAddress,
         totalPoints: data.totalPoints,
+        referrerFid: data.referrerFid,
+        walletConfirmed: data.walletConfirmed,
+        createdAt: data.createdAt,
+        lastUpdated: data.lastUpdated,
+        transactions: data.transactions || [],
+        socialStatus: data.socialStatus || {
+          following: false,
+          inChannel: false,
+          appAdded: false,
+        },
+        newlyAwardedPoints: data.newlyAwardedPoints || {
+          follow: false,
+          channelJoin: false,
+          appAdd: false,
+        },
       };
     } catch (error) {
       console.error("Failed to confirm wallet:", error);
-      // Fallback to mock data
-      return {
-        fid: "12345",
-        walletAddress,
-        totalPoints: 1500, // Award 250 points for wallet confirmation
-      };
+      throw error;
     }
   };
 
-  // Load user profile and check for referral code on mount
+  // Load points when user is authenticated
   useEffect(() => {
-    const loadProfile = async () => {
-      setState((prev) => ({ ...prev, isLoading: true }));
+    const loadPoints = async () => {
+      if (!user.data) {
+        setState((prev) => ({
+          ...prev,
+          userPoints: null,
+          isLoading: false,
+          error: null,
+        }));
+        return;
+      }
+
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
       try {
         const userData = await fetchUserProfile();
 
@@ -121,39 +185,70 @@ export function PointsProvider({ children }: PointsProviderProps) {
         setState((prev) => ({
           ...prev,
           userPoints: userData || null,
-          isAuthenticated: true,
-          walletConfirmed: !!userData?.walletAddress,
           referrerFid: storedReferral || undefined,
           isLoading: false,
+          error: null,
         }));
       } catch (error) {
-        console.error("Failed to load profile:", error);
-        setState((prev) => ({ ...prev, isLoading: false }));
+        console.error("Failed to load points:", error);
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error:
+            error instanceof Error ? error.message : "Failed to load points",
+        }));
       }
     };
 
-    loadProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    loadPoints();
+  }, [user.data, user.isLoading]);
 
   const confirmWallet = async (walletAddress: string) => {
-    setState((prev) => ({ ...prev, isLoading: true }));
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
       const updatedUser = await confirmWalletAPI(walletAddress);
       setState((prev) => ({
         ...prev,
         userPoints: updatedUser,
-        walletConfirmed: true,
         isLoading: false,
+        error: null,
       }));
     } catch (error) {
       console.error("Failed to confirm wallet:", error);
-      setState((prev) => ({ ...prev, isLoading: false }));
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : "Failed to confirm wallet",
+      }));
     }
   };
 
   const setReferrerFid = (fid: string) => {
     setState((prev) => ({ ...prev, referrerFid: fid }));
+  };
+
+  const refetchPoints = async () => {
+    if (!user.data) return;
+
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    try {
+      const userData = await fetchUserProfile();
+      setState((prev) => ({
+        ...prev,
+        userPoints: userData || null,
+        isLoading: false,
+        error: null,
+      }));
+    } catch (error) {
+      console.error("Failed to refetch points:", error);
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : "Failed to refetch points",
+      }));
+    }
   };
 
   return (
@@ -162,6 +257,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         ...state,
         confirmWallet,
         setReferrerFid,
+        refetchPoints,
       }}
     >
       {children}
