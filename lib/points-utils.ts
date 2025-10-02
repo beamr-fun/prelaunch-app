@@ -10,11 +10,11 @@ export type PointSource =
 
 export interface PointRecord {
   id: string;
-  user_id: string;
+  user_id: string | null;
   source: string;
   amount: number;
   metadata?: any;
-  created_at: string;
+  created_at: string | null;
 }
 
 /**
