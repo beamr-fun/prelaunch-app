@@ -7,6 +7,8 @@ import {
   awardAppAddPoints,
   getUserPoints,
   getUserTotalPoints,
+  hasCastPoints,
+  hasReferred,
 } from "@/lib/points-utils";
 import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
@@ -77,11 +79,14 @@ export async function GET(request: NextRequest) {
       // Continue execution even if social checks fail
     }
 
-    // Get user's total points and transaction history
-    const [totalPoints, transactions] = await Promise.all([
-      getUserTotalPoints(user.id),
-      getUserPoints(user.id),
-    ]);
+    // Get user's total points, transaction history, CAST point status, and referral status
+    const [totalPoints, transactions, hasCast, hasReferredStatus] =
+      await Promise.all([
+        getUserTotalPoints(user.id),
+        getUserPoints(user.id),
+        hasCastPoints(user.id),
+        hasReferred(user.id),
+      ]);
 
     // Get recent transactions (last 10)
     const recentTransactions = transactions.slice(0, 10);
@@ -99,6 +104,8 @@ export async function GET(request: NextRequest) {
         following: awardedPoints.follow,
         inChannel: awardedPoints.channelJoin,
         appAdded: miniAppAdded,
+        hasCast: hasCast,
+        hasReferred: hasReferredStatus,
       },
       newlyAwardedPoints: {
         follow: awardedPoints.follow,

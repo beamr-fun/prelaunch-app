@@ -28,6 +28,8 @@ export interface UserPoints {
     following: boolean;
     inChannel: boolean;
     appAdded: boolean;
+    hasCast: boolean;
+    hasReferred: boolean;
   };
   newlyAwardedPoints: {
     follow: boolean;
@@ -93,6 +95,8 @@ export function PointsProvider({ children }: PointsProviderProps) {
           following: false,
           inChannel: false,
           appAdded: false,
+          hasCast: false,
+          hasReferred: false,
         },
         newlyAwardedPoints: data.newlyAwardedPoints || {
           follow: false,
@@ -142,6 +146,8 @@ export function PointsProvider({ children }: PointsProviderProps) {
           following: false,
           inChannel: false,
           appAdded: false,
+          hasCast: false,
+          hasReferred: false,
         },
         newlyAwardedPoints: data.newlyAwardedPoints || {
           follow: false,
@@ -172,6 +178,8 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
       try {
         const userData = await fetchUserProfile();
+
+        console.log("userData", userData);
 
         // Check for referral code in URL
         const urlReferral = getReferralFromURL();

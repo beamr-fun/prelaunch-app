@@ -6,7 +6,8 @@ export type PointSource =
   | "channel_join"
   | "wallet_confirmation"
   | "app_add"
-  | "referral";
+  | "referral"
+  | "cast";
 
 export interface PointRecord {
   id: string;
@@ -60,7 +61,7 @@ export const insertPointRecord = async (
       console.log(
         `Point record already exists for user ${userId} and source ${source}`
       );
-      return false;
+      return true;
     }
 
     // Insert new point record
@@ -240,6 +241,54 @@ export const deletePointRecord = async (
     return true;
   } catch (error) {
     console.error("Error deleting point record:", error);
+    return false;
+  }
+};
+
+/**
+ * Check if user has CAST points
+ */
+export const hasCastPoints = async (userId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from("points")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("source", "cast")
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error checking CAST points:", error);
+      return false;
+    }
+
+    return !!data;
+  } catch (error) {
+    console.error("Error checking CAST points:", error);
+    return false;
+  }
+};
+
+/**
+ * Check if user has referral bonus points
+ */
+export const hasReferred = async (userId: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from("points")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("source", "referral")
+      .limit(1);
+
+    if (error) {
+      console.error("Error checking referral points:", error);
+      return false;
+    }
+
+    return data && data.length > 0;
+  } catch (error) {
+    console.error("Error checking referral points:", error);
     return false;
   }
 };

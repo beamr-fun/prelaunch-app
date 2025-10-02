@@ -3,14 +3,16 @@
 import { sdk } from "@farcaster/miniapp-sdk";
 import { Button, Text, Flex, Paper } from "@mantine/core";
 import { useState } from "react";
-import { Share2, Link, Check, Copy } from "lucide-react";
+import { Share2, Link, Check, Copy, CircleCheck } from "lucide-react";
 import { generateReferralURL } from "@/lib/storage";
+import { usePoints } from "@/contexts/points-context";
 
 interface ShareButtonProps {
   referralCode: string;
 }
 
 export default function ShareButton({ referralCode }: ShareButtonProps) {
+  const { userPoints } = usePoints();
   const [isSharing, setIsSharing] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -85,7 +87,14 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
         loading={isSharing}
         variant="outline"
         color="white"
-        leftSection={<Share2 size={16} />}
+        leftSection={
+          <Flex align="center" gap="xs">
+            <Share2 size={16} />
+            {userPoints?.socialStatus?.hasReferred && (
+              <CircleCheck size={16} color="green" />
+            )}
+          </Flex>
+        }
         size="lg"
       >
         Share

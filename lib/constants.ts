@@ -13,6 +13,7 @@ export const POINT_VALUES = {
   CHANNEL_JOIN: 150,
   REFERRAL_BONUS: 100, // Bonus for the referrer
   APP_ADD: 50,
+  CAST: 150,
 } as const;
 
 export const BEAMR_ACCOUNT_FID = 1149437;
