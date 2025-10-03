@@ -53,24 +53,17 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   if (isExpired) {
     return (
       <Flex direction="column" align="center" gap="md">
-        <Text size="xl" fw={700} c="green">
-          🚀 LAUNCHED! 🚀
-        </Text>
-        <Text size="md" c="gray.4">
-          Welcome to the future of Beamer!
-        </Text>
+        <Text size="xl">BEAMR</Text>
       </Flex>
     );
   }
 
   return (
-    <Flex direction="column" align="center" gap="lg">
-      <Flex gap="xl" wrap="wrap" justify="center">
-        <CountdownDisplay value={timeLeft.days} label="d" />
-        <CountdownDisplay value={timeLeft.hours} label="h" />
-        <CountdownDisplay value={timeLeft.minutes} label="m" />
-        <CountdownDisplay value={timeLeft.seconds} label="s" />
-      </Flex>
+    <Flex gap="lg" wrap="wrap" justify="center">
+      <CountdownDisplay value={timeLeft.days} label="d" />
+      <CountdownDisplay value={timeLeft.hours} label="h" />
+      <CountdownDisplay value={timeLeft.minutes} label="m" />
+      <CountdownDisplay value={timeLeft.seconds} label="s" />
     </Flex>
   );
 }

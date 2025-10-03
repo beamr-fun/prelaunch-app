@@ -1,20 +1,13 @@
-import Providers from "@/components/providers";
 import type { Metadata } from "next";
-import { DM_Mono } from "next/font/google";
 import { Flex } from "@mantine/core";
+import Providers from "@/components/providers";
 import Header from "@/components/ui/Header";
 import Footer from "@/components/ui/Footer";
 
 import "@mantine/core/styles.css";
+import "@/styles/fonts.css";
 
-import {
-  ColorSchemeScript,
-  MantineProvider,
-  mantineHtmlProps,
-} from "@mantine/core";
-// import { cssVariablesResolver, theme } from "@/lib/theme";
-
-const font = DM_Mono({ weight: "400", subsets: ["latin"] });
+import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 
 export const metadata: Metadata = {
   title: "beamr",
@@ -30,29 +23,44 @@ export default function RootLayout({
     <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
+        <link
+          rel="preload"
+          href="https://cdn.jsdelivr.net/gh/fonts-archive/Pretendard/Pretendard-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://cdn.jsdelivr.net/gh/fonts-archive/Pretendard/Pretendard-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://cdn.jsdelivr.net/gh/fonts-archive/Pretendard/Pretendard-SemiBold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://cdn.jsdelivr.net/gh/fonts-archive/Pretendard/Pretendard-Bold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
       </head>
-      <body className={font.className}>
+      <body>
         <Providers>
-          <MantineProvider>
-            {/* <MantineProvider
-            theme={theme}
-            // withCssVariables
-            // defaultColorScheme="dark"
-            // cssVariablesResolver={cssVariablesResolver}
-          > */}
-            <Flex
-              direction="column"
-              style={{ minHeight: "100vh" }}
-              bg="dark.8"
-              c="white"
-            >
-              <Header />
-              <Flex style={{ flex: 1 }} direction="column">
-                {children}
-              </Flex>
-              <Footer />
+          <Flex direction="column" style={{ minHeight: "100vh" }}>
+            <Header />
+            <Flex style={{ flex: 1 }} direction="column">
+              {children}
             </Flex>
-          </MantineProvider>
+            <Footer />
+          </Flex>
         </Providers>
       </body>
     </html>

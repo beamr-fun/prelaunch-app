@@ -13,10 +13,8 @@ export default function CountdownDisplay({
 }: CountdownDisplayProps) {
   return (
     <Flex direction="row" align="flex-end">
-      <Text size="2rem" fw={700} c="white">
-        {value.toString().padStart(2, "0")}
-      </Text>
-      <Text size="sm" c="gray.4" fw={500}>
+      <Text size="3rem">{value.toString().padStart(2, "0")}</Text>
+      <Text size="xl" c="gray.4">
         {label}
       </Text>
     </Flex>

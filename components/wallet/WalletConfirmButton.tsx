@@ -41,8 +41,6 @@ export default function WalletConfirmButton({
         disabled={isDisabled}
         loading={isConfirming || isLoading}
         size="md"
-        variant="outline"
-        color="white"
         style={{
           minWidth: "200px",
         }}

@@ -24,12 +24,6 @@ export default function Home() {
     referrerFid,
   } = usePoints();
 
-  console.log("user", user);
-  console.log("userPoints", userPoints);
-  console.log("walletConfirmed", userPoints?.walletConfirmed);
-
-  console.log("walletLoading", walletLoading);
-
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
   const launchDate = getLaunchDate();
@@ -53,7 +47,7 @@ export default function Home() {
               <PreBeamsCounter points={currentPoints} />
             )}
             {!userPoints?.walletConfirmed && !walletLoading && (
-              <Text ta="center" size="sm">
+              <Text ta="center" size="lg">
                 Confirm your preferred wallet to earn your first Beamer token
                 stream at launch.
               </Text>
@@ -61,13 +55,7 @@ export default function Home() {
           </Flex>
         )}
         {!currentUser?.data && !isLoading && !walletLoading && (
-          <Button
-            onClick={signIn}
-            disabled={isLoading}
-            color="white"
-            variant="outline"
-            size="xl"
-          >
+          <Button onClick={signIn} disabled={isLoading} size="xl">
             {isLoading ? (
               <>
                 <div />
@@ -85,7 +73,6 @@ export default function Home() {
             {!userPoints?.walletConfirmed && !walletLoading && (
               <>
                 <WalletSelector
-                  // wallets={mockWallets}
                   wallets={currentUser.data.verified_addresses.eth_addresses}
                   primaryWallet={
                     currentUser.data.verified_addresses.primary.eth_address
@@ -114,16 +101,10 @@ export default function Home() {
             gap="lg"
             style={{ width: "100%", maxWidth: "400px" }}
           >
-            <Anchor
-              component={Link}
-              href="/leaderboard"
-              c="white"
-              fw={500}
-              mx="lg"
-            >
+            <Anchor component={Link} href="/leaderboard">
               <Flex direction="row" align="center" gap="xs">
                 <ChartNoAxesColumn size={16} />
-                <Text size="xs"> Leaderboard</Text>
+                <Text size="sm"> Leaderboard</Text>
               </Flex>
             </Anchor>
             <Flex direction="row" gap="md" wrap="wrap" justify="center">

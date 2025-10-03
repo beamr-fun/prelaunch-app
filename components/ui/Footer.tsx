@@ -16,8 +16,6 @@ import { usePoints } from "@/contexts/points-context";
 export default function Footer() {
   const { userPoints } = usePoints();
 
-  console.log("userPoints", userPoints);
-
   const handleFollowClick = async () => {
     await sdk.actions.viewProfile({
       fid: BEAMR_ACCOUNT_FID,
@@ -36,24 +34,18 @@ export default function Footer() {
   };
 
   const handleAddMiniAppClick = async () => {
-    await sdk.actions.addMiniApp();
+    if (!userPoints?.socialStatus?.appAdded) {
+      await sdk.actions.addMiniApp();
+    }
   };
 
   return (
-    <Flex
-      direction="row"
-      gap="xs"
-      px="xs"
-      py="sm"
-      justify="space-between"
-      wrap="wrap"
-    >
+    <Flex direction="row" gap="4px" px="xs" py="sm">
       <Button
-        variant="transparent"
-        color="white"
         onClick={handleFollowClick}
         h="70px"
         flex="1"
+        style={{ minWidth: 0 }}
       >
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
@@ -69,11 +61,10 @@ export default function Footer() {
       </Button>
 
       <Button
-        variant="transparent"
-        color="white"
         onClick={handleJoinClick}
         h="70px"
         flex="1"
+        style={{ minWidth: 0 }}
       >
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
@@ -89,11 +80,10 @@ export default function Footer() {
       </Button>
 
       <Button
-        variant="transparent"
-        color="white"
         onClick={handleCastClick}
         h="70px"
         flex="1"
+        style={{ minWidth: 0 }}
       >
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
@@ -109,12 +99,10 @@ export default function Footer() {
       </Button>
 
       <Button
-        variant="transparent"
-        color="white"
         onClick={handleAddMiniAppClick}
         h="70px"
         flex="1"
-        disabled={userPoints?.socialStatus?.appAdded}
+        style={{ minWidth: 0 }}
       >
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">

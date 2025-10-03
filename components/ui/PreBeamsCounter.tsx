@@ -10,13 +10,13 @@ interface PreBeamsCounterProps {
 export default function PreBeamsCounter({ points }: PreBeamsCounterProps) {
   return (
     <Flex direction="column" align="center" gap="md">
-      <Text size="xl" fw={600} c="white" ta="center">
+      <Text size="xl" ta="center">
         Your Pre-Beams
       </Text>
 
-      <PointsDisplay points={points} size="large" />
+      <PointsDisplay points={points} />
 
-      <Text size="sm" c="white" ta="center" maw={300}>
+      <Text size="lg" ta="center" maw={300}>
         Do stuff to make the beamr launch a success. We&apos;re watching.
       </Text>
     </Flex>

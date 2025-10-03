@@ -5,15 +5,9 @@ import { useState, useEffect } from "react";
 
 interface PointsDisplayProps {
   points: number;
-  label?: string;
-  size?: "small" | "large";
 }
 
-export default function PointsDisplay({
-  points,
-  label,
-  size = "small",
-}: PointsDisplayProps) {
+export default function PointsDisplay({ points }: PointsDisplayProps) {
   const [displayPoints, setDisplayPoints] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -43,39 +37,19 @@ export default function PointsDisplay({
     return value.toLocaleString();
   };
 
-  if (size === "large") {
-    return (
-      <Flex direction="column" align="center" gap="xs">
-        <Text
-          size="3rem"
-          fw={700}
-          c="white"
-          style={{
-            fontFamily: "monospace",
-            transition: "all 0.3s ease",
-            transform: isAnimating ? "scale(1.05)" : "scale(1)",
-          }}
-        >
-          {formatPoints(displayPoints)}
-        </Text>
-        <Text size="lg" c="gray.4" fw={500}>
-          {label}
-        </Text>
-      </Flex>
-    );
-  }
-
   return (
-    <Badge
-      size="lg"
-      variant="gradient"
-      gradient={{ from: "blue", to: "purple" }}
-      style={{
-        transition: "all 0.3s ease",
-        transform: isAnimating ? "scale(1.1)" : "scale(1)",
-      }}
-    >
-      {formatPoints(displayPoints)} {label}
-    </Badge>
+    <Flex direction="column" align="center" gap="xs">
+      <Text
+        size="3rem"
+        c="white"
+        style={{
+          // fontFamily: "monospace",
+          transition: "all 0.3s ease",
+          transform: isAnimating ? "scale(1.05)" : "scale(1)",
+        }}
+      >
+        {formatPoints(displayPoints)}
+      </Text>
+    </Flex>
   );
 }

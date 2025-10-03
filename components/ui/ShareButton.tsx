@@ -1,7 +1,7 @@
 "use client";
 
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Button, Text, Flex, Paper } from "@mantine/core";
+import { Button, Text, Flex, Paper, Anchor } from "@mantine/core";
 import { useState } from "react";
 import { Share2, Link, Check, Copy, CircleCheck } from "lucide-react";
 import { generateReferralURL } from "@/lib/storage";
@@ -85,8 +85,6 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
       <Button
         onClick={handleCastClick}
         loading={isSharing}
-        variant="outline"
-        color="white"
         leftSection={
           <Flex align="center" gap="xs">
             <Share2 size={16} />
@@ -100,22 +98,14 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
         Share
       </Button>
 
-      <Button
-        onClick={handleShare}
-        variant="transparent"
-        color="white"
-        leftSection={<Copy size={16} />}
-        size="xs"
-        styles={{
-          root: {
-            transition: "all 0.3s ease",
-            transform: copied ? "scale(1.05)" : "scale(1)",
-            minWidth: "200px",
-          },
-        }}
-      >
-        {copied ? "Copied to clipboard" : "Copy Referral Link"}
-      </Button>
+      <Anchor onClick={handleShare}>
+        <Flex direction="row" align="center" gap="xs">
+          <Copy size={16} />
+          <Text size="sm">
+            {copied ? "Copied to clipboard" : "Copy Referral Link"}
+          </Text>
+        </Flex>
+      </Anchor>
     </Flex>
   );
 }
