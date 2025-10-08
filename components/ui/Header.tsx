@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Text, ActionIcon } from "@mantine/core";
+import { Flex, Text } from "@mantine/core";
 
 export default function Header() {
   return (

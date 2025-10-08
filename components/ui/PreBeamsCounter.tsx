@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Text, Paper } from "@mantine/core";
+import { Flex, Text } from "@mantine/core";
 import PointsDisplay from "./PointsDisplay";
 
 interface PreBeamsCounterProps {

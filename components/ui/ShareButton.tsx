@@ -1,9 +1,9 @@
 "use client";
 
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Button, Text, Flex, Paper, Anchor } from "@mantine/core";
+import { Button, Text, Flex, Anchor } from "@mantine/core";
 import { useState } from "react";
-import { Share2, Link, Check, Copy, CircleCheck } from "lucide-react";
+import { Share2, Copy, CircleCheck } from "lucide-react";
 import { generateReferralURL } from "@/lib/storage";
 import { usePoints } from "@/contexts/points-context";
 
@@ -29,8 +29,6 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
 
   const handleNativeCopy = async () => {
     const referralURL = generateReferralURL(referralCode);
-
-    console.log("referralURL", referralURL);
 
     if (navigator.share) {
       try {

@@ -1,7 +1,7 @@
 "use client";
 
 import { sdk } from "@farcaster/miniapp-sdk";
-import { Flex, Button, Group, Text } from "@mantine/core";
+import { Flex, Button, Text } from "@mantine/core";
 import {
   MessageCircle,
   MessageSquareText,

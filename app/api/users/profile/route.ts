@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { checkUserFollows, checkUserInChannel } from "@/lib/neynar";
 import {
   awardFollowPoints,
@@ -59,7 +59,6 @@ export async function GET(request: NextRequest) {
         BEAMR_ACCOUNT_FID.toString()
       );
 
-      console.log("isFollowing", isFollowing);
       if (isFollowing) {
         awardedPoints.follow = await awardFollowPoints(user.id);
       }

@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { POINT_VALUES } from "@/lib/constants";
 
 export type PointSource =

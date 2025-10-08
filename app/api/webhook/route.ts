@@ -1,4 +1,3 @@
-import { sendFrameNotification } from "@/lib/notification-client";
 import {
   deleteUserNotificationDetails,
   setUserNotificationDetails,
@@ -84,11 +83,6 @@ export async function POST(request: Request) {
       );
       if (event.notificationDetails) {
         await setUserNotificationDetails(fid, event.notificationDetails);
-        // await sendFrameNotification({
-        //   fid,
-        //   title: `Welcome to beamr`,
-        //   body: `Thank you for adding beamr`,
-        // });
       } else {
         await deleteUserNotificationDetails(fid);
       }
@@ -104,11 +98,6 @@ export async function POST(request: Request) {
     case "notifications_enabled": {
       console.log("notifications_enabled", event.notificationDetails);
       await setUserNotificationDetails(fid, event.notificationDetails);
-      // await sendFrameNotification({
-      //   fid,
-      //   title: `Welcome to beamr`,
-      //   body: `Thank you for enabling notifications for beamr`,
-      // });
 
       break;
     }

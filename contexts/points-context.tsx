@@ -83,7 +83,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
       }
       const data = await response.json();
 
-      console.log("user points fetch data", data);
       return {
         fid: data.fid,
         walletAddress: data.walletAddress,

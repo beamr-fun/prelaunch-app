@@ -10,8 +10,8 @@ import "@/styles/fonts.css";
 import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 
 export const metadata: Metadata = {
-  title: "beamr",
-  description: "beamr",
+  title: "BEAMR",
+  description: "BEAMR",
 };
 
 export default function RootLayout({

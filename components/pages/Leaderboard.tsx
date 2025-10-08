@@ -38,6 +38,7 @@ export default function Leaderboard() {
   } = useApiQuery<LeaderboardResponse>({
     url: "/api/leaderboard",
     queryKey: ["leaderboard"],
+    staleTime: 15000,
   });
   const leaderboardData = response?.data || [];
 

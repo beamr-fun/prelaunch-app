@@ -99,3 +99,16 @@ The app is wrapped with `MiniAppProvider` in `providers.tsx`, configured with:
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [Neynar](https://neynar.com)
+
+
+# Scripts
+
+Export user points by fid
+
+```bash
+# Export to console
+node scripts/export-user-points.js 12345
+
+# Export to file
+node scripts/export-user-points.js 12345 > user-12345-points.csv
+```

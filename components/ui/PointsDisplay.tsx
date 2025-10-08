@@ -1,6 +1,6 @@
 "use client";
 
-import { Text, Badge, Flex } from "@mantine/core";
+import { Text, Flex } from "@mantine/core";
 import { useState, useEffect } from "react";
 
 interface PointsDisplayProps {

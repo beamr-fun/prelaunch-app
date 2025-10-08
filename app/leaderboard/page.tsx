@@ -11,7 +11,7 @@ const frame = {
     title: "Launch App",
     action: {
       type: "launch_frame",
-      name: "beamr",
+      name: "BEAMR",
       url: appUrl,
       splashImageUrl: `${appUrl}/images/splash.png`,
       splashBackgroundColor: "#000000",
@@ -21,10 +21,10 @@ const frame = {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "beamr",
+    title: "BEAMR",
     openGraph: {
-      title: "beamr",
-      description: "beamr",
+      title: "BEAMR",
+      description: "BEAMR",
     },
     other: {
       "fc:frame": JSON.stringify(frame),

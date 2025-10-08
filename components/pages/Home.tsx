@@ -1,29 +1,23 @@
 "use client";
 
-import { useUser } from "@/contexts/user-context";
-import { Flex, Container, Stack, Text, Button, Anchor } from "@mantine/core";
+import { useState } from "react";
+import Link from "next/link";
 import { useAccount } from "wagmi";
+import { Flex, Container, Stack, Text, Button, Anchor } from "@mantine/core";
+import { ChartNoAxesColumn } from "lucide-react";
+import { useUser } from "@/contexts/user-context";
+import { usePoints } from "@/contexts/points-context";
 import CountdownTimer from "@/components/ui/CountdownTimer";
 import PreBeamsCounter from "@/components/ui/PreBeamsCounter";
 import WalletSelector from "@/components/wallet/WalletSelector";
 import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
 import ShareButton from "@/components/ui/ShareButton";
-import { ChartNoAxesColumn, Rainbow } from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
 import { getLaunchDate } from "@/lib/constants";
-import { usePoints } from "@/contexts/points-context";
 
 export default function Home() {
   const { user, isLoading, error, signIn } = useUser();
   const { address } = useAccount();
-  const {
-    userPoints,
-    isLoading: walletLoading,
-    confirmWallet,
-    referrerFid,
-    setReferrerFid,
-  } = usePoints();
+  const { userPoints, isLoading: walletLoading, confirmWallet } = usePoints();
 
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
@@ -38,12 +32,8 @@ export default function Home() {
   return (
     <Container style={{ flex: 1 }} px="md" py="xl">
       <Stack align="center" gap="xl" style={{ height: "100%" }}>
-        {/* <Rainbow size={75} /> */}
-
-        {/* Countdown Timer */}
         <CountdownTimer targetDate={launchDate} />
 
-        {/* User Profile Section */}
         {currentUser?.data && (
           <Flex direction="column" align="center" gap="md">
             {userPoints?.walletConfirmed && (
@@ -70,7 +60,6 @@ export default function Home() {
           </Button>
         )}
 
-        {/* Wallet Section */}
         {currentUser?.data && (
           <Stack align="center" gap="md">
             {!userPoints?.walletConfirmed && !walletLoading && (
@@ -96,7 +85,6 @@ export default function Home() {
           </Stack>
         )}
 
-        {/* Referral Section - Only show when wallet is confirmed */}
         {currentUser?.data && userPoints?.walletConfirmed && (
           <Flex
             direction="column"
