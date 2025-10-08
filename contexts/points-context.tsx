@@ -42,13 +42,13 @@ export interface PointsState {
   userPoints: UserPoints | null;
   isLoading: boolean;
   error: string | null;
-  referrerFid?: string;
 }
 
 interface PointsContextType extends PointsState {
   confirmWallet: (walletAddress: string) => Promise<void>;
   setReferrerFid: (fid: string) => void;
   refetchPoints: () => Promise<void>;
+  referrerFid?: string;
 }
 
 const PointsContext = createContext<PointsContextType | undefined>(undefined);
@@ -63,8 +63,10 @@ export function PointsProvider({ children }: PointsProviderProps) {
     userPoints: null,
     isLoading: false,
     error: null,
-    referrerFid: undefined,
   });
+  const [referrerFid, setReferrerFidState] = useState<string | undefined>(
+    undefined
+  );
 
   const fetchUserProfile = async (): Promise<UserPoints | undefined> => {
     try {
@@ -123,7 +125,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         },
         body: JSON.stringify({
           walletAddress,
-          referrerFid: state.referrerFid,
+          referrerFid: referrerFid,
           miniAppAdded,
         }),
       });
@@ -161,6 +163,26 @@ export function PointsProvider({ children }: PointsProviderProps) {
     }
   };
 
+  // Handle referral code from URL and storage
+  useEffect(() => {
+    // Check for referral code in URL
+    const urlReferral = getReferralFromURL();
+    console.log("context urlReferral", urlReferral);
+    if (urlReferral) {
+      console.log("setting ref");
+      setReferralCode(urlReferral);
+      setReferrerFidState(urlReferral);
+      return;
+    }
+
+    // Get stored referral code
+    const storedReferral = getReferralCode();
+    console.log("context storedReferral", storedReferral);
+    if (storedReferral) {
+      setReferrerFidState(storedReferral);
+    }
+  }, []);
+
   // Load points when user is authenticated
   useEffect(() => {
     const loadPoints = async () => {
@@ -178,22 +200,11 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
       try {
         const userData = await fetchUserProfile();
-
         console.log("userData", userData);
-
-        // Check for referral code in URL
-        const urlReferral = getReferralFromURL();
-        if (urlReferral) {
-          setReferralCode(urlReferral);
-        }
-
-        // Get stored referral code
-        const storedReferral = getReferralCode();
 
         setState((prev) => ({
           ...prev,
           userPoints: userData || null,
-          referrerFid: storedReferral || undefined,
           isLoading: false,
           error: null,
         }));
@@ -214,6 +225,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
   const confirmWallet = async (walletAddress: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
+      console.log("context confirming referrerFid", referrerFid);
       const updatedUser = await confirmWalletAPI(walletAddress);
       setState((prev) => ({
         ...prev,
@@ -233,7 +245,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
   };
 
   const setReferrerFid = (fid: string) => {
-    setState((prev) => ({ ...prev, referrerFid: fid }));
+    setReferrerFidState(fid);
   };
 
   const refetchPoints = async () => {
@@ -266,6 +278,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         confirmWallet,
         setReferrerFid,
         refetchPoints,
+        referrerFid,
       }}
     >
       {children}

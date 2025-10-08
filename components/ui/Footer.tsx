@@ -50,9 +50,7 @@ export default function Footer() {
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
             <UserPlus size={20} />
-            {userPoints?.socialStatus?.following && (
-              <CircleCheck size={16} color="green" />
-            )}
+            {userPoints?.socialStatus?.following && <CircleCheck size={16} />}
           </Flex>
           <Text size="8px" ta="center">
             Follow
@@ -69,9 +67,7 @@ export default function Footer() {
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
             <MessageSquareText size={20} />
-            {userPoints?.socialStatus?.inChannel && (
-              <CircleCheck size={16} color="green" />
-            )}
+            {userPoints?.socialStatus?.inChannel && <CircleCheck size={16} />}
           </Flex>
           <Text size="8px" ta="center">
             Join
@@ -88,9 +84,7 @@ export default function Footer() {
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
             <MessageCircle size={20} />
-            {userPoints?.socialStatus?.hasCast && (
-              <CircleCheck size={16} color="green" />
-            )}
+            {userPoints?.socialStatus?.hasCast && <CircleCheck size={16} />}
           </Flex>
           <Text size="8px" ta="center">
             Post
@@ -107,9 +101,7 @@ export default function Footer() {
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
             <Plus size={20} />
-            {userPoints?.socialStatus?.appAdded && (
-              <CircleCheck size={16} color="green" />
-            )}
+            {userPoints?.socialStatus?.appAdded && <CircleCheck size={16} />}
           </Flex>
           <Text size="8px" ta="center">
             Add App

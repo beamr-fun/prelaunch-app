@@ -30,10 +30,5 @@ export const getReferralFromURL = (): string | null => {
 };
 
 export const generateReferralURL = (fid: string, baseURL?: string): string => {
-  const base =
-    baseURL ||
-    (typeof window !== "undefined"
-      ? window.location.origin
-      : "https://app.beamer.com");
-  return `${base}/?ref=${fid}`;
+  return `https://farcaster.xyz/miniapps/-${process.env.NEXT_PUBLIC_MINIAPP_ID}/beamr/?ref=${fid}`;
 };

@@ -174,6 +174,9 @@ export async function POST(request: NextRequest) {
     let referralTransaction = null;
     const finalReferrerFid = referrerFid || user.referrer_fid;
 
+    console.log("route referrerFid", referrerFid);
+    console.log("route finalReferrerFid", finalReferrerFid);
+
     if (finalReferrerFid) {
       // Award bonus points to the referrer
       const { data: referrerUser, error: referrerError } = await supabase
@@ -183,6 +186,7 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (!referrerError && referrerUser) {
+        console.log("rewarding to referrerUser", referrerUser);
         const { error: referrerPointsError } = await supabase
           .from("points")
           .insert({

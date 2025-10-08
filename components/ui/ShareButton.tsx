@@ -30,6 +30,8 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
   const handleNativeCopy = async () => {
     const referralURL = generateReferralURL(referralCode);
 
+    console.log("referralURL", referralURL);
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -71,7 +73,7 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
     }
   };
 
-  const handleShare = async () => {
+  const handleCopyRefLink = async () => {
     setIsSharing(true);
     try {
       await handleNativeCopy();
@@ -88,9 +90,6 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
         leftSection={
           <Flex align="center" gap="xs">
             <Share2 size={16} />
-            {userPoints?.socialStatus?.hasReferred && (
-              <CircleCheck size={16} color="green" />
-            )}
           </Flex>
         }
         size="lg"
@@ -98,11 +97,12 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
         Share
       </Button>
 
-      <Anchor onClick={handleShare}>
+      <Anchor onClick={handleCopyRefLink}>
         <Flex direction="row" align="center" gap="xs">
           <Copy size={16} />
           <Text size="sm">
             {copied ? "Copied to clipboard" : "Copy Referral Link"}
+            {userPoints?.socialStatus?.hasReferred && <CircleCheck size={16} />}
           </Text>
         </Flex>
       </Anchor>

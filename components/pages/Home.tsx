@@ -22,11 +22,14 @@ export default function Home() {
     isLoading: walletLoading,
     confirmWallet,
     referrerFid,
+    setReferrerFid,
   } = usePoints();
 
   const [selectedWallet, setSelectedWallet] = useState<string>("");
 
   const launchDate = getLaunchDate();
+
+  console.log("user", user);
 
   const currentUser = user;
 

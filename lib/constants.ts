@@ -8,12 +8,12 @@ export const getLaunchDate = () => {
 
 // Point values configuration
 export const POINT_VALUES = {
-  WALLET_CONFIRMATION: 250,
+  WALLET_CONFIRMATION: 150,
   FOLLOW: 100,
-  CHANNEL_JOIN: 150,
+  CHANNEL_JOIN: 100,
   REFERRAL_BONUS: 100, // Bonus for the referrer
-  APP_ADD: 50,
-  CAST: 150,
+  APP_ADD: 100,
+  CAST: 100,
 } as const;
 
 export const BEAMR_ACCOUNT_FID = 1149437;
