@@ -67,6 +67,7 @@ export const insertPointRecord = async (
     }
 
     // Insert new point record
+    const supabase = supabaseClient();
     const { error } = await supabase.from("points").insert({
       user_id: userId,
       fid: fid,
@@ -96,6 +97,7 @@ export const insertPointRecord = async (
  */
 export const getUserPoints = async (userId: string): Promise<PointRecord[]> => {
   try {
+    const supabase = supabaseClient();
     const { data, error } = await supabase
       .from("points")
       .select("*")
@@ -119,6 +121,7 @@ export const getUserPoints = async (userId: string): Promise<PointRecord[]> => {
  */
 export const getUserTotalPoints = async (userId: string): Promise<number> => {
   try {
+    const supabase = supabaseClient();
     const { data, error } = await supabase
       .from("user_points_total")
       .select("total_points")
@@ -218,6 +221,7 @@ export const deletePointRecord = async (
   source: PointSource
 ): Promise<boolean> => {
   try {
+    const supabase = supabaseClient();
     const { data: user, error: getUserError } = await supabase
       .from("users")
       .select("*")
@@ -265,6 +269,7 @@ export const deletePointRecord = async (
  */
 export const hasCastPoints = async (userId: string): Promise<boolean> => {
   try {
+    const supabase = supabaseClient();
     const { data, error } = await supabase
       .from("points")
       .select("id")
@@ -289,6 +294,7 @@ export const hasCastPoints = async (userId: string): Promise<boolean> => {
  */
 export const hasReferred = async (userId: string): Promise<boolean> => {
   try {
+    const supabase = supabaseClient();
     const { data, error } = await supabase
       .from("points")
       .select("id")
