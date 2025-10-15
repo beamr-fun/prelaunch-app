@@ -13,7 +13,7 @@ import {
 import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
 // Force dynamic rendering for this route
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
@@ -101,6 +101,8 @@ export async function GET(request: NextRequest) {
         hasCastPoints(user.id),
         hasReferred(user.id),
       ]);
+
+    console.log("totalPoints", totalPoints);
 
     // Get recent transactions (last 10)
     const recentTransactions = transactions.slice(0, 10);
