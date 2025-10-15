@@ -11,11 +11,12 @@ export const dynamic = "force-dynamic";
 const quickAuthClient = createClient();
 
 export const POST = async (req: NextRequest) => {
-  const { referrerFid, token: farcasterToken } = await req.json();
+  const { referrerFid, token: farcasterToken, fid: contextFid } = await req.json();
   let fid;
   let isValidSignature;
   let walletAddress: Address = zeroAddress;
   let expirationTime = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+  
   // Verify signature matches custody address and auth address
   try {
     const payload = await quickAuthClient.verifyJwt({
@@ -34,9 +35,10 @@ export const POST = async (req: NextRequest) => {
     console.error("Error verifying token", e);
   }
 
-  if (!isValidSignature || !fid) {
+  // Verify that the FID from the Quick Auth token matches the FID from mini app context
+  if (!isValidSignature || !fid || !contextFid || fid !== contextFid) {
     return NextResponse.json(
-      { success: false, error: "Invalid token" },
+      { success: false, error: "Invalid token or FID mismatch" },
       { status: 401 }
     );
   }
