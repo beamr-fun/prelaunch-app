@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer as supabase } from "@/lib/supabase-server";
+import { supabaseClient } from "@/lib/supabase-server";
 import { checkUserFollows, checkUserInChannel } from "@/lib/neynar";
 import {
   awardFollowPoints,
@@ -14,6 +14,7 @@ import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
 // Force dynamic rendering for this route
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
     const miniAppAdded = searchParams.get("miniAppAdded") === "true";
 
     // Get user from Supabase
+    const supabase = supabaseClient();
     const { data: user, error: getUserError } = await supabase
       .from("users")
       .select("*")

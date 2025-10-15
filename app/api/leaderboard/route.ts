@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseServer as supabase } from "@/lib/supabase-server";
+import { supabaseClient } from "@/lib/supabase-server";
 import { fetchUsersByEthAddress } from "@/lib/neynar";
 
 export interface LeaderboardEntry {
@@ -12,10 +12,12 @@ export interface LeaderboardEntry {
 }
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET() {
   try {
     // Get top 20 users with their total points from the database
+    const supabase = supabaseClient();
     const { data: leaderboardData, error: leaderboardError } = await supabase
       .from("user_points_total")
       .select(

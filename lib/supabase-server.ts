@@ -12,8 +12,6 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
   );
 }
 
-export const supabaseServer = createClient<Database>(
-  supabaseUrl,
-  supabaseServiceRoleKey
-);
-
+export const supabaseClient = () => {
+  return createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+};

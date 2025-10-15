@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer as supabase } from "@/lib/supabase-server";
+import { supabaseClient } from "@/lib/supabase-server";
 import {
   POINT_VALUES,
   BEAMR_ACCOUNT_FID,
@@ -59,6 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create user in Supabase
+    const supabase = supabaseClient();
     const { data: existingUser, error: getUserError } = await supabase
       .from("users")
       .select("*")
@@ -168,7 +169,10 @@ export async function POST(request: NextRequest) {
       // Check if user is in BEAMR channel
       const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
       if (isInChannel) {
-        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id, parseInt(fid));
+        awardedPoints.channelJoin = await awardChannelJoinPoints(
+          user.id,
+          parseInt(fid)
+        );
       }
 
       // Check if user has added the miniapp

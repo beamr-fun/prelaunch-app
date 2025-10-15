@@ -1,4 +1,4 @@
-import { supabaseServer as supabase } from "@/lib/supabase-server";
+import { supabaseClient } from "@/lib/supabase-server";
 import { POINT_VALUES } from "@/lib/constants";
 
 export type PointSource =
@@ -26,6 +26,7 @@ export const checkExistingPoint = async (
   source: PointSource
 ): Promise<boolean> => {
   try {
+    const supabase = supabaseClient();
     const { data, error } = await supabase
       .from("points")
       .select("id")
@@ -139,7 +140,10 @@ export const getUserTotalPoints = async (userId: string): Promise<number> => {
 /**
  * Award points for following BEAMR account
  */
-export const awardFollowPoints = async (userId: string, fid: number): Promise<boolean> => {
+export const awardFollowPoints = async (
+  userId: string,
+  fid: number
+): Promise<boolean> => {
   return await insertPointRecord(userId, fid, "follow", POINT_VALUES.FOLLOW, {
     description: "Followed BEAMR account",
   });
@@ -164,7 +168,10 @@ export const awardChannelJoinPoints = async (
 /**
  * Award points for adding the miniapp
  */
-export const awardAppAddPoints = async (userId: string, fid: number): Promise<boolean> => {
+export const awardAppAddPoints = async (
+  userId: string,
+  fid: number
+): Promise<boolean> => {
   return await insertPointRecord(userId, fid, "app_add", POINT_VALUES.APP_ADD, {
     description: "Added BEAMR miniapp",
   });
