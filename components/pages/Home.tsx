@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import {
   Flex,
@@ -11,7 +11,7 @@ import {
   Anchor,
   Loader,
 } from "@mantine/core";
-import { ChartNoAxesColumn } from "lucide-react";
+import { ChartNoAxesColumn, RotateCcw } from "lucide-react";
 import { useUser } from "@/contexts/user-context";
 import { usePoints } from "@/contexts/points-context";
 import CountdownTimer from "@/components/ui/CountdownTimer";
@@ -19,24 +19,41 @@ import PreBeamsCounter from "@/components/ui/PreBeamsCounter";
 import WalletSelector from "@/components/wallet/WalletSelector";
 import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
 import ShareButton from "@/components/ui/ShareButton";
-// import RefreshButton from "@/components/ui/RefreshButton";
+import RefreshButton from "@/components/ui/RefreshButton";
 import { getLaunchDate } from "@/lib/constants";
+import { useMiniApp } from "@/contexts/miniapp-context";
 
 export default function Home() {
+  const { isMiniAppReady } = useMiniApp();
   const { user, isLoading, signIn } = useUser();
   const {
     userPoints,
     isLoading: walletLoading,
     confirmWallet,
-    // refetchPoints,
+    refetchPoints,
   } = usePoints();
   const [selectedWallet, setSelectedWallet] = useState<string>("");
+  const [isCooldown, setIsCooldown] = useState(false);
   const launchDate = getLaunchDate();
   const currentUser = user;
   const currentPoints = userPoints?.totalPoints || 0;
-  const loadingUserOrPoints = isLoading || walletLoading;
+  const loadingUserOrMiniApp = isLoading || walletLoading || !isMiniAppReady;
 
-  if (loadingUserOrPoints) {
+  const handleRefresh = useCallback(() => {
+    if (isCooldown) return;
+    if (!currentUser?.data || !userPoints) return;
+
+    console.log("refetching");
+    refetchPoints();
+    setIsCooldown(true);
+
+    const interval = setInterval(() => {
+      clearInterval(interval);
+      setIsCooldown(false);
+    }, 10000);
+  }, [currentUser?.data, isCooldown, refetchPoints, userPoints]);
+
+  if (loadingUserOrMiniApp) {
     return (
       <Container style={{ flex: 1 }} px="md" py="xl">
         <Stack align="center" gap="xl" style={{ height: "100%" }}>
@@ -106,11 +123,13 @@ export default function Home() {
             </Flex>
           </Flex>
         )}
-
-        {/* <RefreshButton
-          onRefresh={refetchPoints}
-          disabled={!currentUser?.data || !userPoints}
-        /> */}
+        <Button
+          variant="transparent"
+          disabled={isCooldown || !currentUser?.data || !userPoints}
+          onClick={handleRefresh}
+        >
+          <RotateCcw size={12} />
+        </Button>
       </Stack>
     </Container>
   );
