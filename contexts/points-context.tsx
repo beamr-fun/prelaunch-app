@@ -9,6 +9,7 @@ import {
 } from "react";
 import { sdk } from "@farcaster/miniapp-sdk";
 import { useUser } from "./user-context";
+import { useMiniApp } from "./miniapp-context";
 import {
   getReferralFromURL,
   setReferralCode,
@@ -59,6 +60,7 @@ interface PointsProviderProps {
 
 export function PointsProvider({ children }: PointsProviderProps) {
   const { user } = useUser();
+  const { context: miniAppContext } = useMiniApp();
   const [state, setState] = useState<PointsState>({
     userPoints: null,
     isLoading: false,
@@ -70,8 +72,12 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
   const fetchUserProfile = async (): Promise<UserPoints | undefined> => {
     try {
-      const context = await sdk.context;
-      const miniAppAdded = context?.client?.added;
+      // Only fetch if we're in a mini app context
+      if (!miniAppContext) {
+        throw new Error("Not in mini app context");
+      }
+
+      const miniAppAdded = miniAppContext?.client?.added;
 
       // Pass miniapp status as query parameter
       const url = `/api/users/profile${
@@ -117,8 +123,12 @@ export function PointsProvider({ children }: PointsProviderProps) {
     walletAddress: string
   ): Promise<UserPoints> => {
     try {
-      const context = await sdk.context;
-      const miniAppAdded = context?.client?.added;
+      // Only proceed if we're in a mini app context
+      if (!miniAppContext) {
+        throw new Error("Not in mini app context");
+      }
+
+      const miniAppAdded = miniAppContext?.client?.added;
       const response = await fetch("/api/users/confirm-wallet", {
         method: "POST",
         headers: {
@@ -185,10 +195,10 @@ export function PointsProvider({ children }: PointsProviderProps) {
     }
   }, []);
 
-  // Load points when user is authenticated
+  // Load points when user is authenticated and in mini app
   useEffect(() => {
     const loadPoints = async () => {
-      if (!user.data) {
+      if (!user.data || !miniAppContext) {
         setState((prev) => ({
           ...prev,
           userPoints: null,
@@ -222,7 +232,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
     };
 
     loadPoints();
-  }, [user.data, user.isLoading]);
+  }, [user.data, user.isLoading, miniAppContext]);
 
   const confirmWallet = async (walletAddress: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
