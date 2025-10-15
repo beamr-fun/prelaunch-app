@@ -24,7 +24,7 @@ import { getLaunchDate } from "@/lib/constants";
 import { useMiniApp } from "@/contexts/miniapp-context";
 
 export default function Home() {
-  const { isMiniAppReady } = useMiniApp();
+  const { isMiniAppReady, context } = useMiniApp();
   const { user, isLoading, signIn } = useUser();
   const {
     userPoints,
@@ -38,6 +38,9 @@ export default function Home() {
   const currentUser = user;
   const currentPoints = userPoints?.totalPoints || 0;
   const loadingUserOrMiniApp = isLoading || walletLoading || !isMiniAppReady;
+
+  console.log("context", context);
+  console.log("isMiniAppReady", isMiniAppReady);
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;
