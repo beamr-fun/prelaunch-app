@@ -11,6 +11,8 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     // Get top 20 users with their total points from the database
