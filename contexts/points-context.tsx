@@ -77,7 +77,9 @@ export function PointsProvider({ children }: PointsProviderProps) {
       const url = `/api/users/profile${
         miniAppAdded ? "?miniAppAdded=true" : ""
       }`;
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: "include", // Include cookies for authentication
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -122,6 +124,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Include cookies for authentication
         body: JSON.stringify({
           walletAddress,
           referrerFid: referrerFid,

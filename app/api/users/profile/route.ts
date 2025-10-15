@@ -17,6 +17,15 @@ import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if request is from mini app
+    const isMiniAppValidated = request.headers.get("x-miniapp-validated");
+    if (!isMiniAppValidated) {
+      return NextResponse.json(
+        { error: "Request must be from Farcaster mini app" },
+        { status: 403 }
+      );
+    }
+
     // Get FID from authentication middleware
     const fid = request.headers.get("x-user-fid");
     if (!fid) {

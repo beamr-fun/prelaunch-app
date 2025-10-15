@@ -14,6 +14,15 @@ import {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if request is from mini app
+    const isMiniAppValidated = request.headers.get("x-miniapp-validated");
+    if (!isMiniAppValidated) {
+      return NextResponse.json(
+        { error: "Request must be from Farcaster mini app" },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { walletAddress, referrerFid, miniAppAdded } = body;
 

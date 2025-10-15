@@ -33,6 +33,7 @@ export default async function middleware(req: NextRequest) {
     // Clone the request headers to add user info
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-user-fid", payload.fid as string);
+    requestHeaders.set("x-miniapp-validated", "true");
 
     // Return response with modified headers
     return NextResponse.next({

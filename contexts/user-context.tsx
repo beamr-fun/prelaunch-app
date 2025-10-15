@@ -62,7 +62,7 @@ export const UserProvider = ({
     refetchOnWindowFocus: false,
     isProtected: true,
     retry: false,
-    enabled: true,
+    enabled: !!context, // Only fetch when in mini app context
     ...{
       onSuccess: () => {
         setIsSignedIn(true);
