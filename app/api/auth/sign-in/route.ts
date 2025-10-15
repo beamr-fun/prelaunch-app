@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
   let fid;
   let isValidSignature;
   let walletAddress: Address = zeroAddress;
-  let expirationTime = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+  let expirationTime = Date.now() + 24 * 60 * 60 * 1000; // 24 hours in milliseconds
   
   // Verify signature matches custody address and auth address
   try {
@@ -67,7 +67,7 @@ export const POST = async (req: NextRequest) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60, // 7 days
+    maxAge: 24 * 60 * 60, // 24 hours
     path: "/",
   });
 

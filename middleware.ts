@@ -30,10 +30,24 @@ export default async function middleware(req: NextRequest) {
     // Verify the token using jose
     const { payload } = await jose.jwtVerify(token, secret);
 
+    // Check if token is too old (prevent long-term caching attacks)
+    const tokenAge = Date.now() - (payload.timestamp as number);
+    const maxTokenAge = 24 * 60 * 60 * 1000; // 24 hours
+    
+    if (tokenAge > maxTokenAge) {
+      return NextResponse.json(
+        { error: "Token expired, please sign in again" },
+        { status: 401 }
+      );
+    }
+
     // Clone the request headers to add user info
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-user-fid", payload.fid as string);
+    
+    // Add timestamp to prevent replay attacks
     requestHeaders.set("x-miniapp-validated", "true");
+    requestHeaders.set("x-request-timestamp", Date.now().toString());
 
     // Return response with modified headers
     return NextResponse.next({
