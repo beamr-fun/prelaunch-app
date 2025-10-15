@@ -63,18 +63,18 @@ export async function GET(request: NextRequest) {
       );
 
       if (isFollowing) {
-        awardedPoints.follow = await awardFollowPoints(user.id);
+        awardedPoints.follow = await awardFollowPoints(user.id, parseInt(fid));
       }
 
       // Check if user is in BEAMR channel
       const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
       if (isInChannel) {
-        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id);
+        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id, parseInt(fid));
       }
 
       // Check if user has added the miniapp
       if (miniAppAdded) {
-        awardedPoints.appAdd = await awardAppAddPoints(user.id);
+        awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
       }
     } catch (error) {
       console.error("Error checking social status:", error);
