@@ -10,9 +10,11 @@ import {
   Avatar,
   Group,
   Anchor,
+  Loader,
 } from "@mantine/core";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import RefreshButton from "@/components/ui/RefreshButton";
 
 export interface LeaderboardEntry {
   fid: string;
@@ -33,23 +35,36 @@ export default function Leaderboard() {
   const {
     data: response,
     isLoading,
-    error,
-    isError,
+    refetch,
+    isRefetching,
   } = useApiQuery<LeaderboardResponse>({
     url: "/api/leaderboard",
     queryKey: ["leaderboard"],
     staleTime: 15000,
   });
-  const leaderboardData = response?.data || [];
+  let leaderboardData = response?.data || [];
+
+  const isLoadingOrRefetching = isLoading || isRefetching;
+
+  const handleRefetch = () => {
+    leaderboardData = [];
+    refetch();
+  };
 
   return (
     <>
-      <Anchor component={Link} href="/" c="white" fw={500} mx="lg">
-        <Flex align="center" gap="xs">
-          <ArrowLeft size={12} />
-          <Text size="xs">Back</Text>
-        </Flex>
-      </Anchor>
+      <Flex justify="space-between" align="center" mx="lg">
+        <Anchor component={Link} href="/" c="white" fw={500}>
+          <Flex align="center" gap="xs">
+            <ArrowLeft size={12} />
+            <Text size="xs">Back</Text>
+          </Flex>
+        </Anchor>
+        <RefreshButton
+          onRefresh={() => handleRefetch()}
+          disabled={isLoadingOrRefetching}
+        />
+      </Flex>
       <Container
         py="sm"
         style={{
@@ -58,41 +73,47 @@ export default function Leaderboard() {
       >
         <Stack align="center" gap="xl">
           <Stack gap="md" style={{ width: "100%", maxWidth: "800px" }}>
-            {isLoading && <Text>Loading...</Text>}
-            {/* {(isError || !response?.success) && <Text>Error</Text>} */}
+            <Table
+              withRowBorders={false}
+              style={{
+                overflow: "hidden",
+              }}
+            >
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th c="white" colSpan={2}>
+                    <Text size="xl" fw="700">
+                      Leaderboard
+                    </Text>
+                  </Table.Th>
+                  <Table.Th c="white" ta="right">
+                    <Text size="xs" fw="700">
+                      Pre-BEAMR
+                    </Text>
+                  </Table.Th>
+                  <Table.Th c="white" ta="right">
+                    <Text size="xs" fw="700">
+                      BEAMR/mo
+                    </Text>
+                  </Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {isLoadingOrRefetching && (
+                  <Stack align="center" gap="sm" py="xl">
+                    <Loader color="white" />
+                  </Stack>
+                )}
 
-            {leaderboardData.length === 0 ? (
-              <Stack align="center" gap="sm" py="xl">
-                <Text c="dimmed">No leaderboard data available</Text>
-              </Stack>
-            ) : (
-              <Table
-                withRowBorders={false}
-                style={{
-                  overflow: "hidden",
-                }}
-              >
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th c="white" colSpan={2}>
-                      <Text size="xl" fw="700">
-                        Leaderboard
-                      </Text>
-                    </Table.Th>
-                    <Table.Th c="white" ta="right">
-                      <Text size="xs" fw="700">
-                        Pre-BEAMR
-                      </Text>
-                    </Table.Th>
-                    <Table.Th c="white" ta="right">
-                      <Text size="xs" fw="700">
-                        BEAMR/mo
-                      </Text>
-                    </Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
-                  {leaderboardData.map((entry) => (
+                {!isLoadingOrRefetching && leaderboardData.length === 0 && (
+                  <Stack align="center" gap="sm" py="xl">
+                    <Text c="dimmed">No leaderboard data available</Text>
+                  </Stack>
+                )}
+
+                {!isLoadingOrRefetching &&
+                  leaderboardData.length > 0 &&
+                  leaderboardData.map((entry) => (
                     <Table.Tr key={entry.fid}>
                       <Table.Td c="gray.3" fw={600}>
                         {entry.rank}
@@ -119,9 +140,8 @@ export default function Leaderboard() {
                       </Table.Td>
                     </Table.Tr>
                   ))}
-                </Table.Tbody>
-              </Table>
-            )}
+              </Table.Tbody>
+            </Table>
           </Stack>
         </Stack>
       </Container>

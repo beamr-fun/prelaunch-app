@@ -96,12 +96,12 @@ export default function ShareButton({ referralCode }: ShareButtonProps) {
       </Button>
 
       <Anchor onClick={handleCopyRefLink}>
-        <Flex direction="row" align="center" gap="xs">
+        <Flex direction="row" gap="xs">
           <Copy size={16} />
           <Text size="sm">
             {copied ? "Copied to clipboard" : "Copy Referral Link"}
-            {userPoints?.socialStatus?.hasReferred && <CircleCheck size={16} />}
           </Text>
+          {userPoints?.socialStatus?.hasReferred && <CircleCheck size={16} />}
         </Flex>
       </Anchor>
     </Flex>

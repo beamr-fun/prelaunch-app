@@ -1,14 +1,5 @@
 # BEAMR Pre-launch
 
-## Miniapp starter
-
-This is a [Next.js](https://nextjs.org) starter kit to boostrap your Farcaster Mini App
-
-- [Farcaster Mini Apps](https://miniapps.xyz)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Next.js](https://nextjs.org/docs)
-- [Neynar](https://neynar.com)
-
 ## Getting Started
 
 1. Install dependencies:
@@ -24,12 +15,6 @@ bun install
 ```
 
 2. Verify environment variables:
-
-The environment variables enable the following features:
-
-- Frame metadata - Sets up the Frame Embed that will be shown when you cast your frame
-- Account assocation - Allows users to add your frame to their account, enables notifications
-- Redis API keys - Enable Webhooks and background notifications for your application by storing users notification details
 
 ```bash
 # Required for Frame metadata
@@ -47,6 +32,19 @@ JWT_SECRET=
 # Required for webhooks and background notifications
 REDIS_URL=
 REDIS_TOKEN=
+
+# Required for neynar webhook support
+WEBHOOK_SECRET=
+
+# Required for notification blasts
+FLOW_CASTER_SECRET=
+
+# Required for supbase client
+NEXT_PUBLIC_SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# required for referral links
+NEXT_PUBLIC_MINIAPP_ID=
 ```
 
 3. Start the development server:
@@ -59,6 +57,7 @@ npm run dev
 
 - [NGROK](https://ngrok.com)
 - [Local Tunnel](https://theboroer.github.io/localtunnel-www/)
+- cloudflared: `cloudflared tunnel --url http://localhost:3000`
 
 5. Generate your Farcaster Manifest variables
 
@@ -66,42 +65,7 @@ npm run dev
 - Visit [Manifest Tool](https://warpcast.com/~/developers/mini-apps/manifest)
 - Paste your tunnel domain
 
-## Template Features
-
-### Frame Configuration
-
-- `.well-known/farcaster.json` endpoint configured for Frame metadata and account association
-- Frame metadata automatically added to page headers in `layout.tsx`
-
-### Background Notifications
-
-- Redis-backed notification system using Upstash
-- Ready-to-use notification endpoints in `api/notify` and `api/webhook`
-- Notification client utilities in `lib/notification-client.ts`
-
-### MiniApp Provider
-
-The app is wrapped with `MiniAppProvider` in `providers.tsx`, configured with:
-
-- Access to Mini App context
-- Sets up Wagmi Connectors
-- Sets up Mini App SDK listeners
-- Applies Safe Area Insets
-
-### Dynamic Preview Images
-
-- `dynamic-image-example/[id]/page.tsx` show how to create a Mini App URL resolving to a custom preview image
-- `api/og/example/[id]/route.ts` shows how to generate a custom preview image
-
-## Learn More
-
-- [Farcaster Mini Apps](https://miniapps.xyz)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Neynar](https://neynar.com)
-
-
-# Scripts
+## Scripts
 
 Export user points by fid
 

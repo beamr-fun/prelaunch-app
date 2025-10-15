@@ -37,6 +37,8 @@ export const useApiQuery = <TData, TBody = unknown>(
         ...(body && { body: JSON.stringify(body) }),
       });
 
+      console.log("response", response);
+
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
       }
