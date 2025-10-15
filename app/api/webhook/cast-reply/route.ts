@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabase-server";
+import { supabaseClient } from "@/lib/supabase-server";
 import { POINT_VALUES, BEAMR_ACCOUNT_FID } from "@/lib/constants";
 import { createHmac } from "crypto";
-
-const supabase = supabaseServer;
 
 interface User {
   object: "user";
@@ -124,6 +122,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create user in Supabase (using parent_author's fid)
+    const supabase = supabaseClient();
     const { data: existingUser, error: getUserError } = await supabase
       .from("users")
       .select("*")
@@ -164,19 +163,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has points for this cast reply
-    const { data: existingCastPoints, error: castPointsError } =
-      await supabase
-        .from("points")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("source", "cast")
-        .single();
+    const { data: existingCastPoints, error: castPointsError } = await supabase
+      .from("points")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("source", "cast")
+      .single();
 
     if (castPointsError && castPointsError.code !== "PGRST116") {
-      console.error(
-        "Error checking existing cast points:",
-        castPointsError
-      );
+      console.error("Error checking existing cast points:", castPointsError);
       return NextResponse.json(
         { error: "Failed to check existing cast points" },
         { status: 500 }
@@ -198,10 +193,10 @@ export async function POST(request: NextRequest) {
         fid: parentFid,
         amount: POINT_VALUES.CAST,
         source: "cast",
-        metadata: { 
+        metadata: {
           description: "Received reply from @beamr with #prebeams",
           cast_hash: webhookData.data.hash,
-          author_username: author.username
+          author_username: author.username,
         },
         created_at: new Date().toISOString(),
       })
