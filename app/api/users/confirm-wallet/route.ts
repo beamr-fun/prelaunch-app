@@ -176,9 +176,9 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if user has added the miniapp
-      // if (miniAppAdded) {
-      //   awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
-      // }
+      if (miniAppAdded) {
+        awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
+      }
     } catch (error) {
       console.error("Error checking social status:", error);
       // Continue execution even if social checks fail

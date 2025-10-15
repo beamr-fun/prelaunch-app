@@ -77,14 +77,19 @@ export function PointsProvider({ children }: PointsProviderProps) {
         throw new Error("Not in mini app context");
       }
 
-      // const miniAppAdded = miniAppContext?.client?.added;
+      console.log(
+        "fetchUserProfile miniAppAdded miniAppContext?.client",
+        miniAppContext?.client
+      );
 
-      // // Pass miniapp status as query parameter
-      // const url = `/api/users/profile${
-      //   miniAppAdded ? "?miniAppAdded=true" : ""
-      // }`;
+      const miniAppAdded = miniAppContext?.client?.added;
 
-      const url = `api/users/profile`;
+      // Pass miniapp status as query parameter
+      const url = `/api/users/profile${
+        miniAppAdded ? "?miniAppAdded=true" : ""
+      }`;
+
+      // const url = `api/users/profile`;
       const response = await fetch(url, {
         credentials: "include", // Include cookies for authentication
       });

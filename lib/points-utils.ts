@@ -7,7 +7,7 @@ export type PointSource =
   | "wallet_confirmation"
   | "app_add"
   | "referral"
-  | "cast";
+  | "cast"
 
 export interface PointRecord {
   id: string;
@@ -48,6 +48,7 @@ export const checkExistingPoint = async (
 
 /**
  * Insert a new point record if it doesn't already exist
+ * Note: cast and referral sources allow duplicates and skip duplicate checking
  */
 export const insertPointRecord = async (
   userId: string,
@@ -57,13 +58,18 @@ export const insertPointRecord = async (
   metadata?: any
 ): Promise<boolean> => {
   try {
-    // Check if point already exists
-    const exists = await checkExistingPoint(userId, source);
-    if (exists) {
-      console.log(
-        `Point record already exists for user ${userId} and source ${source}`
-      );
-      return true;
+    // Skip duplicate checking for sources that allow multiple records
+    const allowDuplicates = source === "cast" || source === "referral";
+    
+    if (!allowDuplicates) {
+      // Check if point already exists for single-use actions
+      const exists = await checkExistingPoint(userId, source);
+      if (exists) {
+        console.log(
+          `Point record already exists for user ${userId} and source ${source}`
+        );
+        return true;
+      }
     }
 
     // Insert new point record
@@ -211,6 +217,32 @@ export const awardReferralBonusPoints = async (
     POINT_VALUES.REFERRAL_BONUS,
     { description: `Referral bonus for ${referredFid}` }
   );
+};
+
+/**
+ * Award points for frame added
+ */
+export const awardFrameAddPoints = async (fid: number): Promise<boolean> => {
+  try {
+    const supabase = supabaseClient();
+    const { data: user, error: getUserError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("fid", fid)
+      .single();
+
+    if (getUserError) {
+      console.error("Error finding user for frame_added points:", getUserError);
+      return false;
+    }
+
+    return await insertPointRecord(user.id, fid, "app_add", POINT_VALUES.APP_ADD, {
+      description: "Added BEAMR frame",
+    });
+  } catch (error) {
+    console.error("Error awarding frame_added points:", error);
+    return false;
+  }
 };
 
 /**
