@@ -86,10 +86,10 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // Check if user has added the miniapp
-      if (miniAppAdded) {
-        awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
-      }
+      // // Check if user has added the miniapp
+      // if (miniAppAdded) {
+      //   awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
+      // }
     } catch (error) {
       console.error("Error checking social status:", error);
       // Continue execution even if social checks fail
@@ -109,28 +109,35 @@ export async function GET(request: NextRequest) {
     // Get recent transactions (last 10)
     const recentTransactions = transactions.slice(0, 10);
 
-    return NextResponse.json({
-      fid: user.fid,
-      walletAddress: user.preferred_wallet,
-      totalPoints: totalPoints,
-      referrerFid: user.referrer_fid,
-      walletConfirmed: !!user.preferred_wallet,
-      createdAt: user.created_at,
-      lastUpdated: user.updated_at,
-      transactions: recentTransactions,
-      socialStatus: {
-        following: awardedPoints.follow,
-        inChannel: awardedPoints.channelJoin,
-        appAdded: miniAppAdded,
-        hasCast: hasCast,
-        hasReferred: hasReferredStatus,
+    return NextResponse.json(
+      {
+        fid: user.fid,
+        walletAddress: user.preferred_wallet,
+        totalPoints: totalPoints,
+        referrerFid: user.referrer_fid,
+        walletConfirmed: !!user.preferred_wallet,
+        createdAt: user.created_at,
+        lastUpdated: user.updated_at,
+        transactions: recentTransactions,
+        socialStatus: {
+          following: awardedPoints.follow,
+          inChannel: awardedPoints.channelJoin,
+          appAdded: miniAppAdded,
+          hasCast: hasCast,
+          hasReferred: hasReferredStatus,
+        },
+        newlyAwardedPoints: {
+          follow: awardedPoints.follow,
+          channelJoin: awardedPoints.channelJoin,
+          appAdd: awardedPoints.appAdd,
+        },
       },
-      newlyAwardedPoints: {
-        follow: awardedPoints.follow,
-        channelJoin: awardedPoints.channelJoin,
-        appAdd: awardedPoints.appAdd,
-      },
-    });
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching user profile:", error);
     return NextResponse.json(

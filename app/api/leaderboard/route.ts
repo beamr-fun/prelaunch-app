@@ -120,10 +120,17 @@ export async function GET() {
       })
       .filter(Boolean) as LeaderboardEntry[];
 
-    return NextResponse.json({
-      success: true,
-      data: leaderboardEntries,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: leaderboardEntries,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Failed to fetch leaderboard data:", error);
     return NextResponse.json(
