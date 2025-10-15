@@ -89,6 +89,8 @@ export const UserProvider = ({
       setIsLoading(true);
       setError(null);
 
+      console.log("handleSignIn context", context);
+
       if (!context) {
         console.error("Not in mini app");
         throw new Error("Not in mini app");

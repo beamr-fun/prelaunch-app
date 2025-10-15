@@ -13,7 +13,7 @@ import {
 import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
 // Force dynamic rendering for this route
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
@@ -69,7 +69,10 @@ export async function GET(request: NextRequest) {
       // Check if user is in BEAMR channel
       const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
       if (isInChannel) {
-        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id, parseInt(fid));
+        awardedPoints.channelJoin = await awardChannelJoinPoints(
+          user.id,
+          parseInt(fid)
+        );
       }
 
       // Check if user has added the miniapp
