@@ -195,6 +195,7 @@ export async function POST(request: NextRequest) {
       .from("points")
       .insert({
         user_id: user.id,
+        fid: parentFid,
         amount: POINT_VALUES.CAST,
         source: "cast",
         metadata: { 

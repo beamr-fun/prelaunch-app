@@ -50,6 +50,7 @@ export const checkExistingPoint = async (
  */
 export const insertPointRecord = async (
   userId: string,
+  fid: number,
   source: PointSource,
   amount: number,
   metadata?: any
@@ -67,6 +68,7 @@ export const insertPointRecord = async (
     // Insert new point record
     const { error } = await supabase.from("points").insert({
       user_id: userId,
+      fid: fid,
       source,
       amount,
       metadata: metadata || null,
@@ -137,8 +139,8 @@ export const getUserTotalPoints = async (userId: string): Promise<number> => {
 /**
  * Award points for following BEAMR account
  */
-export const awardFollowPoints = async (userId: string): Promise<boolean> => {
-  return await insertPointRecord(userId, "follow", POINT_VALUES.FOLLOW, {
+export const awardFollowPoints = async (userId: string, fid: number): Promise<boolean> => {
+  return await insertPointRecord(userId, fid, "follow", POINT_VALUES.FOLLOW, {
     description: "Followed BEAMR account",
   });
 };
@@ -147,10 +149,12 @@ export const awardFollowPoints = async (userId: string): Promise<boolean> => {
  * Award points for joining BEAMR channel
  */
 export const awardChannelJoinPoints = async (
-  userId: string
+  userId: string,
+  fid: number
 ): Promise<boolean> => {
   return await insertPointRecord(
     userId,
+    fid,
     "channel_join",
     POINT_VALUES.CHANNEL_JOIN,
     { description: "Joined BEAMR channel" }
@@ -160,8 +164,8 @@ export const awardChannelJoinPoints = async (
 /**
  * Award points for adding the miniapp
  */
-export const awardAppAddPoints = async (userId: string): Promise<boolean> => {
-  return await insertPointRecord(userId, "app_add", POINT_VALUES.APP_ADD, {
+export const awardAppAddPoints = async (userId: string, fid: number): Promise<boolean> => {
+  return await insertPointRecord(userId, fid, "app_add", POINT_VALUES.APP_ADD, {
     description: "Added BEAMR miniapp",
   });
 };
@@ -170,10 +174,12 @@ export const awardAppAddPoints = async (userId: string): Promise<boolean> => {
  * Award points for wallet confirmation
  */
 export const awardWalletConfirmationPoints = async (
-  userId: string
+  userId: string,
+  fid: number
 ): Promise<boolean> => {
   return await insertPointRecord(
     userId,
+    fid,
     "wallet_confirmation",
     POINT_VALUES.WALLET_CONFIRMATION,
     { description: "Wallet confirmation bonus" }
@@ -185,10 +191,12 @@ export const awardWalletConfirmationPoints = async (
  */
 export const awardReferralBonusPoints = async (
   userId: string,
+  fid: number,
   referredFid: string
 ): Promise<boolean> => {
   return await insertPointRecord(
     userId,
+    fid,
     "referral",
     POINT_VALUES.REFERRAL_BONUS,
     { description: `Referral bonus for ${referredFid}` }

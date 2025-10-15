@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
     // Award points for wallet confirmation
     const { error: walletPointsError } = await supabase.from("points").insert({
       user_id: user.id,
+      fid: parseInt(fid),
       amount: POINT_VALUES.WALLET_CONFIRMATION,
       source: "wallet_confirmation",
       metadata: { description: "Wallet confirmation bonus" },
@@ -152,18 +153,18 @@ export async function POST(request: NextRequest) {
       );
 
       if (isFollowing) {
-        awardedPoints.follow = await awardFollowPoints(user.id);
+        awardedPoints.follow = await awardFollowPoints(user.id, parseInt(fid));
       }
 
       // Check if user is in BEAMR channel
       const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
       if (isInChannel) {
-        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id);
+        awardedPoints.channelJoin = await awardChannelJoinPoints(user.id, parseInt(fid));
       }
 
       // Check if user has added the miniapp
       if (miniAppAdded) {
-        awardedPoints.appAdd = await awardAppAddPoints(user.id);
+        awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
       }
     } catch (error) {
       console.error("Error checking social status:", error);
@@ -187,6 +188,7 @@ export async function POST(request: NextRequest) {
           .from("points")
           .insert({
             user_id: referrerUser.id,
+            fid: finalReferrerFid,
             amount: POINT_VALUES.REFERRAL_BONUS,
             source: "referral",
             metadata: { description: `Referral bonus for ${fid}` },
