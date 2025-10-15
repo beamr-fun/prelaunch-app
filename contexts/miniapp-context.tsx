@@ -39,6 +39,7 @@ export function MiniAppProvider({
       const context = await sdk.context;
       if (context) {
         setContext(context as MiniAppContext);
+        setIsMiniAppReady(true);
       } else {
         setError("Failed to load Farcaster context");
       }
@@ -47,7 +48,7 @@ export function MiniAppProvider({
       setError(err instanceof Error ? err.message : "Failed to initialize SDK");
       console.error("SDK initialization error:", err);
     } finally {
-      setIsMiniAppReady(true);
+      // setIsMiniAppReady(true);
     }
   }, []);
 
