@@ -162,27 +162,14 @@ export async function POST(request: NextRequest) {
       user = newUser;
     }
 
-    // Check if user already has points for this cast reply
-    const { data: existingCastPoints, error: castPointsError } = await supabase
-      .from("points")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("source", "cast")
-      .single();
-
-    if (castPointsError && castPointsError.code !== "PGRST116") {
-      console.error("Error checking existing cast points:", castPointsError);
-      return NextResponse.json(
-        { error: "Failed to check existing cast points" },
-        { status: 500 }
-      );
-    }
-
-    if (existingCastPoints) {
-      return NextResponse.json(
-        { error: "User has already received cast points" },
-        { status: 400 }
-      );
+    // Extract points amount from cast text (look for number after #prebeams)
+    let pointsAmount: number = POINT_VALUES.CAST;
+    const hashtagMatch = text.match(/#prebeams\s*(\d+)/i);
+    if (hashtagMatch && hashtagMatch[1]) {
+      const extractedPoints = parseInt(hashtagMatch[1], 10);
+      if (!isNaN(extractedPoints) && extractedPoints > 0) {
+        pointsAmount = extractedPoints;
+      }
     }
 
     // Award points for cast reply
@@ -191,12 +178,13 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         fid: parentFid,
-        amount: POINT_VALUES.CAST,
+        amount: pointsAmount,
         source: "cast",
         metadata: {
-          description: "Received reply from @beamr with #prebeams",
+          description: `Received reply from @beamr with #prebeams (${pointsAmount} points)`,
           cast_hash: webhookData.data.hash,
           author_username: author.username,
+          extracted_points: pointsAmount,
         },
         created_at: new Date().toISOString(),
       })
@@ -232,10 +220,10 @@ export async function POST(request: NextRequest) {
       success: true,
       fid: user.fid,
       totalPoints: totalPoints,
-      awardedPoints: POINT_VALUES.CAST,
+      awardedPoints: pointsAmount,
       transaction: castTransaction,
       transactions: recentTransactions || [],
-      message: "Cast reply points awarded successfully",
+      message: `Cast reply points awarded successfully (${pointsAmount} points)`,
     });
   } catch (error) {
     console.error("Error processing cast reply webhook:", error);

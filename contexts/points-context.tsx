@@ -234,6 +234,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
     };
 
     loadPoints();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.data, user.isLoading, miniAppContext]);
 
   const confirmWallet = async (walletAddress: string) => {

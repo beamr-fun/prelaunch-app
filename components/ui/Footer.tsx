@@ -12,9 +12,11 @@ import {
 
 import { BEAMR_ACCOUNT_FID } from "@/lib/constants";
 import { usePoints } from "@/contexts/points-context";
+import { useMiniApp } from "@/contexts/miniapp-context";
 
 export default function Footer() {
-  const { userPoints } = usePoints();
+  const { userPoints, isLoading } = usePoints();
+  const { context } = useMiniApp();
 
   const handleFollowClick = async () => {
     await sdk.actions.viewProfile({
@@ -38,6 +40,8 @@ export default function Footer() {
       await sdk.actions.addMiniApp();
     }
   };
+
+  if (isLoading || !userPoints?.walletAddress) return;
 
   return (
     <Flex direction="row" gap="4px" px="xs" py="sm">
@@ -97,11 +101,12 @@ export default function Footer() {
         h="70px"
         flex="1"
         style={{ minWidth: 0 }}
+        disabled={context?.client.added}
       >
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
             <Plus size={20} />
-            {userPoints?.socialStatus?.appAdded && <CircleCheck size={16} />}
+            {context?.client.added && <CircleCheck size={16} />}
           </Flex>
           <Text size="8px" ta="center">
             Add App
