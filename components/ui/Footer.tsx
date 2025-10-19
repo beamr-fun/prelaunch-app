@@ -41,6 +41,8 @@ export default function Footer() {
     }
   };
 
+  const appAdded = context?.client.added || userPoints?.socialStatus?.appAdded;
+
   if (isLoading || !userPoints?.walletAddress) return;
 
   return (
@@ -101,12 +103,12 @@ export default function Footer() {
         h="70px"
         flex="1"
         style={{ minWidth: 0 }}
-        disabled={context?.client.added}
+        disabled={appAdded}
       >
         <Flex direction="column" align="center" gap="xs">
           <Flex align="center" gap="xs">
             <Plus size={20} />
-            {context?.client.added && <CircleCheck size={16} />}
+            {appAdded && <CircleCheck size={16} />}
           </Flex>
           <Text size="8px" ta="center">
             Add App

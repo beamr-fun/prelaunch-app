@@ -62,10 +62,11 @@ export function MiniAppProvider({
 
   const handleAddMiniApp = useCallback(async () => {
     try {
-      const result = await sdk.actions.addMiniApp();
-      if (result) {
-        return result;
-      }
+      // TODO Add this back in when we can handle adding before confirming wallet
+      // const result = await sdk.actions.addMiniApp();miniAppAdded
+      // if (result) {
+      //   return result;
+      // }
       return null;
     } catch (error) {
       console.error("[error] adding frame", error);

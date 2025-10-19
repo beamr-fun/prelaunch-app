@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Get miniapp addition status from query parameter
-    const { searchParams } = new URL(request.url);
-    const miniAppAdded = searchParams.get("miniAppAdded") === "true";
+    // const { searchParams } = new URL(request.url);
+    // const miniAppAdded = searchParams.get("miniAppAdded") === "true";
 
     // Get user from Supabase
     const supabase = supabaseClient();
@@ -86,10 +86,10 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      // // Check if user has added the miniapp
-      if (miniAppAdded) {
-        awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
-      }
+      // // Check if user has added the miniapp - only doingthison confirm wallet
+      // if (miniAppAdded) {
+      //   awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
+      // }
     } catch (error) {
       console.error("Error checking social status:", error);
       // Continue execution even if social checks fail
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
         socialStatus: {
           following: awardedPoints.follow,
           inChannel: awardedPoints.channelJoin,
-          appAdded: miniAppAdded,
+          appAdded: awardedPoints.appAdd,
           hasCast: hasCast,
           hasReferred: hasReferredStatus,
         },

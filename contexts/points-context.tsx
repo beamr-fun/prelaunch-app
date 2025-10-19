@@ -77,19 +77,20 @@ export function PointsProvider({ children }: PointsProviderProps) {
         throw new Error("Not in mini app context");
       }
 
-      console.log(
-        "fetchUserProfile miniAppAdded miniAppContext?.client",
-        miniAppContext?.client
-      );
+      // 10.19 removing this on profile fetch due to context no updating.
+      //  webhook and confirm wallet route will bethe only places we update app add points
+      // console.log(
+      //   "fetchUserProfile miniAppAdded miniAppContext?.client",
+      //   miniAppContext?.client
+      // );
+      // const miniAppAdded = miniAppContext?.client?.added;
+      // // Pass miniapp status as query parameter
+      // const url = `/api/users/profile${
+      //   miniAppAdded ? "?miniAppAdded=true" : ""
+      // }`;
 
-      const miniAppAdded = miniAppContext?.client?.added;
+      const url = `api/users/profile`;
 
-      // Pass miniapp status as query parameter
-      const url = `/api/users/profile${
-        miniAppAdded ? "?miniAppAdded=true" : ""
-      }`;
-
-      // const url = `api/users/profile`;
       const response = await fetch(url, {
         credentials: "include", // Include cookies for authentication
       });
@@ -136,6 +137,8 @@ export function PointsProvider({ children }: PointsProviderProps) {
       }
 
       const miniAppAdded = miniAppContext?.client?.added;
+      const newContext = sdk.context;
+      console.log("newContext", newContext);
       const response = await fetch("/api/users/confirm-wallet", {
         method: "POST",
         headers: {
