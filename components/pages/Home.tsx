@@ -44,8 +44,9 @@ export default function Home() {
   console.log("isMiniAppReady", isMiniAppReady);
   console.log("currentUser?.isLoading", currentUser?.isLoading);
   console.log("isLoading", isLoading);
-
   console.log("walletLoading", walletLoading);
+  console.log("address", address);
+  console.log("currentUser?.data", currentUser?.data);
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;

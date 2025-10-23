@@ -44,10 +44,15 @@ export default function WalletSelector({
       wallet.length - 4
     )}`;
 
-    if (wallet === primaryWallet && wallet === currentWallet)
+    if (
+      wallet.toLowerCase() === primaryWallet.toLowerCase() &&
+      wallet.toLowerCase() === currentWallet?.toLowerCase()
+    )
       return `${truncAddy} (primary, connected)`;
-    if (wallet === primaryWallet) return `${truncAddy} (primary)`;
-    if (wallet === currentWallet) return `${truncAddy} (connected)`;
+    if (wallet.toLowerCase() === primaryWallet.toLowerCase())
+      return `${truncAddy} (primary)`;
+    if (wallet.toLowerCase() === currentWallet?.toLowerCase())
+      return `${truncAddy} (connected)`;
     return truncAddy;
   };
 
