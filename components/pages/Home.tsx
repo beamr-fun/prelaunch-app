@@ -21,6 +21,7 @@ import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
 import ShareButton from "@/components/ui/ShareButton";
 import { getLaunchDate } from "@/lib/constants";
 import { useMiniApp } from "@/contexts/miniapp-context";
+import { useAccount } from "wagmi";
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -31,6 +32,7 @@ export default function Home() {
     confirmWallet,
     refetchPoints,
   } = usePoints();
+  const { address } = useAccount();
   const [selectedWallet, setSelectedWallet] = useState<string>("");
   const [isCooldown, setIsCooldown] = useState(false);
   const launchDate = getLaunchDate();
@@ -92,6 +94,7 @@ export default function Home() {
               primaryWallet={
                 currentUser.data.verified_addresses.primary.eth_address
               }
+              currentWallet={address}
               selectedWallet={selectedWallet}
               onWalletSelect={setSelectedWallet}
               disabled={walletLoading}

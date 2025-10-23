@@ -6,6 +6,7 @@ import { useState } from "react";
 interface WalletSelectorProps {
   wallets: string[];
   selectedWallet: string;
+  currentWallet?: string;
   primaryWallet: string;
   onWalletSelect: (wallet: string) => void;
   disabled?: boolean;
@@ -15,6 +16,7 @@ export default function WalletSelector({
   wallets,
   selectedWallet,
   primaryWallet,
+  currentWallet,
   onWalletSelect,
   disabled = false,
 }: WalletSelectorProps) {
@@ -42,7 +44,11 @@ export default function WalletSelector({
       wallet.length - 4
     )}`;
 
-    return wallet === primaryWallet ? `${truncAddy} (primary)` : truncAddy;
+    if (wallet === primaryWallet && wallet === currentWallet)
+      return `${truncAddy} (primary, connected)`;
+    if (wallet === primaryWallet) return `${truncAddy} (primary)`;
+    if (wallet === currentWallet) return `${truncAddy} (connected)`;
+    return truncAddy;
   };
 
   const walletOptions = wallets.map((wallet) => ({
