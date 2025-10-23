@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { walletAddress, referrerFid, miniAppAdded } = body;
+    const { walletAddress, miniAppAdded } = body;
+    let { referrerFid } = body;
 
     // Validate required fields
     if (!walletAddress) {
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
         { error: "FID and referrer FID match. NO NO!" },
         { status: 400 }
       );
+      referrerFid = undefined;
     }
 
     // Get or create user in Supabase
