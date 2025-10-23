@@ -189,7 +189,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
   useEffect(() => {
     // Check for referral code in URL
     const urlReferral = getReferralFromURL();
-    console.log("context urlReferral", urlReferral);
     if (urlReferral) {
       console.log("setting ref");
       setReferralCode(urlReferral);
@@ -199,7 +198,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
     // Get stored referral code
     const storedReferral = getReferralCode();
-    console.log("context storedReferral", storedReferral);
     if (storedReferral) {
       setReferrerFidState(storedReferral);
     }
@@ -248,7 +246,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
   const confirmWallet = async (walletAddress: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      console.log("context confirming referrerFid", referrerFid);
       const updatedUser = await confirmWalletAPI(walletAddress);
       setState((prev) => ({
         ...prev,
