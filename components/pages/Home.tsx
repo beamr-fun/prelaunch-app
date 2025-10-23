@@ -19,7 +19,6 @@ import PreBeamsCounter from "@/components/ui/PreBeamsCounter";
 import WalletSelector from "@/components/wallet/WalletSelector";
 import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
 import ShareButton from "@/components/ui/ShareButton";
-import RefreshButton from "@/components/ui/RefreshButton";
 import { getLaunchDate } from "@/lib/constants";
 import { useMiniApp } from "@/contexts/miniapp-context";
 
@@ -37,10 +36,13 @@ export default function Home() {
   const launchDate = getLaunchDate();
   const currentUser = user;
   const currentPoints = userPoints?.totalPoints || 0;
-  const loadingUserOrMiniApp = isLoading || walletLoading || !isMiniAppReady;
+  const loadingUserOrMiniApp =
+    isLoading || walletLoading || !isMiniAppReady || currentUser?.isLoading;
 
   console.log("isMiniAppReady", isMiniAppReady);
+  console.log("currentUser?.isLoading", currentUser?.isLoading);
   console.log("isLoading", isLoading);
+
   console.log("walletLoading", walletLoading);
 
   const handleRefresh = useCallback(() => {
