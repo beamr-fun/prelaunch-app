@@ -53,10 +53,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (fid === referrerFid) {
-      return NextResponse.json(
-        { error: "FID and referrer FID match. NO NO!" },
-        { status: 400 }
-      );
+      // return NextResponse.json(
+      //   { error: "FID and referrer FID match. NO NO!" },
+      //   { status: 400 }
+      // );
       referrerFid = undefined;
     }
 
