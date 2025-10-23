@@ -4,11 +4,11 @@ import { checkUserFollows, checkUserInChannel } from "@/lib/neynar";
 import {
   awardFollowPoints,
   awardChannelJoinPoints,
-  awardAppAddPoints,
   getUserPoints,
   getUserTotalPoints,
   hasCastPoints,
   hasReferred,
+  checkExistingPoint,
 } from "@/lib/points-utils";
 import { BEAMR_ACCOUNT_FID, BEAMR_CHANNEL_NAME } from "@/lib/constants";
 
@@ -86,6 +86,9 @@ export async function GET(request: NextRequest) {
         );
       }
 
+      // Check if user has app_add points
+      awardedPoints.appAdd = await checkExistingPoint(user.id, "app_add");
+
       // // Check if user has added the miniapp - only doingthison confirm wallet
       // if (miniAppAdded) {
       //   awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
@@ -122,13 +125,8 @@ export async function GET(request: NextRequest) {
         socialStatus: {
           following: awardedPoints.follow,
           inChannel: awardedPoints.channelJoin,
-          appAdded: awardedPoints.appAdd,
           hasCast: hasCast,
           hasReferred: hasReferredStatus,
-        },
-        newlyAwardedPoints: {
-          follow: awardedPoints.follow,
-          channelJoin: awardedPoints.channelJoin,
           appAdd: awardedPoints.appAdd,
         },
       },

@@ -249,13 +249,6 @@ export async function POST(request: NextRequest) {
         inChannel: awardedPoints.channelJoin,
         appAdded: !!miniAppAdded,
       },
-      awardedPoints: {
-        walletConfirmation: POINT_VALUES.WALLET_CONFIRMATION,
-        follow: awardedPoints.follow ? POINT_VALUES.FOLLOW : 0,
-        channelJoin: awardedPoints.channelJoin ? POINT_VALUES.CHANNEL_JOIN : 0,
-        appAdd: awardedPoints.appAdd ? POINT_VALUES.APP_ADD : 0,
-        referrerBonus: referralTransaction ? POINT_VALUES.REFERRAL_BONUS : 0,
-      },
     });
   } catch (error) {
     console.error("Error confirming wallet:", error);

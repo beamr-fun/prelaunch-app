@@ -32,11 +32,6 @@ export interface UserPoints {
     hasCast: boolean;
     hasReferred: boolean;
   };
-  newlyAwardedPoints: {
-    follow: boolean;
-    channelJoin: boolean;
-    appAdd: boolean;
-  };
 }
 
 export interface PointsState {
@@ -115,11 +110,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
           hasCast: false,
           hasReferred: false,
         },
-        newlyAwardedPoints: data.newlyAwardedPoints || {
-          follow: false,
-          channelJoin: false,
-          appAdd: false,
-        },
       };
     } catch (error) {
       console.error("Failed to fetch user profile:", error);
@@ -172,11 +162,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
           appAdded: false,
           hasCast: false,
           hasReferred: false,
-        },
-        newlyAwardedPoints: data.newlyAwardedPoints || {
-          follow: false,
-          channelJoin: false,
-          appAdd: false,
         },
       };
     } catch (error) {
