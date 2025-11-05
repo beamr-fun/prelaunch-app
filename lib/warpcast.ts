@@ -6,7 +6,8 @@ import { env } from "@/lib/env";
  * @returns The farcaster manifest for the frame
  */
 export async function getFarcasterManifest() {
-  let frameName = "BEAMR";
+  // let frameName = "BEAMR";
+  let frameName = "RMAEB";
   let noindex = false;
   const appUrl = env.NEXT_PUBLIC_URL;
   if (appUrl.includes("localhost")) {
@@ -36,13 +37,17 @@ export async function getFarcasterManifest() {
       splashBackgroundColor: "#000000",
       webhookUrl: `${appUrl}/api/webhook`,
       // Metadata https://github.com/farcasterxyz/miniapps/discussions/191
-      subtitle: "BEAMR", // 30 characters, no emojis or special characters, short description under app name
-      description: "BEAMR", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
+      // subtitle: "BEAMR", // 30 characters, no emojis or special characters, short description under app name
+      subtitle: "RMAEB", // 30 characters, no emojis or special characters, short description under app name
+      description: "RMAEB", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
+      // description: "BEAMR", // 170 characters, no emojis or special characters, promotional message displayed on Mini App Page
       primaryCategory: "social",
       tags: ["mini-app"], // up to 5 tags, filtering/search tags
-      tagline: "BEAMR", // 30 characters, marketing tagline should be punchy and descriptive
+      // tagline: "BEAMR", // 30 characters, marketing tagline should be punchy and descriptive
+      tagline: "RMAEB", // 30 characters, marketing tagline should be punchy and descriptive
       ogTitle: `${frameName}`, // 30 characters, app name + short tag, Title case, no emojis
-      ogDescription: "BEAMR", // 100 characters, summarize core benefits in 1-2 lines
+      // ogDescription: "BEAMR", // 100 characters, summarize core benefits in 1-2 lines
+      ogDescription: "RMAEB", // 100 characters, summarize core benefits in 1-2 lines
       screenshotUrls: [
         // 1284 x 2778, visual previews of the app, max 3 screenshots
         `${appUrl}/images/feed.png`,
