@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useCallback, useState } from "react";
-import Link from "next/link";
+import { useCallback, useState } from 'react';
+import Link from 'next/link';
 import {
   Flex,
   Container,
@@ -10,18 +10,18 @@ import {
   Button,
   Anchor,
   Loader,
-} from "@mantine/core";
-import { ChartNoAxesColumn, RotateCcw } from "lucide-react";
-import { useUser } from "@/contexts/user-context";
-import { usePoints } from "@/contexts/points-context";
-import CountdownTimer from "@/components/ui/CountdownTimer";
-import PreBeamsCounter from "@/components/ui/PreBeamsCounter";
-import WalletSelector from "@/components/wallet/WalletSelector";
-import WalletConfirmButton from "@/components/wallet/WalletConfirmButton";
-import ShareButton from "@/components/ui/ShareButton";
-import { getLaunchDate } from "@/lib/constants";
-import { useMiniApp } from "@/contexts/miniapp-context";
-import { useAccount } from "wagmi";
+} from '@mantine/core';
+import { ChartNoAxesColumn, RotateCcw } from 'lucide-react';
+import { useUser } from '@/contexts/user-context';
+import { usePoints } from '@/contexts/points-context';
+import CountdownTimer from '@/components/ui/CountdownTimer';
+import PreBeamsCounter from '@/components/ui/PreBeamsCounter';
+import WalletSelector from '@/components/wallet/WalletSelector';
+import WalletConfirmButton from '@/components/wallet/WalletConfirmButton';
+import ShareButton from '@/components/ui/ShareButton';
+import { getLaunchDate } from '@/lib/constants';
+import { useMiniApp } from '@/contexts/miniapp-context';
+import { useAccount } from 'wagmi';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -33,7 +33,7 @@ export default function Home() {
     refetchPoints,
   } = usePoints();
   const { address } = useAccount();
-  const [selectedWallet, setSelectedWallet] = useState<string>("");
+  const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [isCooldown, setIsCooldown] = useState(false);
   const launchDate = getLaunchDate();
   const currentUser = user;
@@ -41,18 +41,18 @@ export default function Home() {
   const loadingUserOrMiniApp =
     isLoading || walletLoading || !isMiniAppReady || currentUser?.isLoading;
 
-  console.log("isMiniAppReady", isMiniAppReady);
-  console.log("currentUser?.isLoading", currentUser?.isLoading);
-  console.log("isLoading", isLoading);
-  console.log("walletLoading", walletLoading);
-  console.log("address", address);
-  console.log("currentUser?.data", currentUser?.data);
+  console.log('isMiniAppReady', isMiniAppReady);
+  console.log('currentUser?.isLoading', currentUser?.isLoading);
+  console.log('isLoading', isLoading);
+  console.log('walletLoading', walletLoading);
+  console.log('address', address);
+  console.log('currentUser?.data', currentUser?.data);
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;
     if (!currentUser?.data || !userPoints) return;
 
-    console.log("refetching");
+    console.log('refetching');
     refetchPoints();
     setIsCooldown(true);
 
@@ -65,7 +65,7 @@ export default function Home() {
   if (loadingUserOrMiniApp) {
     return (
       <Container style={{ flex: 1 }} px="md" py="xl">
-        <Stack align="center" gap="xl" style={{ height: "100%" }}>
+        <Stack align="center" gap="xl" style={{ height: '100%' }}>
           <CountdownTimer targetDate={launchDate} />
           <Loader color="white" />
         </Stack>
@@ -75,12 +75,12 @@ export default function Home() {
 
   return (
     <Container px="md" py="xl">
-      <Stack align="center" gap="xl" style={{ height: "100%" }}>
+      <Stack align="center" gap="xl" style={{ height: '100%' }}>
         <CountdownTimer targetDate={launchDate} />
 
         {!currentUser?.data && (
           <Button onClick={signIn} disabled={isLoading} size="xl">
-            {isLoading ? <span>Signing in...</span> : "Sign in"}
+            {isLoading ? <span>Signing in...</span> : 'Sign in'}
           </Button>
         )}
 
@@ -119,7 +119,7 @@ export default function Home() {
               direction="column"
               align="center"
               gap="lg"
-              style={{ width: "100%", maxWidth: "400px" }}
+              style={{ width: '100%', maxWidth: '400px' }}
             >
               <Anchor component={Link} href="/leaderboard">
                 <Flex direction="row" align="center" gap="xs">
@@ -134,7 +134,7 @@ export default function Home() {
           </Flex>
         )}
         <Button
-          variant="transparent"
+          variant="secondary"
           disabled={isCooldown || !currentUser?.data || !userPoints}
           onClick={handleRefresh}
         >
