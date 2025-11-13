@@ -2,36 +2,37 @@ import {
   ConvertCSSVariablesInput,
   createTheme,
   MantineTheme,
-} from "@mantine/core";
-import typographyClasses from "../styles/typography.module.css";
-import buttonClasses from "../styles/button.module.css";
-import inputClasses from "../styles/input.module.css";
-import segmentedClasses from "../styles/segmentedControl.module.css";
+} from '@mantine/core';
+import typographyClasses from '../styles/typography.module.css';
+import buttonClasses from '../styles/button.module.css';
+import inputClasses from '../styles/input.module.css';
+import segmentedClasses from '../styles/segmentedControl.module.css';
+import layoutClasses from '../styles/layout.module.css';
 
 const GRAY = [
-  "#F2F2F2",
-  "#E3E3E3",
-  "#C8C8C8",
-  "#AEADAD",
-  "#949494",
-  "#7B7B7B",
-  "#636363",
-  "#363636",
-  "#222121",
-  "#0F0E0E",
+  '#F2F2F2',
+  '#E3E3E3',
+  '#C8C8C8',
+  '#AEADAD',
+  '#949494',
+  '#7B7B7B',
+  '#636363',
+  '#363636',
+  '#222121',
+  '#0F0E0E',
 ] as const;
 
 const BLUE = [
-  "#F2FDFF",
-  "#E6FAFF",
-  "#BFF1FF",
-  "#99E7FF",
-  "#4DCCFF",
-  "#00ABFF",
-  "#0091E6",
-  "#005299",
-  "#003773",
-  "#00204A",
+  '#F2FDFF',
+  '#E6FAFF',
+  '#BFF1FF',
+  '#99E7FF',
+  '#4DCCFF',
+  '#00ABFF',
+  '#0091E6',
+  '#005299',
+  '#003773',
+  '#00204A',
 ] as const;
 
 const DIM = [
@@ -61,50 +62,50 @@ const BRIGHT = [
 ] as const;
 
 const RED = [
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
-  "#F45744",
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
+  '#F45744',
 ] as const;
 const GREEN = [
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
-  "#63B18A",
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
+  '#63B18A',
 ] as const;
 
 const PURPLE = [
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
-  "6D68C4",
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
+  '6D68C4',
 ] as const;
 
 export const theme = createTheme({
   radius: {
-    xs: "4px",
-    sm: "8px",
-    md: "12px",
-    lg: "16px",
-    xl: "20px",
+    xs: '4px',
+    sm: '8px',
+    md: '12px',
+    lg: '16px',
+    xl: '20px',
   },
   colors: {
     gray: GRAY,
@@ -116,20 +117,20 @@ export const theme = createTheme({
     purple: PURPLE,
   },
   fontSizes: {
-    xs: "10px",
-    sm: "12px",
-    md: "14px",
-    lg: "16px",
-    xl: "18px",
+    xs: '10px',
+    sm: '12px',
+    md: '14px',
+    lg: '16px',
+    xl: '18px',
   },
   spacing: {
-    xs: "4px",
-    sm: "8px",
-    md: "16px",
-    lg: "24px",
-    xl: "32px",
+    xs: '4px',
+    sm: '8px',
+    md: '16px',
+    lg: '24px',
+    xl: '32px',
   },
-  fontFamily: "Pretendard, sans-serif",
+  fontFamily: 'Pretendard, sans-serif',
   components: {
     Text: {
       classNames: { root: typographyClasses.text },
@@ -139,6 +140,7 @@ export const theme = createTheme({
     },
     Input: {
       classNames: {
+        wrapper: inputClasses.wrapper,
         input: inputClasses.baseInput,
       },
     },
@@ -148,12 +150,16 @@ export const theme = createTheme({
         description: inputClasses.description,
         error: inputClasses.errorText,
       },
-      defaultProps: {
-        inputWrapperOrder: ["label", "input", "error", "description"],
+    },
+    Paper: {
+      classNames: {
+        root: layoutClasses.paper,
       },
     },
+
     TextInput: {
       classNames: {
+        wrapper: inputClasses.wrapper,
         input: inputClasses.textInput,
       },
     },
@@ -186,10 +192,10 @@ export const theme = createTheme({
         option: inputClasses.selectOption,
       },
       defaultProps: {
-        autoSelectOnBlur: true,
+        // autoSelectOnBlur: true,
         allowDeselect: false,
         comboboxProps: {
-          transitionProps: { transition: "fade-up", duration: 200 },
+          transitionProps: { transition: 'fade-up', duration: 200 },
         },
       },
     },
@@ -200,7 +206,7 @@ export const theme = createTheme({
         label: segmentedClasses.label,
       },
       defaultProps: {
-        size: "md",
+        size: 'md',
         fullWidth: true,
       },
     },
@@ -210,18 +216,23 @@ export const cssVariablesResolver = (
   theme: MantineTheme
 ): ConvertCSSVariablesInput => ({
   variables: {
-    "--mantine-color-body": "var(--mantine-color-gray-9)",
-    "--mantine-color-text": "var(--mantine-color-gray-1)",
-    "--mantine-color-dimmed": "var(--mantine-color-gray-4)",
+    '--glass-pane': 'rgba(242, 242, 242, 0.02)',
+    '--glass-edge': 'rgba(255, 255, 255, 0.035)',
+    '--glass-blur': 'blur(32px)',
+    '--glass-pronounced': 'rgba(242, 242, 242, 0.028)',
+    '--glass-thick': 'rgba(242, 242, 242, 0.05)',
+    '--mantine-color-body': 'var(--mantine-color-gray-9)',
+    '--mantine-color-text': 'var(--mantine-color-gray-1)',
+    '--mantine-color-dimmed': 'var(--mantine-color-gray-4)',
   },
   dark: {
-    "--mantine-color-body": "var(--mantine-color-gray-9)",
-    "--mantine-color-text": "var(--mantine-color-gray-1)",
-    "--mantine-color-dimmed": "var(--mantine-color-gray-4)",
+    '--mantine-color-body': 'var(--mantine-color-gray-9)',
+    '--mantine-color-text': 'var(--mantine-color-gray-1)',
+    '--mantine-color-dimmed': 'var(--mantine-color-gray-4)',
   },
   light: {
-    "--mantine-color-body": "var(--mantine-color-gray-0)",
-    "--mantine-color-text": "var(--mantine-color-gray-8)",
-    "--mantine-color-dimmed": "var(--mantine-color-gray-5)",
+    '--mantine-color-body': 'var(--mantine-color-gray-0)',
+    '--mantine-color-text': 'var(--mantine-color-gray-8)',
+    '--mantine-color-dimmed': 'var(--mantine-color-gray-5)',
   },
 });
