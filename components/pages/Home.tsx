@@ -77,7 +77,7 @@ export default function Home() {
           w={250}
           mt="xl"
           fit="contain"
-        />{' '}
+        />
       </Stack>
     </Container>
   );

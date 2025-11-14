@@ -1,120 +1,46 @@
 'use client';
 
-import { sdk } from '@farcaster/miniapp-sdk';
-import { Flex, Button, Text, ActionIcon } from '@mantine/core';
-import {
-  MessageCircle,
-  MessageSquareText,
-  UserPlus,
-  Plus,
-  CircleCheck,
-} from 'lucide-react';
+const DEFAULT_NAV_LINKS = [
+  {
+    link: '/home',
+    Icon: Home,
+  },
+  {
+    link: '/leaderboard',
+    Icon: Trophy,
+  },
+  {
+    link: '/info',
+    Icon: Info,
+  },
+];
 
-import { BEAMR_ACCOUNT_FID } from '@/lib/constants';
-import { usePoints } from '@/contexts/points-context';
-import { useMiniApp } from '@/contexts/miniapp-context';
+import { usePathname, useRouter } from 'next/navigation';
+import { Box, Group, Button, ActionIcon } from '@mantine/core';
+import { Globe, Home, Info, Trophy } from 'lucide-react';
+import classes from '@/styles/layout.module.css';
 
 export default function Footer() {
-  const { userPoints, isLoading } = usePoints();
-  const { context } = useMiniApp();
-
-  const handleFollowClick = async () => {
-    await sdk.actions.viewProfile({
-      fid: BEAMR_ACCOUNT_FID,
-    });
-  };
-
-  const handleJoinClick = async () => {
-    await sdk.actions.openUrl('https://farcaster.xyz/~/channel/beamr');
-  };
-
-  const handleCastClick = async () => {
-    await sdk.actions.composeCast({
-      text: 'beamr',
-      embeds: [process.env.NEXT_PUBLIC_URL || ''],
-    });
-  };
-
-  const handleAddMiniAppClick = async () => {
-    if (!userPoints?.socialStatus?.appAdded) {
-      await sdk.actions.addMiniApp();
-    }
-  };
-
-  const appAdded = context?.client.added || userPoints?.socialStatus?.appAdded;
-
-  if (isLoading || !userPoints?.walletAddress) return;
+  const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <Flex direction="row" gap="4px" px="xs" py="sm">
-      <Button
-        onClick={handleFollowClick}
-        h="70px"
-        flex="1"
-        style={{ minWidth: 0 }}
-      >
-        <Flex direction="column" align="center" gap="xs">
-          <Flex align="center" gap="xs">
-            <UserPlus size={20} />
-            {userPoints?.socialStatus?.following && <CircleCheck size={16} />}
-          </Flex>
-          <Text size="8px" ta="center">
-            Follow
-          </Text>
-        </Flex>
-      </Button>
+    <Box className={classes.navBox}>
+      <Group className={classes.innerNavBox}>
+        {DEFAULT_NAV_LINKS.map(({ link, Icon }) => {
+          const isSelected = pathname === link;
 
-      <ActionIcon
-        onClick={handleJoinClick}
-        h="70px"
-        flex="1"
-        style={{ minWidth: 0 }}
-      >
-        <Flex direction="column" align="center" gap="xs">
-          <Flex align="center" gap="xs">
-            <MessageSquareText size={20} />
-            {userPoints?.socialStatus?.inChannel && <CircleCheck size={16} />}
-          </Flex>
-          <Text size="8px" ta="center">
-            Join
-          </Text>
-        </Flex>
-      </ActionIcon>
-
-      <Button
-        onClick={handleCastClick}
-        h="70px"
-        flex="1"
-        style={{ minWidth: 0 }}
-      >
-        <Flex direction="column" align="center" gap="xs">
-          <Flex align="center" gap="xs">
-            <MessageCircle size={20} />
-            {userPoints?.socialStatus?.hasCast && <CircleCheck size={16} />}
-          </Flex>
-          <Text size="8px" ta="center">
-            Post
-          </Text>
-        </Flex>
-      </Button>
-
-      <Button
-        onClick={handleAddMiniAppClick}
-        h="70px"
-        flex="1"
-        style={{ minWidth: 0 }}
-        disabled={appAdded}
-      >
-        <Flex direction="column" align="center" gap="xs">
-          <Flex align="center" gap="xs">
-            <Plus size={20} />
-            {appAdded && <CircleCheck size={16} />}
-          </Flex>
-          <Text size="8px" ta="center">
-            Add App
-          </Text>
-        </Flex>
-      </Button>
-    </Flex>
+          return (
+            <ActionIcon
+              key={link}
+              className={isSelected ? classes.navLinkSelected : classes.navLink}
+              onClick={() => router.push(link)}
+            >
+              <Icon size={28} />
+            </ActionIcon>
+          );
+        })}
+      </Group>
+    </Box>
   );
 }

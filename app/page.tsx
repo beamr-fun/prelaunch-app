@@ -1,33 +1,33 @@
-import HomePage from "@/components/pages/Home";
-import { env } from "@/lib/env";
-import { Metadata } from "next";
+import HomePage from '@/components/pages/Home';
+import { env } from '@/lib/env';
+import { Metadata } from 'next';
 
 const appUrl = env.NEXT_PUBLIC_URL;
 
 const frame = {
-  version: "next",
+  version: 'next',
   imageUrl: `${appUrl}/images/feed.png`,
   button: {
-    title: "Launch App",
+    title: 'Launch App',
     action: {
-      type: "launch_frame",
-      name: "BEAMR",
+      type: 'launch_frame',
+      name: 'BEAMR',
       url: appUrl,
-      splashImageUrl: `${appUrl}/images/splash.png`,
-      splashBackgroundColor: "#000000",
+      splashImageUrl: `${appUrl}/images/beamrLogo.png`,
+      splashBackgroundColor: '#000000',
     },
   },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "BEAMR",
+    title: 'BEAMR',
     openGraph: {
-      title: "BEAMR",
-      description: "BEAMR",
+      title: 'BEAMR',
+      description: 'BEAMR',
     },
     other: {
-      "fc:frame": JSON.stringify(frame),
+      'fc:frame': JSON.stringify(frame),
     },
   };
 }
