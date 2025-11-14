@@ -14,6 +14,7 @@ import {
   Select,
   NumberInput,
   TextInput,
+  Image,
 } from '@mantine/core';
 import { ChartNoAxesColumn, RotateCcw } from 'lucide-react';
 import { useUser } from '@/contexts/user-context';
@@ -66,90 +67,113 @@ export default function Home() {
     }, 10000);
   }, [currentUser?.data, isCooldown, refetchPoints, userPoints]);
 
-  if (loadingUserOrMiniApp) {
-    return (
-      <Container style={{ flex: 1 }} px="md" py="xl">
-        <Stack align="center" gap="xl" style={{ height: '100%' }}>
-          <CountdownTimer targetDate={launchDate} />
-          <Loader color="white" />
-        </Stack>
-      </Container>
-    );
-  }
-
   return (
-    <Container px="md" py="xl">
+    <Container style={{ flex: 1 }} px="md" py="xl">
       <Stack align="center" gap="xl" style={{ height: '100%' }}>
-        {/* <CountdownTimer targetDate={launchDate} /> */}
-        {/* 
-        {!currentUser?.data && (
-          <Button onClick={signIn} disabled={isLoading} size="xl">
-            {isLoading ? <span>Signing in...</span> : 'Sign in'}
-          </Button>
-        )} */}
-
-        {/* {currentUser?.data && !userPoints?.walletConfirmed && (
-          <Stack align="center" gap="md">
-            <Text ta="center" size="lg">
-              Confirm your preferred wallet to earn your first Beamer token
-              stream at launch.
-            </Text>
-            <WalletSelector
-              wallets={currentUser.data.verified_addresses.eth_addresses}
-              primaryWallet={
-                currentUser.data.verified_addresses.primary.eth_address
-              }
-              currentWallet={address}
-              selectedWallet={selectedWallet}
-              onWalletSelect={setSelectedWallet}
-              disabled={walletLoading}
-            />
-            <WalletConfirmButton
-              onConfirm={confirmWallet}
-              selectedWallet={selectedWallet}
-              disabled={!selectedWallet}
-              isLoading={walletLoading}
-            />
-          </Stack>
-        )} */}
-
-        {/* {currentUser?.data && userPoints?.walletConfirmed && (
-          <Flex direction="column" align="center" gap="md">
-            <Flex align="center" gap="md">
-              <PreBeamsCounter points={currentPoints} />
-            </Flex>
-
-            <Flex
-              direction="column"
-              align="center"
-              gap="lg"
-              style={{ width: '100%', maxWidth: '400px' }}
-            >
-              <Anchor component={Link} href="/leaderboard">
-                <Flex direction="row" align="center" gap="xs">
-                  <ChartNoAxesColumn size={16} />
-                  <Text size="sm"> Leaderboard</Text>
-                </Flex>
-              </Anchor>
-              <Flex direction="row" gap="md" wrap="wrap" justify="center">
-                <ShareButton referralCode={currentUser.data.fid} />
-              </Flex>
-            </Flex>
-          </Flex>
-        )} */}
-
-        <Cards />
-
-        {/* <Button
-          variant="secondary"
-          disabled={isCooldown || !currentUser?.data || !userPoints}
-          onClick={handleRefresh}
-        >
-          <RotateCcw size={12} />
-        </Button> */}
+        <Image
+          src="./images/beamrLogo.png"
+          alt="Beamr Logo"
+          h={250}
+          w={250}
+          mt="xl"
+          fit="contain"
+        />{' '}
       </Stack>
     </Container>
   );
+
+  // if (loadingUserOrMiniApp) {
+  //   return (
+  //     <Container style={{ flex: 1 }} px="md" py="xl">
+  //       <Stack align="center" gap="xl" style={{ height: '100%' }}>
+  //         <CountdownTimer targetDate={launchDate} />
+  //         <Loader color="white" />
+  //       </Stack>
+  //     </Container>
+  //   );
+  // }
+
+  // return (
+  //   <Container px="md" py="xl">
+  //     <Stack align="center" gap="xl" style={{ height: '100%' }}>
+  //       <Image
+  //         src="./images/beamrLogo.png"
+  //         alt="Beamr Logo"
+  //         h={250}
+  //         w={250}
+  //         mt="xl"
+  //         fit="contain"
+  //       />
+  //       <CountdownTimer targetDate={launchDate} />
+
+  //       {!currentUser?.data && (
+  //         <Button onClick={signIn} disabled={isLoading} size="xl">
+  //           {isLoading ? <span>Signing in...</span> : 'Sign in'}
+  //         </Button>
+  //       )}
+
+  //       {currentUser?.data && !userPoints?.walletConfirmed && (
+  //         <Stack align="center" gap="md">
+  //           <Text ta="center" size="lg">
+  //             Confirm your preferred wallet to earn your first Beamer token
+  //             stream at launch.
+  //           </Text>
+  //           <WalletSelector
+  //             wallets={currentUser.data.verified_addresses.eth_addresses}
+  //             primaryWallet={
+  //               currentUser.data.verified_addresses.primary.eth_address
+  //             }
+  //             currentWallet={address}
+  //             selectedWallet={selectedWallet}
+  //             onWalletSelect={setSelectedWallet}
+  //             disabled={walletLoading}
+  //           />
+  //           <WalletConfirmButton
+  //             onConfirm={confirmWallet}
+  //             selectedWallet={selectedWallet}
+  //             disabled={!selectedWallet}
+  //             isLoading={walletLoading}
+  //           />
+  //         </Stack>
+  //       )}
+
+  //       {currentUser?.data && userPoints?.walletConfirmed && (
+  //         <Flex direction="column" align="center" gap="md">
+  //           <Flex align="center" gap="md">
+  //             <PreBeamsCounter points={currentPoints} />
+  //           </Flex>
+
+  //           <Flex
+  //             direction="column"
+  //             align="center"
+  //             gap="lg"
+  //             style={{ width: '100%', maxWidth: '400px' }}
+  //           >
+  //             <Anchor component={Link} href="/leaderboard">
+  //               <Flex direction="row" align="center" gap="xs">
+  //                 <ChartNoAxesColumn size={16} />
+  //                 <Text size="sm"> Leaderboard</Text>
+  //               </Flex>
+  //             </Anchor>
+  //             <Flex direction="row" gap="md" wrap="wrap" justify="center">
+  //               <ShareButton referralCode={currentUser.data.fid} />
+  //             </Flex>
+  //           </Flex>
+  //         </Flex>
+  //       )}
+
+  //       <Cards />
+
+  //       <Button
+  //         variant="secondary"
+  //         disabled={isCooldown || !currentUser?.data || !userPoints}
+  //         onClick={handleRefresh}
+  //       >
+  //         <RotateCcw size={12} />
+  //       </Button>
+  //     </Stack>
+  //   </Container>
+  // );
 }
 
 // const Inputs = () => {

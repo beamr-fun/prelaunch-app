@@ -25,7 +25,7 @@ export default function Footer() {
   };
 
   const handleJoinClick = async () => {
-    await sdk.actions.openUrl({ url: 'https://farcaster.xyz/~/channel/beamr' });
+    await sdk.actions.openUrl('https://farcaster.xyz/~/channel/beamr');
   };
 
   const handleCastClick = async () => {
