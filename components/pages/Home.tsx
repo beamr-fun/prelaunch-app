@@ -1,32 +1,23 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import Link from 'next/link';
 import {
-  Flex,
   Container,
   Stack,
   Text,
-  Button,
-  Anchor,
-  Loader,
   Paper,
   Select,
   NumberInput,
   TextInput,
   Image,
+  Box,
 } from '@mantine/core';
-import { ChartNoAxesColumn, RotateCcw } from 'lucide-react';
 import { useUser } from '@/contexts/user-context';
 import { usePoints } from '@/contexts/points-context';
-import CountdownTimer from '@/components/ui/CountdownTimer';
-import PreBeamsCounter from '@/components/ui/PreBeamsCounter';
-import WalletSelector from '@/components/wallet/WalletSelector';
-import WalletConfirmButton from '@/components/wallet/WalletConfirmButton';
-import ShareButton from '@/components/ui/ShareButton';
 import { getLaunchDate } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { useAccount } from 'wagmi';
+import { PageLayout } from '../ui/PageLayout';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -68,18 +59,16 @@ export default function Home() {
   }, [currentUser?.data, isCooldown, refetchPoints, userPoints]);
 
   return (
-    <Container style={{ flex: 1 }} px="md" py="xl">
-      <Stack align="center" gap="xl" style={{ height: '100%' }}>
-        <Image
-          src="./images/beamrLogo.png"
-          alt="Beamr Logo"
-          h={250}
-          w={250}
-          mt="xl"
-          fit="contain"
-        />
-      </Stack>
-    </Container>
+    <PageLayout>
+      <Image
+        src="./images/beamrLogo.png"
+        alt="Beamr Logo"
+        width={80}
+        height={80}
+        mb="xl"
+        fit="contain"
+      />
+    </PageLayout>
   );
 
   // if (loadingUserOrMiniApp) {
