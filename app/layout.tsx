@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Flex } from '@mantine/core';
+import { Box, Flex, ScrollArea } from '@mantine/core';
 import Providers from '@/components/providers';
 import Header from '@/components/ui/Header';
 import Footer from '@/components/ui/Footer';
@@ -80,11 +80,20 @@ export default function RootLayout({
                 </linearGradient>
               </defs>
             </svg>
-            <Header />
-            <Flex style={{ flex: 1 }} direction="column">
-              {children}
-            </Flex>
-            {/* <Footer /> */}
+            <ScrollArea
+              classNames={{
+                root: classes.scrollArea,
+                thumb: classes.scrollThumb,
+              }}
+            >
+              <Box className={classes.contentBox}>
+                <Header />
+                <Flex style={{ flex: 1 }} direction="column">
+                  {children}
+                </Flex>
+              </Box>
+              <Footer />
+            </ScrollArea>
           </Flex>
         </Providers>
       </body>
