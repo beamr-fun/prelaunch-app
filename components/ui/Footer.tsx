@@ -2,7 +2,7 @@
 
 const DEFAULT_NAV_LINKS = [
   {
-    link: '/home',
+    link: '/',
     Icon: Home,
   },
   {
