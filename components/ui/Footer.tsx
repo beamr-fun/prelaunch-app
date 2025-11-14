@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { sdk } from "@farcaster/miniapp-sdk";
-import { Flex, Button, Text } from "@mantine/core";
+import { sdk } from '@farcaster/miniapp-sdk';
+import { Flex, Button, Text, ActionIcon } from '@mantine/core';
 import {
   MessageCircle,
   MessageSquareText,
   UserPlus,
   Plus,
   CircleCheck,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { BEAMR_ACCOUNT_FID } from "@/lib/constants";
-import { usePoints } from "@/contexts/points-context";
-import { useMiniApp } from "@/contexts/miniapp-context";
+import { BEAMR_ACCOUNT_FID } from '@/lib/constants';
+import { usePoints } from '@/contexts/points-context';
+import { useMiniApp } from '@/contexts/miniapp-context';
 
 export default function Footer() {
   const { userPoints, isLoading } = usePoints();
@@ -25,13 +25,13 @@ export default function Footer() {
   };
 
   const handleJoinClick = async () => {
-    await sdk.actions.openUrl({ url: "https://farcaster.xyz/~/channel/beamr" });
+    await sdk.actions.openUrl('https://farcaster.xyz/~/channel/beamr');
   };
 
   const handleCastClick = async () => {
     await sdk.actions.composeCast({
-      text: "beamr",
-      embeds: [process.env.NEXT_PUBLIC_URL || ""],
+      text: 'beamr',
+      embeds: [process.env.NEXT_PUBLIC_URL || ''],
     });
   };
 
@@ -64,7 +64,7 @@ export default function Footer() {
         </Flex>
       </Button>
 
-      <Button
+      <ActionIcon
         onClick={handleJoinClick}
         h="70px"
         flex="1"
@@ -79,7 +79,7 @@ export default function Footer() {
             Join
           </Text>
         </Flex>
-      </Button>
+      </ActionIcon>
 
       <Button
         onClick={handleCastClick}
