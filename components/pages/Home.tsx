@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from 'react';
 import {
-  Container,
   Stack,
   Text,
   Paper,
@@ -12,11 +11,10 @@ import {
   Image,
   Box,
   Group,
-  List,
-  Flex,
-  Avatar,
   useMantineTheme,
   Button,
+  Tooltip,
+  ActionIcon,
 } from '@mantine/core';
 import { useUser } from '@/contexts/user-context';
 import { usePoints } from '@/contexts/points-context';
@@ -24,7 +22,8 @@ import { getLaunchDate } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { useAccount } from 'wagmi';
 import { PageLayout } from '../ui/PageLayout';
-import { Heart } from 'lucide-react';
+import { CheckCheck, Copy, Infinity, InfoIcon, RefreshCw } from 'lucide-react';
+import LaunchPhase from '../ui/LaunchPhase';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -44,13 +43,6 @@ export default function Home() {
   const currentPoints = userPoints?.totalPoints || 0;
   const loadingUserOrMiniApp =
     isLoading || walletLoading || !isMiniAppReady || currentUser?.isLoading;
-
-  console.log('isMiniAppReady', isMiniAppReady);
-  console.log('currentUser?.isLoading', currentUser?.isLoading);
-  console.log('isLoading', isLoading);
-  console.log('walletLoading', walletLoading);
-  console.log('address', address);
-  console.log('currentUser?.data', currentUser?.data);
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;
@@ -76,212 +68,136 @@ export default function Home() {
         mb="md"
         fit="contain"
       />
-      <Text fz="sm" ta="center" mb="xl">
-        A dynamic micro-subscription service
-      </Text>
-      <Paper>
-        <Text mb={'sm'}>
-          Beamr is the easiest way to sustainably reward the people who make
-          your feed worth scrolling.
-        </Text>
-        <List mb={24}>
-          <List.Item>You set monthly budget</List.Item>
-          <List.Item>
-            We dynamically split that stream based on your interactions (likes,
-            comments, follows, etc.)
-          </List.Item>
-          <List.Item>
-            Your favorite Farcasters start earning instantly & consistently
-          </List.Item>
-        </List>
-        <Box pos="relative" h={150} mb="md">
-          <Box pos="absolute" left={60}>
-            <Box pos={'relative'}>
-              <Avatar size={28} src="" pos={'absolute'} bg="blue" left={0} />
-              <Avatar
-                size={28}
-                src=""
-                pos={'absolute'}
-                bg="blue"
-                left={0}
-                top={92}
-              />
-              <Group
-                pos="absolute"
-                top={40}
-                left={-9}
-                style={{ zIndex: 10 }}
-                wrap="nowrap"
-                gap={2}
-              >
-                <Text fw={700} fz="xl" c={colors.red[7]}>
-                  +
-                </Text>
-                <Heart color={colors.red[7]} fill={colors.red[7]} size={20} />
-              </Group>
-              <Text
-                fz="xs"
-                pos={'absolute'}
-                bg={colors.gray[8]}
-                px={4}
-                fw={700}
-                top={126}
-                left={-2}
-                bdrs={6}
-              >
-                100%
-              </Text>
-              <svg
-                width="18"
-                height="55"
-                style={{ position: 'absolute', top: 34, left: 8 }}
-              >
-                <defs>
-                  <marker
-                    id="arrowhead"
-                    markerWidth="4"
-                    markerHeight="4"
-                    refX="2"
-                    refY="2"
-                    orient="auto"
-                  >
-                    <polygon points="0 0, 4 2, 0 4" fill={colors.gray[0]} />
-                  </marker>
-                </defs>
+      <Box>
+        <LaunchPhase />
 
-                <line
-                  x1="6"
-                  y1="0"
-                  x2="6"
-                  y2="50"
-                  stroke={colors.gray[0]}
-                  strokeWidth="1"
-                  markerEnd="url(#arrowhead)"
-                  strokeDasharray={'4 4'}
-                />
-              </svg>
-            </Box>
-          </Box>
-          <Box pos={'absolute'} right={120}>
-            <Box pos={'relative'}>
-              <Avatar size={28} src="" pos={'absolute'} bg="blue" left={0} />
-              <Avatar
-                size={28}
-                src=""
-                pos={'absolute'}
-                bg="blue"
-                left={-30}
-                top={92}
-              />
-              <Avatar
-                size={28}
-                src=""
-                pos={'absolute'}
-                bg="blue"
-                left={30}
-                top={92}
-              />
-              <Group
-                pos="absolute"
-                top={40}
-                left={28}
-                style={{ zIndex: 10 }}
-                wrap="nowrap"
-                gap={2}
-              >
-                <Text fw={700} fz="xl" c={colors.red[7]}>
-                  +
+        <Paper>
+          <Group justify="center" mb="md">
+            <Box>
+              <Group gap="xs">
+                <Text fz="sm" c={colors.gray[3]}>
+                  Your SUP XP
                 </Text>
-                <Heart color={colors.red[7]} fill={colors.red[7]} size={20} />
+                <Tooltip label="LKJLK  KJ LKJ L KJ KJ LKJ LKJ LK J">
+                  <InfoIcon
+                    color={colors.gray[0]}
+                    size={18}
+                    style={{ transform: 'translateY(-1px)' }}
+                  />
+                </Tooltip>
               </Group>
-              <Text
-                fz="xs"
-                pos={'absolute'}
-                bg={colors.gray[8]}
-                fw={700}
-                px={4}
-                top={126}
-                left={-28}
-                bdrs={6}
-              >
-                50%
-              </Text>
-              <Text
-                fz="xs"
-                pos={'absolute'}
-                bg={colors.gray[8]}
-                px={4}
-                fw={700}
-                top={126}
-                left={28}
-                bdrs={6}
-              >
-                50%
-              </Text>
-              <svg
-                width="60"
-                height="120"
-                style={{ position: 'absolute', top: 25, left: 28 }}
-              >
-                <defs>
-                  <marker
-                    id="arrowhead"
-                    markerWidth="4"
-                    markerHeight="4"
-                    refX="2"
-                    refY="2"
-                    orient="auto"
-                  >
-                    <polygon points="0 0, 4 2, 0 4" fill="white" />
-                  </marker>
-                </defs>
-                <path
-                  d="M4 4 C30 25, 25 50, 20 60"
-                  stroke="white"
-                  stroke-width="1"
-                  stroke-dasharray="4 4"
-                  fill="none"
-                  marker-end="url(#arrowhead)"
-                />
-              </svg>
-              <svg
-                width="60"
-                height="120"
-                style={{
-                  position: 'absolute',
-                  top: 25,
-                  left: -60,
-                  transform: 'scaleX(-1)',
-                }}
-              >
-                <defs>
-                  <marker
-                    id="arrowhead"
-                    markerWidth="4"
-                    markerHeight="4"
-                    refX="2"
-                    refY="2"
-                    orient="auto"
-                  >
-                    <polygon points="0 0, 4 2, 0 4" fill="white" />
-                  </marker>
-                </defs>
-                <path
-                  d="M4 4 C30 25, 25 50, 20 60"
-                  stroke="white"
-                  stroke-width="1"
-                  stroke-dasharray="4 4"
-                  fill="none"
-                  marker-end="url(#arrowhead)"
-                />
-              </svg>
+              <Group gap="xs">
+                <Text fz={32}>450</Text>
+                <ActionIcon>
+                  <RefreshCw size={22} />
+                </ActionIcon>
+              </Group>
             </Box>
-          </Box>
-        </Box>
-        <Button size="lg">Join us</Button>
-      </Paper>
+          </Group>
+          <Stack gap={14}>
+            <Group wrap="nowrap" align="start">
+              <CheckCheck
+                size={24}
+                strokeWidth={2}
+                style={{
+                  stroke: 'url(#beamr-gradient)',
+                  fill: 'none',
+                }}
+              />
+              <Box>
+                <Text c={colors.gray[1]} mb={2}>
+                  Install app with notifications (100 XP)
+                </Text>
+                <Text c={colors.blue[5]} fz="sm" td="underline">
+                  Click here to install the app
+                </Text>
+              </Box>
+            </Group>
+            <Group wrap="nowrap" align="start">
+              <CheckCheck
+                size={24}
+                strokeWidth={2}
+                style={{
+                  stroke: 'url(#beamr-gradient)',
+                  fill: 'none',
+                }}
+              />
+              <Box>
+                <Text c={colors.gray[1]} mb={2}>
+                  Follow @beamr (100 XP)
+                </Text>
+                <Text c={colors.blue[5]} fz="sm" td="underline">
+                  Click here to follow @beamr
+                </Text>
+              </Box>
+            </Group>
+            <Group wrap="nowrap" align="start">
+              <CheckCheck
+                size={24}
+                strokeWidth={2}
+                style={{
+                  stroke: 'url(#beamr-gradient)',
+                  fill: 'none',
+                }}
+              />
+              <Box>
+                <Text c={colors.gray[1]} mb={2}>
+                  Join /beamr (100 XP)
+                </Text>
+                <Text c={colors.blue[5]} fz="sm" td="underline">
+                  Click here to join /beamr
+                </Text>
+              </Box>
+            </Group>
+            <Group wrap="nowrap" align="start">
+              <Infinity
+                size={24}
+                strokeWidth={2}
+                style={{
+                  stroke: 'url(#beamr-gradient)',
+                  fill: 'none',
+                }}
+              />
+
+              <Text c={colors.gray[1]} mb={2}>
+                Refer other quality users (150 XP/user)
+              </Text>
+            </Group>
+            <Group wrap="nowrap" align="start">
+              <Infinity
+                size={24}
+                strokeWidth={2}
+                style={{
+                  stroke: 'url(#beamr-gradient)',
+                  fill: 'none',
+                }}
+              />
+              <Text c={colors.gray[1]} mb={2} style={{ flex: 1 }}>
+                Engage, share, grow, and use Beamr (+++ XP, bots & slop need not
+                apply)
+              </Text>
+            </Group>
+            <Text fz="sm" c={colors.gray[3]} mb="md">
+              Changes may take time to update in the UI.
+            </Text>
+            <Button size="lg">Share @beamr</Button>
+            <Group justify="center">
+              <Group gap={4} style={{ cursor: 'pointer' }}>
+                <Copy size={14} />
+                <Text fz="sm">Copy referral code</Text>
+              </Group>
+            </Group>
+          </Stack>
+        </Paper>
+      </Box>
     </PageLayout>
   );
+
+  // return (
+  //   <PageLayout>
+  //     <Greeting />
+  //   </PageLayout>
+  // );
 
   // <svg width="200" height="60">
   //   <defs>
