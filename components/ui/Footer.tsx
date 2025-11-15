@@ -7,7 +7,7 @@ const DEFAULT_NAV_LINKS = [
   },
   {
     link: '/leaderboard',
-    Icon: Trophy,
+    Icon: SfLogo,
   },
   {
     link: '/info',
@@ -19,6 +19,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Box, Group, Button, ActionIcon } from '@mantine/core';
 import { Home, Info, Trophy } from 'lucide-react';
 import classes from '@/styles/layout.module.css';
+import { SfLogo } from './SFLogo';
 
 export default function Footer() {
   const pathname = usePathname();

@@ -21,6 +21,7 @@ import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import RefreshButton from '@/components/ui/RefreshButton';
 import { PageLayout } from '../ui/PageLayout';
+import { SfLogo } from '../ui/SFLogo';
 
 export interface LeaderboardEntry {
   fid: string;
@@ -60,9 +61,12 @@ export default function Leaderboard() {
   return (
     <PageLayout>
       <Paper mb="lg">
-        <Text fz="lg" fw={500} mb="lg">
-          Leaderboard
-        </Text>
+        <Group mb="lg">
+          <Text fz="lg" fw={500}>
+            Leaderboard
+          </Text>
+          <SfLogo />
+        </Group>
         <TableHeader />
         <ScrollArea h={400}>
           <Stack gap={'md'}>
