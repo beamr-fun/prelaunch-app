@@ -15,6 +15,7 @@ import {
   Button,
   Tooltip,
   ActionIcon,
+  List,
 } from '@mantine/core';
 import { useUser } from '@/contexts/user-context';
 import { usePoints } from '@/contexts/points-context';
@@ -63,7 +64,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <Paper>
+      <Paper mb="md">
         <Text fz="lg" mb="md">
           Not another tipping tap
         </Text>
@@ -72,6 +73,18 @@ export default function Home() {
           sounds trivial but will have profound effects stemming the slop tide.
         </Text>
         <Diagram />
+      </Paper>
+      <Paper>
+        <Text fz="lg" mb="md">
+          Beamr helps you shape your feed
+        </Text>
+        <List mb="lg">
+          <List.Item>{'Relational > Transactional'}</List.Item>
+          <List.Item>{'Intentional > Mindless'}</List.Item>
+          <List.Item>{'Taste > Aggregation'}</List.Item>
+          <List.Item>{'Sustainable > Extractive'}</List.Item>
+        </List>
+        <Button size="lg">Learn More</Button>
       </Paper>
     </PageLayout>
   );
