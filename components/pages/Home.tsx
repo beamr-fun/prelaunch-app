@@ -11,6 +11,12 @@ import {
   TextInput,
   Image,
   Box,
+  Group,
+  List,
+  Flex,
+  Avatar,
+  useMantineTheme,
+  Button,
 } from '@mantine/core';
 import { useUser } from '@/contexts/user-context';
 import { usePoints } from '@/contexts/points-context';
@@ -18,6 +24,7 @@ import { getLaunchDate } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { useAccount } from 'wagmi';
 import { PageLayout } from '../ui/PageLayout';
+import { Heart } from 'lucide-react';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -28,6 +35,7 @@ export default function Home() {
     confirmWallet,
     refetchPoints,
   } = usePoints();
+  const { colors } = useMantineTheme();
   const { address } = useAccount();
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [isCooldown, setIsCooldown] = useState(false);
@@ -65,11 +73,241 @@ export default function Home() {
         alt="Beamr Logo"
         width={80}
         height={80}
-        mb="xl"
+        mb="md"
         fit="contain"
       />
+      <Text fz="sm" ta="center" mb="xl">
+        A dynamic micro-subscription service
+      </Text>
+      <Paper>
+        <Text mb={'sm'}>
+          Beamr is the easiest way to sustainably reward the people who make
+          your feed worth scrolling.
+        </Text>
+        <List mb={24}>
+          <List.Item>You set monthly budget</List.Item>
+          <List.Item>
+            We dynamically split that stream based on your interactions (likes,
+            comments, follows, etc.)
+          </List.Item>
+          <List.Item>
+            Your favorite Farcasters start earning instantly & consistently
+          </List.Item>
+        </List>
+        <Box pos="relative" h={150} mb="md">
+          <Box pos="absolute" left={60}>
+            <Box pos={'relative'}>
+              <Avatar size={28} src="" pos={'absolute'} bg="blue" left={0} />
+              <Avatar
+                size={28}
+                src=""
+                pos={'absolute'}
+                bg="blue"
+                left={0}
+                top={92}
+              />
+              <Group
+                pos="absolute"
+                top={40}
+                left={-9}
+                style={{ zIndex: 10 }}
+                wrap="nowrap"
+                gap={2}
+              >
+                <Text fw={700} fz="xl" c={colors.red[7]}>
+                  +
+                </Text>
+                <Heart color={colors.red[7]} fill={colors.red[7]} size={20} />
+              </Group>
+              <Text
+                fz="xs"
+                pos={'absolute'}
+                bg={colors.gray[8]}
+                px={4}
+                fw={700}
+                top={126}
+                left={-2}
+                bdrs={6}
+              >
+                100%
+              </Text>
+              <svg
+                width="18"
+                height="55"
+                style={{ position: 'absolute', top: 34, left: 8 }}
+              >
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="4"
+                    markerHeight="4"
+                    refX="2"
+                    refY="2"
+                    orient="auto"
+                  >
+                    <polygon points="0 0, 4 2, 0 4" fill={colors.gray[0]} />
+                  </marker>
+                </defs>
+
+                <line
+                  x1="6"
+                  y1="0"
+                  x2="6"
+                  y2="50"
+                  stroke={colors.gray[0]}
+                  strokeWidth="1"
+                  markerEnd="url(#arrowhead)"
+                  strokeDasharray={'4 4'}
+                />
+              </svg>
+            </Box>
+          </Box>
+          <Box pos={'absolute'} right={120}>
+            <Box pos={'relative'}>
+              <Avatar size={28} src="" pos={'absolute'} bg="blue" left={0} />
+              <Avatar
+                size={28}
+                src=""
+                pos={'absolute'}
+                bg="blue"
+                left={-30}
+                top={92}
+              />
+              <Avatar
+                size={28}
+                src=""
+                pos={'absolute'}
+                bg="blue"
+                left={30}
+                top={92}
+              />
+              <Group
+                pos="absolute"
+                top={40}
+                left={28}
+                style={{ zIndex: 10 }}
+                wrap="nowrap"
+                gap={2}
+              >
+                <Text fw={700} fz="xl" c={colors.red[7]}>
+                  +
+                </Text>
+                <Heart color={colors.red[7]} fill={colors.red[7]} size={20} />
+              </Group>
+              <Text
+                fz="xs"
+                pos={'absolute'}
+                bg={colors.gray[8]}
+                fw={700}
+                px={4}
+                top={126}
+                left={-28}
+                bdrs={6}
+              >
+                50%
+              </Text>
+              <Text
+                fz="xs"
+                pos={'absolute'}
+                bg={colors.gray[8]}
+                px={4}
+                fw={700}
+                top={126}
+                left={28}
+                bdrs={6}
+              >
+                50%
+              </Text>
+              <svg
+                width="60"
+                height="120"
+                style={{ position: 'absolute', top: 25, left: 28 }}
+              >
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="4"
+                    markerHeight="4"
+                    refX="2"
+                    refY="2"
+                    orient="auto"
+                  >
+                    <polygon points="0 0, 4 2, 0 4" fill="white" />
+                  </marker>
+                </defs>
+                <path
+                  d="M4 4 C30 25, 25 50, 20 60"
+                  stroke="white"
+                  stroke-width="1"
+                  stroke-dasharray="4 4"
+                  fill="none"
+                  marker-end="url(#arrowhead)"
+                />
+              </svg>
+              <svg
+                width="60"
+                height="120"
+                style={{
+                  position: 'absolute',
+                  top: 25,
+                  left: -60,
+                  transform: 'scaleX(-1)',
+                }}
+              >
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="4"
+                    markerHeight="4"
+                    refX="2"
+                    refY="2"
+                    orient="auto"
+                  >
+                    <polygon points="0 0, 4 2, 0 4" fill="white" />
+                  </marker>
+                </defs>
+                <path
+                  d="M4 4 C30 25, 25 50, 20 60"
+                  stroke="white"
+                  stroke-width="1"
+                  stroke-dasharray="4 4"
+                  fill="none"
+                  marker-end="url(#arrowhead)"
+                />
+              </svg>
+            </Box>
+          </Box>
+        </Box>
+        <Button size="lg">Join us</Button>
+      </Paper>
     </PageLayout>
   );
+
+  // <svg width="200" height="60">
+  //   <defs>
+  //     <marker
+  //       id="arrowhead"
+  //       markerWidth="6"
+  //       markerHeight="6"
+  //       refX="5"
+  //       refY="3"
+  //       orient="auto"
+  //     >
+  //       <polygon points="0 0, 6 3, 0 6" fill="black" />
+  //     </marker>
+  //   </defs>
+
+  //   <line
+  //     x1="10"
+  //     y1="30"
+  //     x2="180"
+  //     y2="30"
+  //     stroke="black"
+  //     stroke-width="2"
+  //     stroke-dasharray="4 4"
+  //     marker-end="url(#arrowhead)"
+  //   />
+  // </svg>;
 
   // if (loadingUserOrMiniApp) {
   //   return (
