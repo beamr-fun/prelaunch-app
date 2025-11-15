@@ -1,3 +1,5 @@
+'use-client';
+
 import { Avatar, Box, Group, Text, useMantineTheme } from '@mantine/core';
 import { Heart } from 'lucide-react';
 import React from 'react';

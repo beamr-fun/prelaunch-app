@@ -17,7 +17,7 @@ const DEFAULT_NAV_LINKS = [
 
 import { usePathname, useRouter } from 'next/navigation';
 import { Box, Group, Button, ActionIcon } from '@mantine/core';
-import { Globe, Home, Info, Trophy } from 'lucide-react';
+import { Home, Info, Trophy } from 'lucide-react';
 import classes from '@/styles/layout.module.css';
 
 export default function Footer() {
