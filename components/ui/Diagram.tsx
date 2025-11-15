@@ -167,10 +167,10 @@ const Diagram = () => {
             <path
               d="M4 4 C30 25, 25 50, 20 60"
               stroke="white"
-              stroke-width="1"
-              stroke-dasharray="4 4"
+              strokeWidth="1"
+              strokeDasharray="4 4"
               fill="none"
-              marker-end="url(#arrowhead)"
+              markerEnd="url(#arrowhead)"
             />
           </svg>
           <svg
@@ -198,10 +198,10 @@ const Diagram = () => {
             <path
               d="M4 4 C30 25, 25 50, 20 60"
               stroke="white"
-              stroke-width="1"
-              stroke-dasharray="4 4"
+              strokeWidth="1"
+              strokeDasharray="4 4"
               fill="none"
-              marker-end="url(#arrowhead)"
+              markerEnd="url(#arrowhead)"
             />
           </svg>
         </Box>
