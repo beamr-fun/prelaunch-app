@@ -16,8 +16,9 @@ import {
   Box,
   Button,
   ScrollArea,
+  ActionIcon,
 } from '@mantine/core';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, RefreshCwIcon } from 'lucide-react';
 import Link from 'next/link';
 import RefreshButton from '@/components/ui/RefreshButton';
 import { PageLayout } from '../ui/PageLayout';
@@ -61,11 +62,16 @@ export default function Leaderboard() {
   return (
     <PageLayout>
       <Paper mb="lg">
-        <Group mb="lg">
-          <Text fz="lg" fw={500}>
-            Leaderboard
-          </Text>
-          <SfLogo />
+        <Group mb="lg" justify="space-between">
+          <Group>
+            <Text fz="lg" fw={500}>
+              Leaderboard
+            </Text>
+            <SfLogo />
+          </Group>
+          <ActionIcon>
+            <RefreshCwIcon size={20} />
+          </ActionIcon>
         </Group>
         <TableHeader />
         <ScrollArea h={400}>

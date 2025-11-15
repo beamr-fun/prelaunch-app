@@ -23,11 +23,13 @@ import { getLaunchDate } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { useAccount } from 'wagmi';
 import { PageLayout } from '../ui/PageLayout';
+import classes from '@/styles/animation.module.css';
 import { CheckCheck, Copy, Infinity, InfoIcon, RefreshCw } from 'lucide-react';
 import LaunchPhase from '../ui/LaunchPhase';
 import Checklist from '../ui/Checklist';
 import { WalletSelect } from '../ui/WalletSelect';
 import Diagram from '../ui/Diagram';
+import Greeting from '../ui/Greeting';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -40,6 +42,10 @@ export default function Home() {
   } = usePoints();
   const { colors } = useMantineTheme();
   const { address } = useAccount();
+
+  const [hasGreeted, setHasGreeted] = useState(
+    localStorage.getItem('hasGreeted') === 'true'
+  );
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [isCooldown, setIsCooldown] = useState(false);
   const launchDate = getLaunchDate();
@@ -47,6 +53,12 @@ export default function Home() {
   const currentPoints = userPoints?.totalPoints || 0;
   const loadingUserOrMiniApp =
     isLoading || walletLoading || !isMiniAppReady || currentUser?.isLoading;
+
+  console.log('loadingUserOrMiniApp', loadingUserOrMiniApp);
+  console.log('isLoading', isLoading);
+  console.log('walletLoading', walletLoading);
+  console.log('!isMiniAppReady', !isMiniAppReady);
+  console.log('currentUser?.isLoading', currentUser?.isLoading);
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;
@@ -62,8 +74,42 @@ export default function Home() {
     }, 10000);
   }, [currentUser?.data, isCooldown, refetchPoints, userPoints]);
 
-  return <></>;
+  if (loadingUserOrMiniApp)
+    return (
+      <PageLayout>
+        <Image
+          src="./images/beamrLogo.png"
+          alt="Beamr Logo"
+          width={80}
+          height={80}
+          mb="md"
+          fit="contain"
+          className={classes.loadingEffect}
+        />
+      </PageLayout>
+    );
 
+  if (!hasGreeted) {
+    return (
+      <PageLayout>
+        <Greeting />
+      </PageLayout>
+    );
+  }
+
+  if (currentUser?.data && !userPoints?.walletConfirmed) {
+    return (
+      <PageLayout>
+        <WalletSelect />
+      </PageLayout>
+    );
+  }
+
+  return (
+    <PageLayout>
+      <Checklist />
+    </PageLayout>
+  );
   // return (
   //   <PageLayout>
   //     <WalletSelect />
