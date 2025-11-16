@@ -19,6 +19,7 @@ import {
 import { RefreshCwIcon } from 'lucide-react';
 import { PageLayout } from '../ui/PageLayout';
 import { SfLogo } from '../ui/SFLogo';
+import sdk from '@farcaster/miniapp-sdk';
 
 export interface LeaderboardEntry {
   fid: string;
@@ -55,6 +56,12 @@ export default function Leaderboard() {
   const handleRefetch = () => {
     leaderboardData = [];
     refetch();
+  };
+
+  const handleSupLink = async () => {
+    await sdk.actions.openUrl(
+      'https://farcaster.xyz/miniapps/1NTJKdUZCsPI/superfluid-claim-app'
+    );
   };
 
   return (
@@ -119,7 +126,9 @@ export default function Leaderboard() {
           </Text>
           <Text>Engage, share, grow, and use Beamr: you’ll get rewarded.</Text>
         </Stack>
-        <Button size="lg">Claim SUP XP</Button>
+        <Button size="lg" onClick={handleSupLink}>
+          Claim SUP XP
+        </Button>
       </Paper>
     </PageLayout>
   );

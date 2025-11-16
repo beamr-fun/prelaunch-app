@@ -48,7 +48,6 @@ const Checklist = ({
   };
 
   const handleJoinClick = async () => {
-    console.log('Joining channel...');
     await sdk.actions.openUrl('https://farcaster.xyz/~/channel/beamr');
   };
 
