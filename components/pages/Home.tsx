@@ -10,15 +10,17 @@ import classes from '@/styles/animation.module.css';
 import Checklist from '../ui/Checklist';
 import { WalletSelect } from '../ui/WalletSelect';
 import Greeting from '../ui/Greeting';
+import ErrorDisplay from '../ui/ErrorDisplay';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
-  const { user, isLoading } = useUser();
+  const { user, isLoading, error: userContextError } = useUser();
   const {
     userPoints,
     isLoading: walletLoading,
     confirmWallet,
     refetchPoints,
+    error: pointsError,
   } = usePoints();
 
   const [hasGreeted, setHasGreeted] = useState(false);
@@ -71,6 +73,44 @@ export default function Home() {
         />
       </PageLayout>
     );
+
+  if (userContextError || user.error) {
+    return (
+      <PageLayout>
+        <Image
+          src="./images/beamrLogo.png"
+          alt="Beamr Logo"
+          width={80}
+          height={80}
+          mb="md"
+          fit="contain"
+        />
+        <ErrorDisplay
+          title={'Error loading User Data'}
+          errorMsg={userContextError?.message || user.error?.message}
+        />
+      </PageLayout>
+    );
+  }
+
+  if (pointsError) {
+    return (
+      <PageLayout>
+        <Image
+          src="./images/beamrLogo.png"
+          alt="Beamr Logo"
+          width={80}
+          height={80}
+          mb="md"
+          fit="contain"
+        />
+        <ErrorDisplay
+          title={'Error loading Points Data'}
+          errorMsg={pointsError}
+        />
+      </PageLayout>
+    );
+  }
 
   if (!hasGreeted) {
     return (
