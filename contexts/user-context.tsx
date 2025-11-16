@@ -65,7 +65,6 @@ export const UserProvider = ({
     enabled: !!context, // Only fetch when in mini app context
     ...{
       onSuccess: () => {
-        console.log('/me');
         setIsSignedIn(true);
       },
     },
@@ -78,7 +77,6 @@ export const UserProvider = ({
     method: 'POST',
     body: (variables) => variables,
     onSuccess: (data) => {
-      console.log('/sign-in');
       setIsSignedIn(true);
       setIsLoading(false);
       refetchUser();

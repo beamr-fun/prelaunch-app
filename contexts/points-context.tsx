@@ -90,11 +90,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
         credentials: 'include', // Include cookies for authentication
       });
 
-      console.log('response', response);
-
-      const error = await response.json();
-
-      console.log('error', error);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -134,7 +129,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
       const miniAppAdded = miniAppContext?.client?.added;
       const newContext = sdk.context;
-      console.log('newContext', newContext);
+
       const response = await fetch('/api/users/confirm-wallet', {
         method: 'POST',
         headers: {

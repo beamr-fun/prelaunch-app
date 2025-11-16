@@ -162,13 +162,15 @@ const Checklist = ({
               />
             </Tooltip>
           </Group>
-          <Group gap="xs" justify="center" mb="sm">
+          <Group gap="xs" justify="center">
             <PointsDisplay points={currentPoints} />
             <ActionIcon onClick={handleRefresh} disabled={isCoolingDown}>
               <RefreshCw size={22} />
             </ActionIcon>
           </Group>
-
+          <Text ta="center" fz="sm" c={colors.gray[3]} mb="md">
+            (Changes may take time to update).
+          </Text>
           <Stack gap={14}>
             <ChecklistItem
               checked={hasAddedApp || false}
@@ -215,9 +217,7 @@ const Checklist = ({
                 apply)
               </Text>
             </Group>
-            <Text fz="sm" c={colors.gray[3]} mb="md">
-              Changes may take time to update in the UI.
-            </Text>
+
             <Button size="lg" onClick={handleCastClick}>
               Share @beamr
             </Button>

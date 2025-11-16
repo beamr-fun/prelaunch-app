@@ -3,7 +3,7 @@ import React from 'react';
 
 const LaunchPhase = () => {
   return (
-    <Box mt="md">
+    <Box mt="xl">
       <Group justify="center" mb={2}>
         <Box pos="relative" w={235} h={20}>
           <Box

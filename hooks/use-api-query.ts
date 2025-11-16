@@ -1,9 +1,9 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
 interface UseApiQueryOptions<TData, TBody = unknown>
-  extends Omit<UseQueryOptions<TData>, "queryFn"> {
+  extends Omit<UseQueryOptions<TData>, 'queryFn'> {
   url: string;
   method?: HttpMethod;
   body?: TBody;
@@ -16,7 +16,7 @@ export const useApiQuery = <TData, TBody = unknown>(
 ) => {
   const {
     url,
-    method = "GET",
+    method = 'GET',
     body,
     isProtected = false,
     enabled = true,
@@ -29,15 +29,13 @@ export const useApiQuery = <TData, TBody = unknown>(
       const response = await fetch(url, {
         method,
         headers: {
-          ...(body && { "Content-Type": "application/json" }),
+          ...(body && { 'Content-Type': 'application/json' }),
         },
         ...(isProtected && {
-          credentials: "include",
+          credentials: 'include',
         }),
         ...(body && { body: JSON.stringify(body) }),
       });
-
-      console.log("response", response);
 
       if (!response.ok) {
         throw new Error(`API Error: ${response.status}`);
