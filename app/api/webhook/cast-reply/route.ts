@@ -113,10 +113,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check that the message includes the hashtag '#prebeams'
-    if (!text.includes("#prebeams")) {
+    // Check that the message includes the hashtag '#beamrsup'
+    if (!text.includes("#beamrsup")) {
       return NextResponse.json(
-        { error: "Cast does not contain required hashtag #prebeams" },
+        { error: "Cast does not contain required hashtag #beamrsup" },
         { status: 400 }
       );
     }
@@ -162,9 +162,9 @@ export async function POST(request: NextRequest) {
       user = newUser;
     }
 
-    // Extract points amount from cast text (look for number after #prebeams)
+    // Extract points amount from cast text (look for number after #beamrsup)
     let pointsAmount: number = POINT_VALUES.CAST;
-    const hashtagMatch = text.match(/#prebeams\s*(\d+)/i);
+    const hashtagMatch = text.match(/#beamrsup\s*(\d+)/i);
     if (hashtagMatch && hashtagMatch[1]) {
       const extractedPoints = parseInt(hashtagMatch[1], 10);
       if (!isNaN(extractedPoints) && extractedPoints > 0) {
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
         amount: pointsAmount,
         source: "cast",
         metadata: {
-          description: `Received reply from @beamr with #prebeams (${pointsAmount} points)`,
+          description: `Received reply from @beamr with #beamrsup (${pointsAmount} points)`,
           cast_hash: webhookData.data.hash,
           author_username: author.username,
           extracted_points: pointsAmount,
