@@ -89,6 +89,12 @@ export function PointsProvider({ children }: PointsProviderProps) {
       const response = await fetch(url, {
         credentials: 'include', // Include cookies for authentication
       });
+
+      console.log('response', response);
+
+      const error = await response.json();
+
+      console.log('error', error);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -205,7 +211,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
       try {
         const userData = await fetchUserProfile();
-        console.log('userData', userData);
 
         setState((prev) => ({
           ...prev,

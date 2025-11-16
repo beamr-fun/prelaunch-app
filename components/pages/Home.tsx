@@ -97,24 +97,24 @@ export default function Home() {
     );
   }
 
-  if (pointsError) {
-    return (
-      <PageLayout>
-        <Image
-          src="./images/beamrLogo.png"
-          alt="Beamr Logo"
-          width={80}
-          height={80}
-          mb="md"
-          fit="contain"
-        />
-        <ErrorDisplay
-          title={'Error loading Points Data'}
-          errorMsg={pointsError}
-        />
-      </PageLayout>
-    );
-  }
+  // if (pointsError) {
+  //   return (
+  //     <PageLayout>
+  //       <Image
+  //         src="./images/beamrLogo.png"
+  //         alt="Beamr Logo"
+  //         width={80}
+  //         height={80}
+  //         mb="md"
+  //         fit="contain"
+  //       />
+  //       <ErrorDisplay
+  //         title={'Error loading Points Data'}
+  //         errorMsg={pointsError}
+  //       />
+  //     </PageLayout>
+  //   );
+  // }
 
   if (!hasGreeted) {
     return (
