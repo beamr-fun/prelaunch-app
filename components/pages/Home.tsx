@@ -48,17 +48,10 @@ export default function Home() {
   );
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [isCooldown, setIsCooldown] = useState(false);
-  const launchDate = getLaunchDate();
   const currentUser = user;
-  const currentPoints = userPoints?.totalPoints || 0;
+
   const loadingUserOrMiniApp =
     isLoading || walletLoading || !isMiniAppReady || currentUser?.isLoading;
-
-  console.log('loadingUserOrMiniApp', loadingUserOrMiniApp);
-  console.log('isLoading', isLoading);
-  console.log('walletLoading', walletLoading);
-  console.log('!isMiniAppReady', !isMiniAppReady);
-  console.log('currentUser?.isLoading', currentUser?.isLoading);
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;
@@ -73,6 +66,11 @@ export default function Home() {
       setIsCooldown(false);
     }, 10000);
   }, [currentUser?.data, isCooldown, refetchPoints, userPoints]);
+
+  const confirmGreeted = () => {
+    localStorage.setItem('hasGreeted', 'true');
+    setHasGreeted(true);
+  };
 
   if (loadingUserOrMiniApp)
     return (
@@ -92,7 +90,7 @@ export default function Home() {
   if (!hasGreeted) {
     return (
       <PageLayout>
-        <Greeting />
+        <Greeting confirmGreeted={confirmGreeted} />
       </PageLayout>
     );
   }
@@ -100,7 +98,13 @@ export default function Home() {
   if (currentUser?.data && !userPoints?.walletConfirmed) {
     return (
       <PageLayout>
-        <WalletSelect />
+        <WalletSelect
+          onWalletSelect={(addr: string) => {
+            setSelectedWallet(addr);
+          }}
+          selectedWallet={selectedWallet}
+          confirmWallet={confirmWallet}
+        />
       </PageLayout>
     );
   }
@@ -110,49 +114,6 @@ export default function Home() {
       <Checklist />
     </PageLayout>
   );
-  // return (
-  //   <PageLayout>
-  //     <WalletSelect />
-  //   </PageLayout>
-  // );
-
-  // return (
-  //   <PageLayout>
-  //     <Checklist />
-  //   </PageLayout>
-  // );
-
-  // return (
-  //   <PageLayout>
-  //     <Greeting />
-  //   </PageLayout>
-  // );
-
-  // <svg width="200" height="60">
-  //   <defs>
-  //     <marker
-  //       id="arrowhead"
-  //       markerWidth="6"
-  //       markerHeight="6"
-  //       refX="5"
-  //       refY="3"
-  //       orient="auto"
-  //     >
-  //       <polygon points="0 0, 6 3, 0 6" fill="black" />
-  //     </marker>
-  //   </defs>
-
-  //   <line
-  //     x1="10"
-  //     y1="30"
-  //     x2="180"
-  //     y2="30"
-  //     stroke="black"
-  //     stroke-width="2"
-  //     stroke-dasharray="4 4"
-  //     marker-end="url(#arrowhead)"
-  //   />
-  // </svg>;
 
   // if (loadingUserOrMiniApp) {
   //   return (

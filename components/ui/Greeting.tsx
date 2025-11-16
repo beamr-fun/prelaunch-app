@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Image, List, Paper, Text } from '@mantine/core';
 import Diagram from './Diagram';
 
-const Greeting = () => {
+const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
   return (
     <Box>
       <Image
@@ -32,7 +32,9 @@ const Greeting = () => {
           </List.Item>
         </List>
         <Diagram />
-        <Button size="lg">Join us</Button>
+        <Button size="lg" onClick={confirmGreeted}>
+          Join us
+        </Button>
       </Paper>
     </Box>
   );

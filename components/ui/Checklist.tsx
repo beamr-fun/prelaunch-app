@@ -1,10 +1,8 @@
 import React from 'react';
-import { PageLayout } from './PageLayout';
 import {
   ActionIcon,
   Box,
   Button,
-  CopyButton,
   Group,
   Image,
   Paper,
@@ -15,9 +13,13 @@ import {
 } from '@mantine/core';
 import LaunchPhase from './LaunchPhase';
 import { CheckCheck, InfoIcon, RefreshCw, Infinity, Copy } from 'lucide-react';
+import PointsDisplay from './PointsDisplay';
+import { usePoints } from '@/contexts/points-context';
 
 const Checklist = () => {
   const { colors } = useMantineTheme();
+  const { userPoints } = usePoints();
+  const currentPoints = userPoints?.totalPoints || 0;
   return (
     <Box>
       <Image
@@ -31,28 +33,25 @@ const Checklist = () => {
       <Box>
         <LaunchPhase />
         <Paper>
-          <Group justify="center" mb="md">
-            <Box>
-              <Group gap="xs">
-                <Text fz="sm" c={colors.gray[3]}>
-                  Your SUP XP
-                </Text>
-                <Tooltip label="LKJLK  KJ LKJ L KJ KJ LKJ LKJ LK J">
-                  <InfoIcon
-                    color={colors.gray[0]}
-                    size={18}
-                    style={{ transform: 'translateY(-1px)' }}
-                  />
-                </Tooltip>
-              </Group>
-              <Group gap="xs">
-                <Text fz={32}>450</Text>
-                <ActionIcon>
-                  <RefreshCw size={22} />
-                </ActionIcon>
-              </Group>
-            </Box>
+          <Group gap="xs" justify="center">
+            <Text fz="sm" c={colors.gray[3]}>
+              Your SUP XP
+            </Text>
+            <Tooltip label="LKJLK  KJ LKJ L KJ KJ LKJ LKJ LK J">
+              <InfoIcon
+                color={colors.gray[0]}
+                size={18}
+                style={{ transform: 'translateY(-1px)' }}
+              />
+            </Tooltip>
           </Group>
+          <Group gap="xs" justify="center" mb="sm">
+            <PointsDisplay points={currentPoints} />
+            <ActionIcon>
+              <RefreshCw size={22} />
+            </ActionIcon>
+          </Group>
+
           <Stack gap={14}>
             <Group wrap="nowrap" align="start">
               <CheckCheck
