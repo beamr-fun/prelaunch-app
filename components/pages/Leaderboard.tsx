@@ -12,6 +12,9 @@ import {
   Button,
   ScrollArea,
   ActionIcon,
+  Container,
+  Loader,
+  Flex,
 } from '@mantine/core';
 import { RefreshCwIcon } from 'lucide-react';
 import { PageLayout } from '../ui/PageLayout';
@@ -47,6 +50,8 @@ export default function Leaderboard() {
 
   const isLoadingOrRefetching = isLoading || isRefetching;
 
+  const noUsersFound = leaderboardData.length == 0;
+
   const handleRefetch = () => {
     leaderboardData = [];
     refetch();
@@ -69,8 +74,22 @@ export default function Leaderboard() {
         <TableHeader />
         <ScrollArea h={250}>
           <Stack gap={'md'}>
-            {!isLoadingOrRefetching &&
-              leaderboardData.length > 0 &&
+            {isLoadingOrRefetching ? (
+              <Flex h={200} align={'center'} justify="center">
+                <Loader color="var(--glass-thick)" />
+              </Flex>
+            ) : noUsersFound ? (
+              <Flex h={200} align={'center'} justify="center">
+                <Box>
+                  <Text fz="lg" fw={500} ta="center">
+                    No Users Found
+                  </Text>
+                  <Text ta="center">
+                    {"There aren't any users with points"}
+                  </Text>
+                </Box>
+              </Flex>
+            ) : (
               leaderboardData.map((entry) => (
                 <TableRow
                   key={entry.fid}
@@ -80,7 +99,8 @@ export default function Leaderboard() {
                   rank={entry.rank}
                   username={entry.username}
                 />
-              ))}
+              ))
+            )}
           </Stack>
         </ScrollArea>
       </Paper>

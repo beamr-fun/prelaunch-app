@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Image } from '@mantine/core';
+import { Group, Image, Loader } from '@mantine/core';
 import { useUser } from '@/contexts/user-context';
 import { usePoints } from '@/contexts/points-context';
 import { useMiniApp } from '@/contexts/miniapp-context';
@@ -67,10 +67,14 @@ export default function Home() {
           alt="Beamr Logo"
           width={80}
           height={80}
-          mb="md"
+          // mb="md"
           fit="contain"
           className={classes.loadingEffect}
+          mb={150}
         />
+        <Group justify="center">
+          <Loader color="var(--glass-thick)" />
+        </Group>
       </PageLayout>
     );
 

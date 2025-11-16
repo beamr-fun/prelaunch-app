@@ -3,7 +3,6 @@
 import React from 'react';
 import { Box, Button, List, Paper, Text } from '@mantine/core';
 import Diagram from '../ui/Diagram';
-// import Diagram from '../ui/Diagram';
 
 export default function Info() {
   return (
