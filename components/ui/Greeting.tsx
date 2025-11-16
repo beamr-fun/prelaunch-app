@@ -1,8 +1,17 @@
 import React from 'react';
-import { Box, Button, Image, List, Paper, Text } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Image,
+  List,
+  Paper,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import Diagram from './Diagram';
 
 const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
+  const { colors } = useMantineTheme();
   return (
     <Box>
       <Image
@@ -13,16 +22,27 @@ const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
         mb="md"
         fit="contain"
       />
-      <Text fz="sm" ta="center" mb="xl">
+      <Text
+        // fz="sm"
+        ta="center"
+        mb="xl"
+        fw={500}
+        variant="gradient"
+        gradient={{
+          from: colors.blue[0],
+          to: colors.blue[4],
+          deg: 90,
+        }}
+      >
         A dynamic micro-subscription service
       </Text>
       <Paper>
         <Text mb={'sm'}>
           Beamr is the easiest way to sustainably reward the people who make
-          your feed worth scrolling.
+          your feed worth scrolling:
         </Text>
         <List mb={24}>
-          <List.Item>You set monthly budget</List.Item>
+          <List.Item>You set a continuous token stream rate</List.Item>
           <List.Item>
             We dynamically split that stream based on your interactions (likes,
             comments, follows, etc.)
@@ -33,7 +53,7 @@ const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
         </List>
         <Diagram />
         <Button size="lg" onClick={confirmGreeted}>
-          Join us
+          Earn Rewards
         </Button>
       </Paper>
     </Box>

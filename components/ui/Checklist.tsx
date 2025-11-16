@@ -138,7 +138,24 @@ const Checklist = ({
             <Text fz="sm" c={colors.gray[3]}>
               Your SUP XP
             </Text>
-            <Tooltip label="LKJLK  KJ LKJ L KJ KJ LKJ LKJ LK J">
+            <Tooltip
+              w={200}
+              p={'xs'}
+              multiline
+              label={
+                <Box p="sm">
+                  <Text fz="sm" mb="sm">
+                    {
+                      "We're streaming 2M+ $SUP (Superfluid's governance token) to Beamrs over 90 days. The more XP you earn, the bigger your $SUP stream."
+                    }
+                  </Text>
+                  <Text fz="sm">
+                    Make sure you claim stream increases in the Superfluid Claim
+                    App.
+                  </Text>
+                </Box>
+              }
+            >
               <InfoIcon
                 color={colors.gray[0]}
                 size={18}

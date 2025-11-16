@@ -67,7 +67,7 @@ export default function Leaderboard() {
           </ActionIcon>
         </Group>
         <TableHeader />
-        <ScrollArea h={400}>
+        <ScrollArea h={250}>
           <Stack gap={'md'}>
             {!isLoadingOrRefetching &&
               leaderboardData.length > 0 &&
