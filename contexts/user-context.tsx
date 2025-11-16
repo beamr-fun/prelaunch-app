@@ -65,6 +65,7 @@ export const UserProvider = ({
     enabled: !!context, // Only fetch when in mini app context
     ...{
       onSuccess: () => {
+        console.log('/me');
         setIsSignedIn(true);
       },
     },
@@ -77,6 +78,7 @@ export const UserProvider = ({
     method: 'POST',
     body: (variables) => variables,
     onSuccess: (data) => {
+      console.log('/sign-in');
       setIsSignedIn(true);
       setIsLoading(false);
       refetchUser();
@@ -85,11 +87,8 @@ export const UserProvider = ({
 
   const handleSignIn = useCallback(async () => {
     try {
-      console.log('handleSignIn');
       setIsLoading(true);
       setError(null);
-
-      console.log('handleSignIn context', context);
 
       if (!context) {
         console.error('Not in mini app');
@@ -120,7 +119,7 @@ export const UserProvider = ({
   }, [context, signIn]);
 
   useEffect(() => {
-    if (context && !isSignedIn && !isLoading && autoSignIn && userError) {
+    if (context && !isSignedIn && !isLoading && autoSignIn && !userError) {
       handleSignIn();
     }
   }, [context, handleSignIn, isSignedIn, isLoading, autoSignIn, userError]);
