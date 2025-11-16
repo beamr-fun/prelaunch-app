@@ -19,7 +19,7 @@ import {
 } from '@mantine/core';
 import { useUser } from '@/contexts/user-context';
 import { usePoints } from '@/contexts/points-context';
-import { getLaunchDate } from '@/lib/constants';
+import { BEAMR_ACCOUNT_FID, getLaunchDate } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { useAccount } from 'wagmi';
 import { PageLayout } from '../ui/PageLayout';
@@ -30,6 +30,7 @@ import Checklist from '../ui/Checklist';
 import { WalletSelect } from '../ui/WalletSelect';
 import Diagram from '../ui/Diagram';
 import Greeting from '../ui/Greeting';
+import sdk from '@farcaster/miniapp-sdk';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -51,13 +52,15 @@ export default function Home() {
   const currentUser = user;
 
   const loadingUserOrMiniApp =
-    isLoading || walletLoading || !isMiniAppReady || currentUser?.isLoading;
+    isLoading ||
+    (walletLoading && !userPoints) ||
+    !isMiniAppReady ||
+    currentUser?.isLoading;
 
   const handleRefresh = useCallback(() => {
     if (isCooldown) return;
     if (!currentUser?.data || !userPoints) return;
 
-    console.log('refetching');
     refetchPoints();
     setIsCooldown(true);
 
@@ -111,7 +114,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <Checklist />
+      <Checklist handleRefresh={handleRefresh} isCoolingDown={isCooldown} />
     </PageLayout>
   );
 

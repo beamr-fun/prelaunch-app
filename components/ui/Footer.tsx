@@ -16,8 +16,8 @@ const DEFAULT_NAV_LINKS = [
 ];
 
 import { usePathname, useRouter } from 'next/navigation';
-import { Box, Group, Button, ActionIcon } from '@mantine/core';
-import { Home, Info, Trophy } from 'lucide-react';
+import { Box, Group, ActionIcon } from '@mantine/core';
+import { Home, Info } from 'lucide-react';
 import classes from '@/styles/layout.module.css';
 import { SfLogo } from './SFLogo';
 
