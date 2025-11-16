@@ -157,21 +157,18 @@ const Checklist = ({
             <ChecklistItem
               checked={hasAddedApp || false}
               text="Install app with notifications (100 XP)"
-              actionText="Click here to install the app"
               action={handleAddMiniAppClick}
             />
 
             <ChecklistItem
               checked={hasFollowed || false}
               text="Follow @beamr (100 XP)"
-              actionText="Click here to follow @beamr"
               action={handleFollowClick}
             />
 
             <ChecklistItem
               checked={hasJoinedChannel || false}
               text="Join /beamr (100 XP)"
-              actionText="Click here to join /beamr"
               action={handleJoinClick}
             />
             <Group wrap="nowrap" align="start">
@@ -230,12 +227,11 @@ export default Checklist;
 const ChecklistItem = ({
   checked,
   text,
-  actionText,
+
   action,
 }: {
   checked: boolean;
   text: string;
-  actionText: string;
   action: () => void;
 }) => {
   const { colors } = useMantineTheme();
@@ -249,26 +245,21 @@ const ChecklistItem = ({
           fill: 'none',
         }}
       />
-      <Box>
-        <Text c={colors.gray[1]} mb={2}>
-          {text}
-        </Text>
-        <Text
-          c={checked ? colors.gray[4] : colors.blue[5]}
-          fz="sm"
-          td={checked ? 'line-through' : 'underline'}
-          style={{
-            cursor: checked ? 'text' : 'pointer',
-          }}
-          onClick={() => {
-            if (!checked) {
-              action();
-            }
-          }}
-        >
-          {actionText}
-        </Text>
-      </Box>
+
+      <Text
+        c={checked ? colors.gray[4] : colors.blue[5]}
+        td={checked ? 'line-through' : 'underline'}
+        style={{
+          cursor: checked ? 'text' : 'pointer',
+        }}
+        onClick={() => {
+          if (!checked) {
+            action();
+          }
+        }}
+      >
+        {text}
+      </Text>
     </Group>
   );
 };
