@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ActionIcon,
   Box,
@@ -12,12 +12,20 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import LaunchPhase from './LaunchPhase';
-import { CheckCheck, InfoIcon, RefreshCw, Infinity, Copy } from 'lucide-react';
+import {
+  CheckCheck,
+  InfoIcon,
+  RefreshCw,
+  Infinity,
+  Copy,
+  Check,
+} from 'lucide-react';
 import PointsDisplay from './PointsDisplay';
 import { usePoints } from '@/contexts/points-context';
 import sdk from '@farcaster/miniapp-sdk';
 import { BEAMR_ACCOUNT_FID } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
+import { generateReferralURL } from '@/lib/storage';
 
 const Checklist = ({
   handleRefresh,
@@ -31,6 +39,7 @@ const Checklist = ({
 
   const { userPoints } = usePoints();
   const currentPoints = userPoints?.totalPoints || 0;
+  const [copied, setCopied] = useState(false);
 
   const handleFollowClick = async () => {
     await sdk.actions.viewProfile({
@@ -53,6 +62,57 @@ const Checklist = ({
   const handleAddMiniAppClick = async () => {
     if (!userPoints?.socialStatus?.appAdded) {
       await sdk.actions.addMiniApp();
+    }
+  };
+
+  const handleCopyFallback = async () => {
+    if (!userPoints?.fid) {
+      return;
+    }
+    const referralURL = generateReferralURL(userPoints.fid);
+
+    try {
+      await navigator.clipboard.writeText(referralURL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (error) {
+      console.error('Copy failed:', error);
+      // Final fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = referralURL;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }
+  };
+
+  const handleNativeCopy = async () => {
+    if (!userPoints?.fid) {
+      return;
+    }
+
+    const referralURL = generateReferralURL(userPoints?.fid);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          url: referralURL,
+        });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Share failed:', error);
+          // Fallback to copy
+          handleCopyFallback();
+        }
+      }
+    } else {
+      // Fallback to copy
+      handleCopyFallback();
     }
   };
 
@@ -149,9 +209,13 @@ const Checklist = ({
               Share @beamr
             </Button>
             <Group justify="center">
-              <Group gap={4} style={{ cursor: 'pointer' }}>
-                <Copy size={14} />
-                <Text fz="sm">Copy referral code</Text>
+              <Group
+                gap={4}
+                style={{ cursor: 'pointer' }}
+                onClick={handleNativeCopy}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                <Text fz="sm">{copied ? 'Copied!' : 'Copy referral code'}</Text>
               </Group>
             </Group>
           </Stack>
