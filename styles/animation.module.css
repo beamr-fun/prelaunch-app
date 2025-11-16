@@ -1,0 +1,20 @@
+.loadingEffect {
+  opacity: 0.6;
+  filter: brightness(1.2);
+  animation: pulseLoading 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseLoading {
+  0% {
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(0.8);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+}

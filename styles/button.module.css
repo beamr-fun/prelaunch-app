@@ -80,7 +80,7 @@ button.root[data-variant='secondary']:hover {
   padding: rem(6px) rem(12px);
 }
 
-.actionIcon {
+button.actionIcon {
   color: var(--mantine-color-gray-0);
   background: var(--glass-pane);
   border: rem(1px) solid var(--glass-pane);

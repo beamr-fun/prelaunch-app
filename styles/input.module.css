@@ -76,17 +76,17 @@ div.wrapper:focus-within::after {
   border-color: var(--mantine-color-red-6);
 }
 
-.label {
+label.label {
   font-size: var(--mantine-font-size-lg);
   font-weight: 400;
   color: var(--mantine-color-gray-3);
   margin-bottom: 0;
 }
 
-.description {
+p.description {
   color: var(--mantine-color-gray-3);
   font-size: var(--mantine-font-size-sm);
-  margin-top: rem(2px);
+  margin-top: rem(4px);
 }
 
 .withSection {
@@ -137,14 +137,14 @@ div.wrapper:focus-within::after {
   }
 }
 
-.selectDropdown {
+div.selectDropdown {
   background-color: var(--mantine-color-gray-8);
   border: none;
   border-radius: rem(12px);
   padding: rem(16px);
 }
 
-.selectOption {
+div.selectOption {
   font-size: var(--mantine-font-size-md);
   height: rem(40px);
   margin-bottom: rem(4px);
@@ -156,7 +156,7 @@ div.wrapper:focus-within::after {
   }
 }
 
-.selectOption[data-checked] {
+div.selectOption[data-checked] {
   color: var(--mantine-color-gray-0);
   svg {
     color: var(--mantine-color-gray-0);

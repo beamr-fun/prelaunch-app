@@ -199,6 +199,11 @@ export const theme = createTheme({
         },
       },
     },
+    ActionIcon: {
+      classNames: {
+        root: buttonClasses.actionIcon,
+      },
+    },
     SegmentedControl: {
       classNames: {
         root: segmentedClasses.root,

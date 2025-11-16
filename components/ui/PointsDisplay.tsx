@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Text, Flex } from "@mantine/core";
-import { useState, useEffect } from "react";
+import { Text, Flex } from '@mantine/core';
+import { useState, useEffect } from 'react';
 
 interface PointsDisplayProps {
   points: number;
@@ -38,14 +38,14 @@ export default function PointsDisplay({ points }: PointsDisplayProps) {
   };
 
   return (
-    <Flex direction="column" align="center" gap="xs">
+    <Flex direction="column" align="center">
       <Text
-        size="3rem"
-        c="white"
+        fz={32}
+        c="var(--mantine-color-gray-0)"
         style={{
-          // fontFamily: "monospace",
-          transition: "all 0.3s ease",
-          transform: isAnimating ? "scale(1.05)" : "scale(1)",
+          fontFamily: 'monospace',
+          transition: 'all 0.3s ease',
+          transform: isAnimating ? 'scale(1.05)' : 'scale(1)',
         }}
       >
         {formatPoints(displayPoints)}
