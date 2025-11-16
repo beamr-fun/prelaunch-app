@@ -85,11 +85,8 @@ export const UserProvider = ({
 
   const handleSignIn = useCallback(async () => {
     try {
-      console.log('handleSignIn');
       setIsLoading(true);
       setError(null);
-
-      console.log('handleSignIn context', context);
 
       if (!context) {
         console.error('Not in mini app');
@@ -120,7 +117,7 @@ export const UserProvider = ({
   }, [context, signIn]);
 
   useEffect(() => {
-    if (context && !isSignedIn && !isLoading && autoSignIn && userError) {
+    if (context && !isSignedIn && !isLoading && autoSignIn && !userError) {
       handleSignIn();
     }
   }, [context, handleSignIn, isSignedIn, isLoading, autoSignIn, userError]);

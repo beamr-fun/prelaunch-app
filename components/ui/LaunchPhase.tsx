@@ -3,10 +3,7 @@ import React from 'react';
 
 const LaunchPhase = () => {
   return (
-    <Box>
-      <Text fw={500} fz={'lg'} mb="md">
-        Launch phase
-      </Text>
+    <Box mt="xl">
       <Group justify="center" mb={2}>
         <Box pos="relative" w={235} h={20}>
           <Box
@@ -52,8 +49,8 @@ const LaunchPhase = () => {
       </Group>
       <Group justify="center" mb={'lg'}>
         <Box pos="relative" w={300} h={19}>
-          <Text fz="sm" pos="absolute" left={25}>
-            $SUP
+          <Text fz="sm" pos="absolute" left={5}>
+            $SUP Rewards
           </Text>
           <Text fz="sm" pos="absolute" left={115}>
             Token launch

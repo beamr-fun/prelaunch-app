@@ -48,7 +48,6 @@ const Checklist = ({
   };
 
   const handleJoinClick = async () => {
-    console.log('Joining channel...');
     await sdk.actions.openUrl('https://farcaster.xyz/~/channel/beamr');
   };
 
@@ -138,7 +137,24 @@ const Checklist = ({
             <Text fz="sm" c={colors.gray[3]}>
               Your SUP XP
             </Text>
-            <Tooltip label="LKJLK  KJ LKJ L KJ KJ LKJ LKJ LK J">
+            <Tooltip
+              w={200}
+              p={'xs'}
+              multiline
+              label={
+                <Box p="sm">
+                  <Text fz="sm" mb="sm">
+                    {
+                      "We're streaming 2M+ $SUP (Superfluid's governance token) to Beamrs over 90 days. The more XP you earn, the bigger your $SUP stream."
+                    }
+                  </Text>
+                  <Text fz="sm">
+                    Make sure you claim stream increases in the Superfluid Claim
+                    App.
+                  </Text>
+                </Box>
+              }
+            >
               <InfoIcon
                 color={colors.gray[0]}
                 size={18}
@@ -146,32 +162,31 @@ const Checklist = ({
               />
             </Tooltip>
           </Group>
-          <Group gap="xs" justify="center" mb="sm">
+          <Group gap="xs" justify="center">
             <PointsDisplay points={currentPoints} />
             <ActionIcon onClick={handleRefresh} disabled={isCoolingDown}>
               <RefreshCw size={22} />
             </ActionIcon>
           </Group>
-
+          <Text ta="center" fz="sm" c={colors.gray[3]} mb="md">
+            (Changes may take time to update).
+          </Text>
           <Stack gap={14}>
             <ChecklistItem
               checked={hasAddedApp || false}
               text="Install app with notifications (100 XP)"
-              actionText="Click here to install the app"
               action={handleAddMiniAppClick}
             />
 
             <ChecklistItem
               checked={hasFollowed || false}
               text="Follow @beamr (100 XP)"
-              actionText="Click here to follow @beamr"
               action={handleFollowClick}
             />
 
             <ChecklistItem
               checked={hasJoinedChannel || false}
               text="Join /beamr (100 XP)"
-              actionText="Click here to join /beamr"
               action={handleJoinClick}
             />
             <Group wrap="nowrap" align="start">
@@ -202,9 +217,7 @@ const Checklist = ({
                 apply)
               </Text>
             </Group>
-            <Text fz="sm" c={colors.gray[3]} mb="md">
-              Changes may take time to update in the UI.
-            </Text>
+
             <Button size="lg" onClick={handleCastClick}>
               Share @beamr
             </Button>
@@ -230,12 +243,11 @@ export default Checklist;
 const ChecklistItem = ({
   checked,
   text,
-  actionText,
+
   action,
 }: {
   checked: boolean;
   text: string;
-  actionText: string;
   action: () => void;
 }) => {
   const { colors } = useMantineTheme();
@@ -249,26 +261,21 @@ const ChecklistItem = ({
           fill: 'none',
         }}
       />
-      <Box>
-        <Text c={colors.gray[1]} mb={2}>
-          {text}
-        </Text>
-        <Text
-          c={checked ? colors.gray[4] : colors.blue[5]}
-          fz="sm"
-          td={checked ? 'line-through' : 'underline'}
-          style={{
-            cursor: checked ? 'text' : 'pointer',
-          }}
-          onClick={() => {
-            if (!checked) {
-              action();
-            }
-          }}
-        >
-          {actionText}
-        </Text>
-      </Box>
+
+      <Text
+        c={checked ? colors.gray[4] : colors.blue[5]}
+        td={checked ? 'line-through' : 'underline'}
+        style={{
+          cursor: checked ? 'text' : 'pointer',
+        }}
+        onClick={() => {
+          if (!checked) {
+            action();
+          }
+        }}
+      >
+        {text}
+      </Text>
     </Group>
   );
 };
