@@ -89,9 +89,6 @@ export const WalletSelect = ({
       />
       <LaunchPhase />
       <Paper>
-        <Text fz="lg" c={colors.gray[0]} fw={500} mb="md">
-          Beamr wallet
-        </Text>
         <Stack gap="sm" mb="lg">
           <Text>We’re not beamin’ quite yet.</Text>
           <Text>
