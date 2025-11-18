@@ -6,25 +6,25 @@ const appUrl = env.NEXT_PUBLIC_URL;
 
 const frame = {
   version: 'next',
-  imageUrl: `${appUrl}/images/feeda`,
+  imageUrl: `${appUrl}/images/feed.png`,
   button: {
-    title: 'Launch App',
+    title: 'Start Beamr',
     action: {
       type: 'launch_frame',
       name: 'BEAMR',
       url: appUrl,
-      splashImageUrl: `${appUrl}/images/beamrLogo.png`,
-      splashBackgroundColor: '#000000',
+      splashImageUrl: `${appUrl}/images/splash.png`,
+      splashBackgroundColor: '#0F0E0E',
     },
   },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'BEAMR',
+    title: 'Beamr',
     openGraph: {
-      title: 'BEAMR',
-      description: 'BEAMR',
+      title: 'Beamr - A dynamic micro-subscription service on Farcaster',
+      description: 'The easiest way to sustainably reward people who make your feed worth scrolling. micro-subscription',
     },
     other: {
       'fc:frame': JSON.stringify(frame),
