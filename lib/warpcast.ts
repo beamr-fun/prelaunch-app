@@ -29,7 +29,7 @@ export async function getFarcasterManifest() {
     frame: {
       version: '1',
       name: frameName,
-      iconUrl: `${appUrl}/images/beamrLogo.png`,
+      iconUrl: `${appUrl}/images/icon.png`,
       homeUrl: appUrl,
       imageUrl: `${appUrl}/images/feed.png`,
       buttonTitle: `Start Beamr`,
