@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   createContext,
@@ -6,15 +6,15 @@ import {
   useState,
   useEffect,
   ReactNode,
-} from "react";
-import { sdk } from "@farcaster/miniapp-sdk";
-import { useUser } from "./user-context";
-import { useMiniApp } from "./miniapp-context";
+} from 'react';
+import { sdk } from '@farcaster/miniapp-sdk';
+import { useUser } from './user-context';
+import { useMiniApp } from './miniapp-context';
 import {
   getReferralFromURL,
   setReferralCode,
   getReferralCode,
-} from "@/lib/storage";
+} from '@/lib/storage';
 
 export interface UserPoints {
   fid: string;
@@ -58,7 +58,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
   const { context: miniAppContext } = useMiniApp();
   const [state, setState] = useState<PointsState>({
     userPoints: null,
-    isLoading: false,
+    isLoading: true,
     error: null,
   });
   const [referrerFid, setReferrerFidState] = useState<string | undefined>(
@@ -69,7 +69,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
     try {
       // Only fetch if we're in a mini app context
       if (!miniAppContext) {
-        throw new Error("Not in mini app context");
+        throw new Error('Not in mini app context');
       }
 
       // 10.19 removing this on profile fetch due to context no updating.
@@ -87,8 +87,9 @@ export function PointsProvider({ children }: PointsProviderProps) {
       const url = `api/users/profile`;
 
       const response = await fetch(url, {
-        credentials: "include", // Include cookies for authentication
+        credentials: 'include', // Include cookies for authentication
       });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -112,7 +113,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         },
       };
     } catch (error) {
-      console.error("Failed to fetch user profile:", error);
+      console.error('Failed to fetch user profile:', error);
       throw error;
     }
   };
@@ -123,18 +124,18 @@ export function PointsProvider({ children }: PointsProviderProps) {
     try {
       // Only proceed if we're in a mini app context
       if (!miniAppContext) {
-        throw new Error("Not in mini app context");
+        throw new Error('Not in mini app context');
       }
 
       const miniAppAdded = miniAppContext?.client?.added;
       const newContext = sdk.context;
-      console.log("newContext", newContext);
-      const response = await fetch("/api/users/confirm-wallet", {
-        method: "POST",
+
+      const response = await fetch('/api/users/confirm-wallet', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        credentials: "include", // Include cookies for authentication
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify({
           walletAddress,
           referrerFid: referrerFid,
@@ -165,7 +166,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
         },
       };
     } catch (error) {
-      console.error("Failed to confirm wallet:", error);
+      console.error('Failed to confirm wallet:', error);
       throw error;
     }
   };
@@ -175,7 +176,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
     // Check for referral code in URL
     const urlReferral = getReferralFromURL();
     if (urlReferral) {
-      console.log("setting ref");
+      console.log('setting ref');
       setReferralCode(urlReferral);
       setReferrerFidState(urlReferral);
       return;
@@ -205,7 +206,6 @@ export function PointsProvider({ children }: PointsProviderProps) {
 
       try {
         const userData = await fetchUserProfile();
-        console.log("userData", userData);
 
         setState((prev) => ({
           ...prev,
@@ -214,12 +214,12 @@ export function PointsProvider({ children }: PointsProviderProps) {
           error: null,
         }));
       } catch (error) {
-        console.error("Failed to load points:", error);
+        console.error('Failed to load points:', error);
         setState((prev) => ({
           ...prev,
           isLoading: false,
           error:
-            error instanceof Error ? error.message : "Failed to load points",
+            error instanceof Error ? error.message : 'Failed to load points',
         }));
       }
     };
@@ -239,12 +239,12 @@ export function PointsProvider({ children }: PointsProviderProps) {
         error: null,
       }));
     } catch (error) {
-      console.error("Failed to confirm wallet:", error);
+      console.error('Failed to confirm wallet:', error);
       setState((prev) => ({
         ...prev,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : "Failed to confirm wallet",
+          error instanceof Error ? error.message : 'Failed to confirm wallet',
       }));
     }
   };
@@ -266,12 +266,12 @@ export function PointsProvider({ children }: PointsProviderProps) {
         error: null,
       }));
     } catch (error) {
-      console.error("Failed to refetch points:", error);
+      console.error('Failed to refetch points:', error);
       setState((prev) => ({
         ...prev,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : "Failed to refetch points",
+          error instanceof Error ? error.message : 'Failed to refetch points',
       }));
     }
   };
@@ -294,7 +294,7 @@ export function PointsProvider({ children }: PointsProviderProps) {
 export function usePoints() {
   const context = useContext(PointsContext);
   if (context === undefined) {
-    throw new Error("usePoints must be used within a PointsProvider");
+    throw new Error('usePoints must be used within a PointsProvider');
   }
   return context;
 }

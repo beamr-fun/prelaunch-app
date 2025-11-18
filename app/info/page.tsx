@@ -1,4 +1,4 @@
-import HomePage from '@/components/pages/Home';
+import Info from '@/components/pages/info';
 import { env } from '@/lib/env';
 import { Metadata } from 'next';
 
@@ -6,14 +6,14 @@ const appUrl = env.NEXT_PUBLIC_URL;
 
 const frame = {
   version: 'next',
-  imageUrl: `${appUrl}/images/feeda`,
+  imageUrl: `${appUrl}/images/feed.png`,
   button: {
     title: 'Launch App',
     action: {
       type: 'launch_frame',
       name: 'BEAMR',
       url: appUrl,
-      splashImageUrl: `${appUrl}/images/beamrLogo.png`,
+      splashImageUrl: `${appUrl}/images/splash.png`,
       splashBackgroundColor: '#000000',
     },
   },
@@ -33,5 +33,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Home() {
-  return <HomePage />;
+  return <Info />;
 }
