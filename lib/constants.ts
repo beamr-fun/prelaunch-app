@@ -8,10 +8,10 @@ export const getLaunchDate = () => {
 
 // Point values configuration
 export const POINT_VALUES = {
-  WALLET_CONFIRMATION: 150,
+  WALLET_CONFIRMATION: 50,
   FOLLOW: 100,
   CHANNEL_JOIN: 100,
-  REFERRAL_BONUS: 100, // Bonus for the referrer
+  REFERRAL_BONUS: 250, // Bonus for the referrer
   APP_ADD: 100,
   CAST: 100,
   FRAME_ADD: 100,

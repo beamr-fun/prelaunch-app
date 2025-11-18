@@ -53,7 +53,7 @@ const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
         </List>
         <Diagram />
         <Button size="lg" onClick={confirmGreeted}>
-          Earn Rewards
+          Learn More (& Earn)
         </Button>
       </Paper>
     </Box>

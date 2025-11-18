@@ -12,8 +12,8 @@ export default function Info() {
           Not another tipping app
         </Text>
         <Text mb="sm">
-          The difference between micro-tipping & out micro-subscription approach
-          sounds trivial but will have profound effects stemming the slop tide.
+          The difference between micro-tipping & our micro-subscription approach
+          seems trivial but will have profound effects that will stem the slop tide.
         </Text>
         <Diagram />
       </Paper>

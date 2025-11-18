@@ -200,7 +200,7 @@ const Checklist = ({
               />
 
               <Text c={colors.gray[1]} mb={2}>
-                Refer other quality users (150 XP/user)
+                Refer other quality users (250 XP/user)
               </Text>
             </Group>
             <Group wrap="nowrap" align="start">
