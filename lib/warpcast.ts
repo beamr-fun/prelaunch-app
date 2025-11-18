@@ -49,14 +49,14 @@ export async function getFarcasterManifest() {
       ogTitle: `${frameName}`, // 30 characters, app name + short tag, Title case, no emojis
       // ogDescription: "BEAMR", // 100 characters, summarize core benefits in 1-2 lines
       ogDescription:
-        'The easiest way to sustainably reward people who make your feed worth scrolling.B', // 100 characters, summarize core benefits in 1-2 lines
+        'The easiest way to sustainably reward people who make your feed worth scrolling.', // 100 characters, summarize core benefits in 1-2 lines
       screenshotUrls: [
         // 1284 x 2778, visual previews of the app, max 3 screenshots
         `${appUrl}/images/feed.png`,
       ],
       heroImageUrl: `${appUrl}/images/feed.png`, // 1200 x 630px (1.91:1), promotional display image on top of the mini app store
       ogImageUrl: `${appUrl}/images/feed.png`, // 1200 x 630px (1.91:1), promotional image, same as app hero image
-      noindex: true,
+      noindex: false,
     },
     baseBuilder: {
       ownerAddress: '0x375567484B27648C7CE609425043119b3c0A7285',
