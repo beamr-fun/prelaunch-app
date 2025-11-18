@@ -228,7 +228,7 @@ const Checklist = ({
                 onClick={handleNativeCopy}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
-                <Text fz="sm">{copied ? 'Copied!' : 'Copy referral code'}</Text>
+                <Text fz="sm">{copied ? 'Copied!' : 'Copy referral link'}</Text>
               </Group>
             </Group>
           </Stack>
