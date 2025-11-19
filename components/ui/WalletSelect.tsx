@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Group,
   Image,
   Paper,
   Select,
@@ -110,9 +111,11 @@ export const WalletSelect = ({
           inputWrapperOrder={['label', 'input', 'description', 'error']}
           mb="lg"
         />
-        <Button size="lg" onClick={handleConfirm} disabled={isButtonDisabled}>
-          Save
-        </Button>
+        <Group justify="center">
+          <Button size="lg" onClick={handleConfirm} disabled={isButtonDisabled}>
+            Save
+          </Button>
+        </Group>
       </Paper>
     </Box>
   );

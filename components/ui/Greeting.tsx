@@ -5,6 +5,7 @@ import {
   Image,
   List,
   Paper,
+  Group,
   Text,
   useMantineTheme,
 } from '@mantine/core';
@@ -52,9 +53,11 @@ const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
           </List.Item>
         </List>
         <Diagram />
-        <Button size="lg" onClick={confirmGreeted}>
-          Earn Rewards
-        </Button>
+        <Group justify="center">
+          <Button size="lg" onClick={confirmGreeted}>
+            Earn Rewards
+          </Button>
+        </Group>
       </Paper>
     </Box>
   );

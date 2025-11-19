@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Button, List, Paper, Text } from '@mantine/core';
+import { Box, Button, Group, List, Paper, Text } from '@mantine/core';
 import Diagram from '../ui/Diagram';
 
 export default function Info() {
@@ -27,7 +27,9 @@ export default function Info() {
           <List.Item>{'Taste > Aggregation'}</List.Item>
           <List.Item>{'Sustainable > Extractive'}</List.Item>
         </List>
-        <Button size="lg">Learn More</Button>
+        <Group justify="center">
+          <Button size="lg">Learn More</Button>
+        </Group>
       </Paper>
     </Box>
   );
