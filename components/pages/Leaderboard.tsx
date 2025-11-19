@@ -125,9 +125,11 @@ export default function Leaderboard() {
           </Text>
           <Text>Engage, share, grow, and use Beamr: you’ll get rewarded.</Text>
         </Stack>
-        <Button size="lg" onClick={handleSupLink}>
-          Claim SUP XP
-        </Button>
+        <Group justify="center">
+          <Button size="lg" onClick={handleSupLink}>
+            Claim SUP XP
+          </Button>
+        </Group>
       </Paper>
     </PageLayout>
   );
