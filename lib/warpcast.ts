@@ -16,8 +16,8 @@ export async function getFarcasterManifest() {
   } else if (appUrl.includes('ngrok')) {
     frameName += ' NGROK';
     noindex = true;
-  } else if (appUrl.includes('https://dev.')) {
-    frameName += ' Dev';
+  } else if (appUrl.includes('https://staging.')) {
+    frameName += 'staging';
     noindex = true;
   }
   return {
@@ -56,7 +56,7 @@ export async function getFarcasterManifest() {
       ],
       heroImageUrl: `${appUrl}/images/feed.png`, // 1200 x 630px (1.91:1), promotional display image on top of the mini app store
       ogImageUrl: `${appUrl}/images/feed.png`, // 1200 x 630px (1.91:1), promotional image, same as app hero image
-      noindex: false,
+      noindex: noindex,
     },
     baseBuilder: {
       ownerAddress: '0x375567484B27648C7CE609425043119b3c0A7285',
