@@ -217,10 +217,11 @@ const Checklist = ({
                 apply)
               </Text>
             </Group>
-
-            <Button size="lg" onClick={handleCastClick}>
-              Share @beamr
-            </Button>
+            <Group justify="center">
+              <Button size="lg" onClick={handleCastClick}>
+                Share @beamr
+              </Button>
+            </Group>
             <Group justify="center">
               <Group
                 gap={4}
