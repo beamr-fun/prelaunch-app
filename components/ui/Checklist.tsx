@@ -169,7 +169,7 @@ const Checklist = ({
             </ActionIcon>
           </Group>
           <Text ta="center" fz="sm" c={colors.gray[3]} mb="md">
-            (Changes may take time to update).
+            (Changes may take time to update)
           </Text>
           <Stack gap={14}>
             <ChecklistItem
@@ -200,7 +200,7 @@ const Checklist = ({
               />
 
               <Text c={colors.gray[1]} mb={2}>
-                Refer other quality users (150 XP/user)
+                Refer other quality users (250 XP/user)
               </Text>
             </Group>
             <Group wrap="nowrap" align="start">
@@ -229,7 +229,7 @@ const Checklist = ({
                 onClick={handleNativeCopy}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
-                <Text fz="sm">{copied ? 'Copied!' : 'Copy referral code'}</Text>
+                <Text fz="sm">{copied ? 'Copied!' : 'Copy referral link'}</Text>
               </Group>
             </Group>
           </Stack>

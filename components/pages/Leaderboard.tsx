@@ -118,11 +118,10 @@ export default function Leaderboard() {
         <Stack gap={12} mb="xl">
           <Text>
             $SUP is the governance token of Superfluid (the streaming token
-            protocol Beamr uses)
+            protocol Beamr uses).
           </Text>
           <Text>
-            $SUP is the governance token of Superfluid (the streaming token
-            protocol Beamr uses)
+            We have 2M+ $SUP to stream as rewards over 90 days. 
           </Text>
           <Text>Engage, share, grow, and use Beamr: you’ll get rewarded.</Text>
         </Stack>

@@ -55,7 +55,7 @@ const Greeting = ({ confirmGreeted }: { confirmGreeted: () => void }) => {
         <Diagram />
         <Group justify="center">
           <Button size="lg" onClick={confirmGreeted}>
-            Earn Rewards
+            Learn More (& Earn)
           </Button>
         </Group>
       </Paper>

@@ -9,11 +9,11 @@ export default function Info() {
     <Box pt={'xl'}>
       <Paper mb="md">
         <Text fz="lg" mb="md" fw={500}>
-          Not another tipping tap
+          Not another tipping app
         </Text>
         <Text mb="sm">
-          The difference between micro-tipping & out micro-subscription approach
-          sounds trivial but will have profound effects stemming the slop tide.
+          The difference between micro-tipping & our micro-subscription approach
+          seems trivial but will have profound effects that will stem the slop tide.
         </Text>
         <Diagram />
       </Paper>

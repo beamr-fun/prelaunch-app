@@ -53,10 +53,10 @@ const LaunchPhase = () => {
             $SUP Rewards
           </Text>
           <Text fz="sm" pos="absolute" left={115}>
-            Token launch
+            Token Launch
           </Text>
           <Text fz="sm" pos="absolute" left={235}>
-            App launch
+            App Launch
           </Text>
         </Box>
       </Group>
