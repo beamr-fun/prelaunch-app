@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: 'Beamr',
     openGraph: {
       title: 'Beamr - A dynamic micro-subscription service on Farcaster',
-      description: 'The easiest way to sustainably reward people who make your feed worth scrolling. micro-subscription',
+      description: 'The easiest way to sustainably reward people who make your feed worth scrolling.',
     },
     other: {
       'fc:frame': JSON.stringify(frame),
