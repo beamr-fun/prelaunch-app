@@ -19,7 +19,7 @@ export const redis =
     : null;
 
 export const getNeynarUsers = async (fids: number[]) => {
-  const keys = fids.map((fid) => `${NEYNAR_USER_PREFIX}:${fid}`);
+  const keys = fids.map((fid) => `${NEYNAR_USER_PREFIX}${fid}`);
 
   if (!redis) throw new Error('Redis client is not initialized');
 
@@ -31,7 +31,7 @@ export const getNeynarUsers = async (fids: number[]) => {
 export const setNeynarUsers = async (users: any[]) => {
   if (!redis) throw new Error('Redis client is not initialized');
 
-  const keys = users.map((user) => `${NEYNAR_USER_PREFIX}:${user.fid}`);
+  const keys = users.map((user) => `${NEYNAR_USER_PREFIX}${user.fid}`);
 
   const pipeline = redis.pipeline();
 
@@ -45,7 +45,7 @@ export const setNeynarUsers = async (users: any[]) => {
 export const getNeynarUser = async (fid: string) => {
   if (!redis) return null;
   try {
-    const key = `${NEYNAR_USER_PREFIX}:${fid}`;
+    const key = `${NEYNAR_USER_PREFIX}${fid}`;
     const data = await redis.get(key);
     return data ? (data as any) : null;
   } catch (error) {
@@ -60,7 +60,7 @@ export const getNeynarUser = async (fid: string) => {
 export const setNeynarUser = async (fid: string, user: any) => {
   if (!redis) return;
   try {
-    const key = `${NEYNAR_USER_PREFIX}:${fid}`;
+    const key = `${NEYNAR_USER_PREFIX}${fid}`;
     await redis.set(key, user);
   } catch (error) {
     console.error(`Failed to cache Neynar user for fid ${fid}:`, error);
