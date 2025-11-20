@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseClient } from "@/lib/supabase-server";
-import { fetchUsersByEthAddress } from "@/lib/neynar";
+import { fetchUsers } from "@/lib/neynar";
 
 export interface LeaderboardEntry {
   fid: string;
@@ -97,37 +97,34 @@ export async function GET(request: NextRequest) {
       (entry) => entry.user_id && userMap.has(entry.user_id)
     );
 
-    // Get wallet addresses for fetching user data from Neynar
-    const walletAddresses = filteredLeaderboardData
-      .map((entry) =>
-        entry.user_id ? userMap.get(entry.user_id)?.preferred_wallet : null
-      )
-      .filter(Boolean)
-      .join(",");
+    // Get FIDs for fetching user data from Neynar
+    const fids = filteredLeaderboardData
+      .map((entry) => entry.fid?.toString())
+      .filter((fid): fid is string => fid !== undefined && fid !== null);
 
     // Fetch user data from Neynar API
-    const userDataByAddress = await fetchUsersByEthAddress(walletAddresses);
+    const neynarUsers = await fetchUsers(fids);
 
-    // Create leaderboard entries with rank
+    const neynarUserMap = new Map(
+      neynarUsers.map((user) => [user.fid, user])
+    );
+
     const leaderboardEntries: LeaderboardEntry[] = filteredLeaderboardData
       .map((entry, index) => {
-        const user = entry.user_id ? userMap.get(entry.user_id) : null;
-        const walletAddress = user?.preferred_wallet;
-
-        if (!walletAddress || !entry.fid) {
+        if (!entry.fid) {
           return null;
         }
 
-        const neynarUsers = userDataByAddress[walletAddress] || [];
-        const neynarUser = neynarUsers[0]; // Take the first user if multiple
+        const fid = entry.fid.toString();
+        const neynarUser = neynarUserMap.get(fid);
 
         if (!neynarUser) {
-          console.warn(`No Neynar data found for wallet ${walletAddress}`);
+          console.warn(`No Neynar data found for fid ${fid}`);
           return null;
         }
 
         return {
-          fid: entry.fid.toString(),
+          fid: fid,
           username: neynarUser.username,
           displayName: neynarUser.display_name,
           pfpUrl: neynarUser.pfp_url,
