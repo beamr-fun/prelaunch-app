@@ -74,9 +74,6 @@ export default function Leaderboard() {
             </Text>
             <SfLogo />
           </Group>
-          <ActionIcon onClick={handleRefetch}>
-            <RefreshCwIcon size={20} />
-          </ActionIcon>
         </Group>
         <TableHeader />
         <ScrollArea h={250}>
@@ -120,9 +117,7 @@ export default function Leaderboard() {
             $SUP is the governance token of Superfluid (the streaming token
             protocol Beamr uses).
           </Text>
-          <Text>
-            We have 2M+ $SUP to stream as rewards over 90 days. 
-          </Text>
+          <Text>We have 2M+ $SUP to stream as rewards over 90 days.</Text>
           <Text>Engage, share, grow, and use Beamr: you’ll get rewarded.</Text>
         </Stack>
         <Group justify="center">

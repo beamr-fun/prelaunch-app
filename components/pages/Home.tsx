@@ -10,7 +10,6 @@ import classes from '@/styles/animation.module.css';
 import Checklist from '../ui/Checklist';
 import { WalletSelect } from '../ui/WalletSelect';
 import Greeting from '../ui/Greeting';
-import ErrorDisplay from '../ui/ErrorDisplay';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -123,18 +122,6 @@ export default function Home() {
       </PageLayout>
     );
   }
-
-  return (
-    <PageLayout>
-      <WalletSelect
-        onWalletSelect={(addr: string) => {
-          setSelectedWallet(addr);
-        }}
-        selectedWallet={selectedWallet}
-        confirmWallet={confirmWallet}
-      />
-    </PageLayout>
-  );
 
   if (currentUser?.data && !userPoints?.walletConfirmed) {
     return (
