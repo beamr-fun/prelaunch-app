@@ -19,13 +19,15 @@ import {
   Infinity,
   Copy,
   Check,
+  TriangleAlert,
 } from 'lucide-react';
 import PointsDisplay from './PointsDisplay';
 import { usePoints } from '@/contexts/points-context';
 import sdk from '@farcaster/miniapp-sdk';
-import { BEAMR_ACCOUNT_FID } from '@/lib/constants';
+import { BEAMR_ACCOUNT_FID, UserStanding } from '@/lib/constants';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { generateReferralURL } from '@/lib/storage';
+import { useUser } from '@/contexts/user-context';
 
 const Checklist = ({
   handleRefresh,
@@ -38,7 +40,7 @@ const Checklist = ({
   const { context } = useMiniApp();
 
   const { userPoints } = usePoints();
-  const currentPoints = userPoints?.totalPoints || 0;
+  const { user } = useUser();
   const [copied, setCopied] = useState(false);
 
   const handleFollowClick = async () => {
@@ -120,6 +122,10 @@ const Checklist = ({
   const hasFollowed = userPoints?.socialStatus.following;
   const hasJoinedChannel = userPoints?.socialStatus?.inChannel;
 
+  const isLowStanding = user?.standing === UserStanding.Low;
+  const currentPoints = userPoints?.totalPoints || 0;
+  const standingPoints = isLowStanding ? 0 : currentPoints;
+
   return (
     <Box>
       <Image
@@ -163,14 +169,28 @@ const Checklist = ({
             </Tooltip>
           </Group>
           <Group gap="xs" justify="center">
-            <PointsDisplay points={currentPoints} />
+            <PointsDisplay points={standingPoints} />
             <ActionIcon onClick={handleRefresh} disabled={isCoolingDown}>
               <RefreshCw size={22} />
             </ActionIcon>
           </Group>
-          <Text ta="center" fz="sm" c={colors.gray[3]} mb="md">
-            (Changes may take time to update)
-          </Text>
+
+          {isLowStanding ? (
+            <Group mb="md" gap="sm">
+              <TriangleAlert
+                size={16}
+                color={colors.red[7]}
+                style={{ transform: 'translateY(-1px)' }}
+              />
+              <Text fz="sm" c={colors.red[2]} style={{ flex: 1 }}>
+                {'Account reputation is too low to receive points'}
+              </Text>
+            </Group>
+          ) : (
+            <Text ta="center" fz="sm" c={colors.gray[3]} mb="md">
+              (Changes may take time to update)
+            </Text>
+          )}
           <Stack gap={14}>
             <ChecklistItem
               checked={hasAddedApp || false}

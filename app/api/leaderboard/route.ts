@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { supabaseClient } from "@/lib/supabase-server";
-import { fetchUsersByEthAddress } from "@/lib/neynar";
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseClient } from '@/lib/supabase-server';
+import { fetchUsersByEthAddress } from '@/lib/neynar';
 
 export interface LeaderboardEntry {
   fid: string;
@@ -11,15 +11,32 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const isMiniAppValidated = request.headers.get('x-miniapp-validated');
+    if (!isMiniAppValidated) {
+      return NextResponse.json(
+        { error: 'Request must be from Farcaster mini app' },
+        { status: 403 }
+      );
+    }
+
+    // Get FID from authentication middleware
+    const fid = request.headers.get('x-user-fid');
+    if (!fid) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
     // Get top 20 users with their total points from the database
     const supabase = supabaseClient();
     const { data: leaderboardData, error: leaderboardError } = await supabase
-      .from("user_points_total")
+      .from('user_points_total')
       .select(
         `
         fid,
@@ -27,13 +44,13 @@ export async function GET() {
         user_id
       `
       )
-      .order("total_points", { ascending: false })
+      .order('total_points', { ascending: false })
       .limit(20);
 
     if (leaderboardError) {
-      console.error("Error fetching leaderboard data:", leaderboardError);
+      console.error('Error fetching leaderboard data:', leaderboardError);
       return NextResponse.json(
-        { success: false, error: "Failed to fetch leaderboard data" },
+        { success: false, error: 'Failed to fetch leaderboard data' },
         { status: 500 }
       );
     }
@@ -52,15 +69,15 @@ export async function GET() {
 
     // Fetch user data with wallet addresses
     const { data: usersData, error: usersError } = await supabase
-      .from("users")
-      .select("id, fid, preferred_wallet")
-      .in("id", userIds)
-      .not("preferred_wallet", "is", null); // Only users with confirmed wallets
+      .from('users')
+      .select('id, fid, preferred_wallet')
+      .in('id', userIds)
+      .not('preferred_wallet', 'is', null); // Only users with confirmed wallets
 
     if (usersError) {
-      console.error("Error fetching users data:", usersError);
+      console.error('Error fetching users data:', usersError);
       return NextResponse.json(
-        { success: false, error: "Failed to fetch users data" },
+        { success: false, error: 'Failed to fetch users data' },
         { status: 500 }
       );
     }
@@ -86,7 +103,7 @@ export async function GET() {
         entry.user_id ? userMap.get(entry.user_id)?.preferred_wallet : null
       )
       .filter(Boolean)
-      .join(",");
+      .join(',');
 
     // Fetch user data from Neynar API
     const userDataByAddress = await fetchUsersByEthAddress(walletAddresses);
@@ -127,14 +144,14 @@ export async function GET() {
       },
       {
         headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+          'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
         },
       }
     );
   } catch (error) {
-    console.error("Failed to fetch leaderboard data:", error);
+    console.error('Failed to fetch leaderboard data:', error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch leaderboard data" },
+      { success: false, error: 'Failed to fetch leaderboard data' },
       { status: 500 }
     );
   }

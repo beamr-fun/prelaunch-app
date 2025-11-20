@@ -13,6 +13,7 @@ import {
   useState,
 } from 'react';
 import { useMiniApp } from './miniapp-context';
+import { STANDING_THRESHOLD, UserStanding } from '@/lib/constants';
 
 const UserProviderContext = createContext<
   | {
@@ -21,6 +22,7 @@ const UserProviderContext = createContext<
         refetch: () => Promise<QueryObserverResult<NeynarUser>>;
         isLoading: boolean;
         error: Error | null;
+        standing: UserStanding;
       };
       signIn: () => Promise<void>;
       isLoading: boolean;
@@ -129,6 +131,14 @@ export const UserProvider = ({
         refetch: refetchUser,
         isLoading: isFetchingUser,
         error: userError,
+        standing:
+          isLoading || isFetchingUser
+            ? UserStanding.Loading
+            : !user?.score
+              ? UserStanding.None
+              : user.score >= STANDING_THRESHOLD
+                ? UserStanding.Good
+                : UserStanding.Low,
       },
       signIn: handleSignIn,
       isLoading,
