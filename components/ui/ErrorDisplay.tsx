@@ -12,7 +12,7 @@ const ErrorDisplay = ({
   const { colors } = useMantineTheme();
   return (
     <Paper>
-      <Group>
+      <Group mb="sm">
         <TriangleAlert size={48} color={colors.red[7]} />
         <Text fz={'lg'} fw={700}>
           {title || 'Error'}

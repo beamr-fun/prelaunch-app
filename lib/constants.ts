@@ -18,4 +18,13 @@ export const POINT_VALUES = {
 } as const;
 
 export const BEAMR_ACCOUNT_FID = 1149437;
-export const BEAMR_CHANNEL_NAME = "beamr";
+export const BEAMR_CHANNEL_NAME = 'beamr';
+
+export const STANDING_THRESHOLD = 0.55;
+
+export enum UserStanding {
+  None,
+  Loading,
+  Low,
+  Good,
+}

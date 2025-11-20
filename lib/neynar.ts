@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { env } from '@/lib/env';
 
 export interface NeynarUser {
   fid: string;
@@ -6,6 +6,7 @@ export interface NeynarUser {
   display_name: string;
   pfp_url: string;
   custody_address: string;
+  score: number;
   verifications: string[];
   verified_addresses: {
     eth_addresses: string[];
@@ -20,16 +21,16 @@ export const fetchUser = async (fid: string): Promise<NeynarUser> => {
     `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
     {
       headers: {
-        "x-api-key": env.NEYNAR_API_KEY!,
+        'x-api-key': env.NEYNAR_API_KEY!,
       },
     }
   );
   if (!response.ok) {
     console.error(
-      "Failed to fetch Farcaster user on Neynar",
+      'Failed to fetch Farcaster user on Neynar',
       await response.json()
     );
-    throw new Error("Failed to fetch Farcaster user on Neynar");
+    throw new Error('Failed to fetch Farcaster user on Neynar');
   }
   const data = await response.json();
   return data.users[0];
@@ -42,16 +43,16 @@ export const fetchUsersByEthAddress = async (
     `https://api.neynar.com/v2/farcaster/user/bulk-by-address/?addresses=${addresses}`,
     {
       headers: {
-        "x-api-key": env.NEYNAR_API_KEY!,
+        'x-api-key': env.NEYNAR_API_KEY!,
       },
     }
   );
   if (!response.ok) {
     console.error(
-      "Failed to fetch Farcaster users on Neynar",
+      'Failed to fetch Farcaster users on Neynar',
       await response.json()
     );
-    throw new Error("Failed to fetch Farcaster user on Neynar");
+    throw new Error('Failed to fetch Farcaster user on Neynar');
   }
   const data = await response.json();
   return data;
@@ -67,14 +68,14 @@ export const checkUserFollows = async (
 
       {
         headers: {
-          "x-api-key": env.NEYNAR_API_KEY!,
+          'x-api-key': env.NEYNAR_API_KEY!,
         },
       }
     );
 
     if (!response.ok) {
       console.error(
-        "Failed to fetch user with follow status:",
+        'Failed to fetch user with follow status:',
         await response.json()
       );
       return false;
@@ -86,7 +87,7 @@ export const checkUserFollows = async (
     // Check if the user is following the target (viewer_fid provides this info)
     return user?.viewer_context?.following || false;
   } catch (error) {
-    console.error("Error checking user follows:", error);
+    console.error('Error checking user follows:', error);
     return false;
   }
 };
@@ -100,13 +101,13 @@ export const checkUserInChannel = async (
       `https://api.neynar.com/v2/farcaster/channel/search?q=${channelName}&viewer_fid=${fid}`,
       {
         headers: {
-          "x-api-key": env.NEYNAR_API_KEY!,
+          'x-api-key': env.NEYNAR_API_KEY!,
         },
       }
     );
 
     if (!response.ok) {
-      console.error("Failed to fetch user channels:", await response.json());
+      console.error('Failed to fetch user channels:', await response.json());
       return false;
     }
 
@@ -115,7 +116,7 @@ export const checkUserInChannel = async (
 
     return channel?.viewer_context?.following || false;
   } catch (error) {
-    console.error("Error checking user in channel:", error);
+    console.error('Error checking user in channel:', error);
     return false;
   }
 };

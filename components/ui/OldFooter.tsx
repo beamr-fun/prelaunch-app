@@ -30,7 +30,7 @@ export default function OldFooter() {
 
   const handleCastClick = async () => {
     await sdk.actions.composeCast({
-      text: 'beamr',
+      text: 'Beamr is the easiest way to sustainably reward people who make your feed worth scrolling.  \n\nCheck out the @beamr dynamic micro-subscription app here:',
       embeds: [process.env.NEXT_PUBLIC_URL || ''],
     });
   };

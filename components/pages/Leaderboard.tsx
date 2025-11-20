@@ -20,6 +20,8 @@ import { RefreshCwIcon } from 'lucide-react';
 import { PageLayout } from '../ui/PageLayout';
 import { SfLogo } from '../ui/SFLogo';
 import sdk from '@farcaster/miniapp-sdk';
+import { useUser } from '@/contexts/user-context';
+import { UserStanding } from '@/lib/constants';
 
 export interface LeaderboardEntry {
   fid: string;
@@ -37,26 +39,22 @@ interface LeaderboardResponse {
 }
 
 export default function Leaderboard() {
+  const { user } = useUser();
   const {
     data: response,
     isLoading,
-    refetch,
     isRefetching,
   } = useApiQuery<LeaderboardResponse>({
     url: '/api/leaderboard',
     queryKey: ['leaderboard'],
     staleTime: 15000,
+    enabled: user && user.standing === UserStanding.Good,
   });
   let leaderboardData = response?.data || [];
 
   const isLoadingOrRefetching = isLoading || isRefetching;
 
   const noUsersFound = leaderboardData.length == 0;
-
-  const handleRefetch = () => {
-    leaderboardData = [];
-    refetch();
-  };
 
   const handleSupLink = async () => {
     await sdk.actions.openUrl(
@@ -74,9 +72,6 @@ export default function Leaderboard() {
             </Text>
             <SfLogo />
           </Group>
-          <ActionIcon onClick={handleRefetch}>
-            <RefreshCwIcon size={20} />
-          </ActionIcon>
         </Group>
         <TableHeader />
         <ScrollArea h={250}>
@@ -120,9 +115,7 @@ export default function Leaderboard() {
             $SUP is the governance token of Superfluid (the streaming token
             protocol Beamr uses).
           </Text>
-          <Text>
-            We have 2M+ $SUP to stream as rewards over 90 days. 
-          </Text>
+          <Text>We have 2M+ $SUP to stream as rewards over 90 days.</Text>
           <Text>Engage, share, grow, and use Beamr: you’ll get rewarded.</Text>
         </Stack>
         <Group justify="center">
