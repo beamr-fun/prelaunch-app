@@ -53,7 +53,9 @@ export const fetchUsers = async (fids: string[]): Promise<NeynarUser[]> => {
   // Fetch missing FIDs from Neynar API
   if (missingFids.length > 0) {
     const response = await fetch(
-      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${missingFids.join(",")}`,
+      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${missingFids.join(
+        ","
+      )}`,
       {
         headers: {
           "x-api-key": env.NEYNAR_API_KEY!,
@@ -82,7 +84,9 @@ export const fetchUsers = async (fids: string[]): Promise<NeynarUser[]> => {
   // Return users in the same order as input FIDs
   return fids
     .map((fid) => cachedUsers.get(fid))
-    .filter((user): user is NeynarUser => user !== undefined);
+    .filter((user): user is NeynarUser => {
+      return user !== undefined;
+    });
 };
 
 export const fetchUsersByEthAddress = async (
