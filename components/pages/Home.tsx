@@ -124,6 +124,18 @@ export default function Home() {
     );
   }
 
+  return (
+    <PageLayout>
+      <WalletSelect
+        onWalletSelect={(addr: string) => {
+          setSelectedWallet(addr);
+        }}
+        selectedWallet={selectedWallet}
+        confirmWallet={confirmWallet}
+      />
+    </PageLayout>
+  );
+
   if (currentUser?.data && !userPoints?.walletConfirmed) {
     return (
       <PageLayout>

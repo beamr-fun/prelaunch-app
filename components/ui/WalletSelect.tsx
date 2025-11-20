@@ -14,6 +14,8 @@ import LaunchPhase from './LaunchPhase';
 import { useUser } from '@/contexts/user-context';
 import { useAccount } from 'wagmi';
 import { usePoints } from '@/contexts/points-context';
+import { UserStanding } from '@/lib/constants';
+import { TriangleAlert } from 'lucide-react';
 
 export const WalletSelect = ({
   onWalletSelect,
@@ -78,6 +80,8 @@ export const WalletSelect = ({
     return null;
   }
 
+  const isLowStanding = user?.standing === UserStanding.Low;
+
   return (
     <Box>
       <Image
@@ -90,13 +94,26 @@ export const WalletSelect = ({
       />
       <LaunchPhase />
       <Paper>
-        <Stack gap="sm" mb="lg">
-          <Text>We’re not beamin’ quite yet.</Text>
-          <Text>
-            Confirm your preferred wallet to earn a $SUP rewards stream & be
-            ready for launch.
-          </Text>
-        </Stack>
+        {isLowStanding ? (
+          <Group mb="md" gap="sm">
+            <TriangleAlert
+              size={16}
+              color={colors.red[7]}
+              style={{ transform: 'translateY(-1px)' }}
+            />
+            <Text fz="sm" c={colors.red[2]} style={{ flex: 1 }}>
+              {'Account reputation is too low to receive points'}
+            </Text>
+          </Group>
+        ) : (
+          <Stack gap="sm" mb="lg">
+            <Text>We’re not beamin’ quite yet.</Text>
+            <Text>
+              Confirm your preferred wallet to earn a $SUP rewards stream & be
+              ready for launch.
+            </Text>
+          </Stack>
+        )}
         <Select
           disabled={isWalletLoading}
           label="Beamr Wallet"
