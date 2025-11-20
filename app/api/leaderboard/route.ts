@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseClient } from "@/lib/supabase-server";
 import { fetchUsersByEthAddress } from "@/lib/neynar";
 
@@ -14,8 +14,25 @@ export interface LeaderboardEntry {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Check if request is from mini app
+    const isMiniAppValidated = request.headers.get("x-miniapp-validated");
+    if (!isMiniAppValidated) {
+      return NextResponse.json(
+        { error: "Request must be from Farcaster mini app" },
+        { status: 403 }
+      );
+    }
+
+    // Get FID from authentication middleware
+    const fid = request.headers.get("x-user-fid");
+    if (!fid) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
     // Get top 20 users with their total points from the database
     const supabase = supabaseClient();
     const { data: leaderboardData, error: leaderboardError } = await supabase
