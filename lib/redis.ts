@@ -2,6 +2,8 @@ import { Redis } from '@upstash/redis';
 import { env } from 'process';
 import { NeynarUser } from './neynar';
 
+const NEYNAR_USER_PREFIX = 'beamr:neynaruser:';
+
 if (!env.REDIS_URL || !env.REDIS_TOKEN) {
   console.warn(
     'REDIS_URL or REDIS_TOKEN environment variable is not defined, please add to enable background notifications and webhooks.'
@@ -17,19 +19,19 @@ export const redis =
     : null;
 
 export const getNeynarUsers = async (fids: number[]) => {
-  const keys = fids.map((fid) => `beamr:neynarusers:user:${fid}`);
+  const keys = fids.map((fid) => `${NEYNAR_USER_PREFIX}:${fid}`);
 
   if (!redis) throw new Error('Redis client is not initialized');
 
   const cached = await redis.mget(keys);
 
-  return cached;
+  return cached as NeynarUser[];
 };
 
 export const setNeynarUsers = async (users: any[]) => {
   if (!redis) throw new Error('Redis client is not initialized');
 
-  const keys = users.map((user) => `beamr:neynarusers:user:${user.fid}`);
+  const keys = users.map((user) => `${NEYNAR_USER_PREFIX}:${user.fid}`);
 
   const pipeline = redis.pipeline();
 
@@ -43,7 +45,7 @@ export const setNeynarUsers = async (users: any[]) => {
 export const getNeynarUser = async (fid: string) => {
   if (!redis) return null;
   try {
-    const key = `beamr:neynarusers:user:${fid}`;
+    const key = `${NEYNAR_USER_PREFIX}:${fid}`;
     const data = await redis.get(key);
     return data ? (data as any) : null;
   } catch (error) {
@@ -58,7 +60,7 @@ export const getNeynarUser = async (fid: string) => {
 export const setNeynarUser = async (fid: string, user: any) => {
   if (!redis) return;
   try {
-    const key = `beamr:neynarusers:user:${fid}`;
+    const key = `${NEYNAR_USER_PREFIX}:${fid}`;
     await redis.set(key, user);
   } catch (error) {
     console.error(`Failed to cache Neynar user for fid ${fid}:`, error);
