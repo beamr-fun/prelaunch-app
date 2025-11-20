@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { getNeynarUser, setNeynarUser } from "@/lib/redis";
 
 export interface NeynarUser {
   fid: string;
@@ -33,6 +34,55 @@ export const fetchUser = async (fid: string): Promise<NeynarUser> => {
   }
   const data = await response.json();
   return data.users[0];
+};
+
+export const fetchUsers = async (fids: string[]): Promise<NeynarUser[]> => {
+  const cachedUsers = new Map<string, NeynarUser>();
+  const missingFids: string[] = [];
+
+  // Check cache for each FID
+  for (const fid of fids) {
+    const cached = await getNeynarUser(fid);
+    if (cached) {
+      cachedUsers.set(fid, cached as NeynarUser);
+    } else {
+      missingFids.push(fid);
+    }
+  }
+
+  // Fetch missing FIDs from Neynar API
+  if (missingFids.length > 0) {
+    const response = await fetch(
+      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${missingFids.join(",")}`,
+      {
+        headers: {
+          "x-api-key": env.NEYNAR_API_KEY!,
+        },
+      }
+    );
+    if (!response.ok) {
+      console.error(
+        "Failed to fetch Farcaster users on Neynar",
+        await response.json()
+      );
+      throw new Error("Failed to fetch Farcaster users on Neynar");
+    }
+    const data = await response.json();
+    const users = data.users || [];
+
+    // Cache the newly fetched users
+    for (const user of users) {
+      if (user.fid) {
+        await setNeynarUser(user.fid, user);
+        cachedUsers.set(user.fid, user);
+      }
+    }
+  }
+
+  // Return users in the same order as input FIDs
+  return fids
+    .map((fid) => cachedUsers.get(fid))
+    .filter((user): user is NeynarUser => user !== undefined);
 };
 
 export const fetchUsersByEthAddress = async (
