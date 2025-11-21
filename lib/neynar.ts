@@ -27,7 +27,17 @@ export const NeynarUserSchema = z.object({
 
 export type NeynarUser = z.infer<typeof NeynarUserSchema>;
 
-export const fetchUser = async (fid: string): Promise<NeynarUser> => {
+export const fetchUser = async (
+  fid: string,
+  opts?: { fresh?: boolean }
+): Promise<NeynarUser> => {
+  const { fresh } = opts ?? {};
+
+  if (!fresh) {
+    const cached = await getNeynarUser(fid);
+    if (cached) return cached;
+  }
+
   const response = await fetch(
     `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
     {
@@ -36,6 +46,7 @@ export const fetchUser = async (fid: string): Promise<NeynarUser> => {
       },
     }
   );
+
   if (!response.ok) {
     console.error(
       'Failed to fetch Farcaster user on Neynar',
@@ -43,8 +54,13 @@ export const fetchUser = async (fid: string): Promise<NeynarUser> => {
     );
     throw new Error('Failed to fetch Farcaster user on Neynar');
   }
+
   const data = await response.json();
-  return data.users[0];
+  const user = data.users[0] as NeynarUser;
+
+  await setNeynarUser(fid, user);
+
+  return user;
 };
 
 // export const fetchUsersByEthAddress = async (
@@ -149,9 +165,6 @@ export const fetchUsers = async (fids: number[]): Promise<NeynarUser[]> => {
         console.log();
       }
     });
-
-    // log out missing fids
-    console.log('Missing FIDs from cache:', missingFids);
 
     if (missingFids.length) {
       const res = await fetch(
