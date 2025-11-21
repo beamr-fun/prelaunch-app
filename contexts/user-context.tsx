@@ -72,7 +72,7 @@ export const UserProvider = ({
     },
   });
 
-  const { mutate: signIn } = useApiMutation<{
+  const { mutateAsync: signIn } = useApiMutation<{
     user: NeynarUser;
   }>({
     url: '/api/auth/sign-in',
@@ -119,10 +119,22 @@ export const UserProvider = ({
   }, [context, signIn]);
 
   useEffect(() => {
-    if (context && !isSignedIn && !isLoading && autoSignIn && !userError) {
+    if (context && !isSignedIn && !isLoading && autoSignIn && !isFetchingUser) {
+      console.log('Auto sign-in triggered', {
+        isSignedIn,
+        isLoading,
+        autoSignIn,
+      });
       handleSignIn();
     }
-  }, [context, handleSignIn, isSignedIn, isLoading, autoSignIn, userError]);
+  }, [
+    context,
+    handleSignIn,
+    isSignedIn,
+    isLoading,
+    autoSignIn,
+    isFetchingUser,
+  ]);
 
   const value = useMemo(() => {
     return {
