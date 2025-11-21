@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
 
   const fid = request.headers.get('x-user-fid')!;
   console.log('fid', fid);
-  const user = await fetchUser(fid);
+  const user = await fetchUser(fid, { fresh: true });
   return NextResponse.json(user);
 }
