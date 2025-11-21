@@ -47,27 +47,27 @@ export const fetchUser = async (fid: string): Promise<NeynarUser> => {
   return data.users[0];
 };
 
-export const fetchUsersByEthAddress = async (
-  addresses: string
-): Promise<Record<string, NeynarUser[]>> => {
-  const response = await fetch(
-    `https://api.neynar.com/v2/farcaster/user/bulk-by-address/?addresses=${addresses}`,
-    {
-      headers: {
-        'x-api-key': env.NEYNAR_API_KEY!,
-      },
-    }
-  );
-  if (!response.ok) {
-    console.error(
-      'Failed to fetch Farcaster users on Neynar',
-      await response.json()
-    );
-    throw new Error('Failed to fetch Farcaster user on Neynar');
-  }
-  const data = await response.json();
-  return data;
-};
+// export const fetchUsersByEthAddress = async (
+//   addresses: string
+// ): Promise<Record<string, NeynarUser[]>> => {
+//   const response = await fetch(
+//     `https://api.neynar.com/v2/farcaster/user/bulk-by-address/?addresses=${addresses}`,
+//     {
+//       headers: {
+//         'x-api-key': env.NEYNAR_API_KEY!,
+//       },
+//     }
+//   );
+//   if (!response.ok) {
+//     console.error(
+//       'Failed to fetch Farcaster users on Neynar',
+//       await response.json()
+//     );
+//     throw new Error('Failed to fetch Farcaster user on Neynar');
+//   }
+//   const data = await response.json();
+//   return data;
+// };
 
 export const checkUserFollows = async (
   fid: string,
