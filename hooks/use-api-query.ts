@@ -24,6 +24,7 @@ export const useApiQuery = <TData, TBody = unknown>(
   } = options;
 
   return useQuery<TData>({
+    enabled,
     ...queryOptions,
     queryFn: async () => {
       const response = await fetch(url, {
