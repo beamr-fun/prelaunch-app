@@ -39,6 +39,7 @@ export const useApiQuery = <TData, TBody = unknown>(
       });
 
       if (!response.ok) {
+        console.error('API request failed:', await response.text());
         throw new Error(`API Error: ${response.status}`);
       }
 
