@@ -58,7 +58,7 @@ export default function Home() {
     }
   }, []);
 
-  if (loadingUserOrMiniApp)
+  if (loadingUserOrMiniApp || !currentUser?.data)
     return (
       <PageLayout>
         <Image
@@ -123,7 +123,7 @@ export default function Home() {
     );
   }
 
-  if (currentUser?.data && !userPoints?.walletConfirmed) {
+  if (!userPoints?.walletConfirmed) {
     return (
       <PageLayout>
         <WalletSelect
