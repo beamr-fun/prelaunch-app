@@ -2,7 +2,8 @@ import { Redis } from '@upstash/redis';
 import { env } from 'process';
 import { NeynarUser } from './neynar';
 
-const NEYNAR_USER_PREFIX = 'beamr:neynaruser:';
+const NEYNAR_USER_PREFIX = 'beamr:neynaruserV2:';
+const TTL_SECONDS = 48 * 60 * 60;
 
 if (!env.REDIS_URL || !env.REDIS_TOKEN) {
   console.warn(
@@ -19,50 +20,41 @@ export const redis =
     : null;
 
 export const getNeynarUsers = async (fids: number[]) => {
+  if (!redis) throw new Error('Redis client is not initialized');
+
   const keys = fids.map((fid) => `${NEYNAR_USER_PREFIX}${fid}`);
 
-  if (!redis) throw new Error('Redis client is not initialized');
+  // Don't pass generics — Upstash infers correctly.
+  const values = await redis.mget(keys);
 
-  const cached = await redis.mget(keys);
-
-  return cached as NeynarUser[];
+  return values as (NeynarUser | null)[];
 };
 
-export const setNeynarUsers = async (users: any[]) => {
+export const setNeynarUsers = async (users: NeynarUser[]) => {
   if (!redis) throw new Error('Redis client is not initialized');
-
-  const keys = users.map((user) => `${NEYNAR_USER_PREFIX}${user.fid}`);
 
   const pipeline = redis.pipeline();
 
-  users.forEach((user, index) => {
-    pipeline.set(keys[index], user);
-  });
+  for (const user of users) {
+    const key = `${NEYNAR_USER_PREFIX}${user.fid}`;
+    pipeline.set(key, user, { ex: TTL_SECONDS });
+  }
 
   await pipeline.exec();
 };
 
 export const getNeynarUser = async (fid: string) => {
   if (!redis) return null;
-  try {
-    const key = `${NEYNAR_USER_PREFIX}${fid}`;
-    const data = await redis.get(key);
-    return data ? (data as any) : null;
-  } catch (error) {
-    console.error(
-      `Failed to get Neynar user from cache for fid ${fid}:`,
-      error
-    );
-    return null;
-  }
+
+  const key = `${NEYNAR_USER_PREFIX}${fid}`;
+  const data = await redis.get<NeynarUser>(key);
+
+  return data ?? null;
 };
 
-export const setNeynarUser = async (fid: string, user: any) => {
+export const setNeynarUser = async (fid: string, user: NeynarUser) => {
   if (!redis) return;
-  try {
-    const key = `${NEYNAR_USER_PREFIX}${fid}`;
-    await redis.set(key, user);
-  } catch (error) {
-    console.error(`Failed to cache Neynar user for fid ${fid}:`, error);
-  }
+
+  const key = `${NEYNAR_USER_PREFIX}${fid}`;
+  await redis.set(key, user, { ex: TTL_SECONDS });
 };
