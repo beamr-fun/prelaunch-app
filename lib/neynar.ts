@@ -1,10 +1,5 @@
 import { env } from '@/lib/env';
-import {
-  getNeynarUser,
-  getNeynarUsers,
-  setNeynarUser,
-  setNeynarUsers,
-} from './redis';
+import { getNeynarUsers, setNeynarUsers } from './redis';
 import z from 'zod';
 
 export const NeynarUserSchema = z.object({

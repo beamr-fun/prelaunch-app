@@ -120,11 +120,6 @@ export const UserProvider = ({
 
   useEffect(() => {
     if (context && !isSignedIn && !isLoading && autoSignIn && !isFetchingUser) {
-      console.log('Auto sign-in triggered', {
-        isSignedIn,
-        isLoading,
-        autoSignIn,
-      });
       handleSignIn();
     }
   }, [
