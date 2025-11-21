@@ -1,24 +1,26 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabaseClient } from "@/lib/supabase-server";
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseClient } from '@/lib/supabase-server';
 import {
   POINT_VALUES,
   BEAMR_ACCOUNT_FID,
   BEAMR_CHANNEL_NAME,
-} from "@/lib/constants";
-import { checkUserFollows, checkUserInChannel } from "@/lib/neynar";
+  STANDING_THRESHOLD,
+  UserStanding,
+} from '@/lib/constants';
+import { checkUserFollows, checkUserInChannel, fetchUser } from '@/lib/neynar';
 import {
   awardFollowPoints,
   awardChannelJoinPoints,
   awardAppAddPoints,
-} from "@/lib/points-utils";
+} from '@/lib/points-utils';
 
 export async function POST(request: NextRequest) {
   try {
     // Check if request is from mini app
-    const isMiniAppValidated = request.headers.get("x-miniapp-validated");
+    const isMiniAppValidated = request.headers.get('x-miniapp-validated');
     if (!isMiniAppValidated) {
       return NextResponse.json(
-        { error: "Request must be from Farcaster mini app" },
+        { error: 'Request must be from Farcaster mini app' },
         { status: 403 }
       );
     }
@@ -30,7 +32,7 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!walletAddress) {
       return NextResponse.json(
-        { error: "Wallet address is required" },
+        { error: 'Wallet address is required' },
         { status: 400 }
       );
     }
@@ -38,16 +40,16 @@ export async function POST(request: NextRequest) {
     // Validate wallet address format
     if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
       return NextResponse.json(
-        { error: "Invalid wallet address format" },
+        { error: 'Invalid wallet address format' },
         { status: 400 }
       );
     }
 
     // Get FID from authentication middleware
-    const fid = request.headers.get("x-user-fid");
+    const fid = request.headers.get('x-user-fid');
     if (!fid) {
       return NextResponse.json(
-        { error: "Authentication required" },
+        { error: 'Authentication required' },
         { status: 401 }
       );
     }
@@ -60,18 +62,32 @@ export async function POST(request: NextRequest) {
       referrerFid = undefined;
     }
 
+    const neynarUser = await fetchUser(fid.toString());
+
+    if (!neynarUser) {
+      return NextResponse.json(
+        { error: 'Failed to fetch user from Neynar' },
+        { status: 500 }
+      );
+    }
+
+    const userStanding =
+      neynarUser.score < STANDING_THRESHOLD
+        ? UserStanding.Low
+        : UserStanding.Good;
+
     // Get or create user in Supabase
     const supabase = supabaseClient();
     const { data: existingUser, error: getUserError } = await supabase
-      .from("users")
-      .select("*")
-      .eq("fid", parseInt(fid))
+      .from('users')
+      .select('*')
+      .eq('fid', parseInt(fid))
       .single();
 
-    if (getUserError && getUserError.code !== "PGRST116") {
-      console.error("Error fetching user:", getUserError);
+    if (getUserError && getUserError.code !== 'PGRST116') {
+      console.error('Error fetching user:', getUserError);
       return NextResponse.json(
-        { error: "Failed to fetch user" },
+        { error: 'Failed to fetch user' },
         { status: 500 }
       );
     }
@@ -79,7 +95,7 @@ export async function POST(request: NextRequest) {
     // Check if wallet is already confirmed
     if (existingUser?.preferred_wallet) {
       return NextResponse.json(
-        { error: "Wallet already confirmed" },
+        { error: 'Wallet already confirmed' },
         { status: 400 }
       );
     }
@@ -89,7 +105,7 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       // Update existing user
       const { data: updatedUser, error: updateError } = await supabase
-        .from("users")
+        .from('users')
         .update({
           preferred_wallet: walletAddress,
           referrer_fid: referrerFid
@@ -97,14 +113,14 @@ export async function POST(request: NextRequest) {
             : existingUser.referrer_fid,
           updated_at: new Date().toISOString(),
         })
-        .eq("fid", parseInt(fid))
+        .eq('fid', parseInt(fid))
         .select()
         .single();
 
       if (updateError) {
-        console.error("Error updating user:", updateError);
+        console.error('Error updating user:', updateError);
         return NextResponse.json(
-          { error: "Failed to update user" },
+          { error: 'Failed to update user' },
           { status: 500 }
         );
       }
@@ -112,7 +128,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Create new user
       const { data: newUser, error: createError } = await supabase
-        .from("users")
+        .from('users')
         .insert({
           fid: parseInt(fid),
           preferred_wallet: walletAddress,
@@ -124,30 +140,34 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (createError) {
-        console.error("Error creating user:", createError);
+        console.error('Error creating user:', createError);
         return NextResponse.json(
-          { error: "Failed to create user" },
+          { error: 'Failed to create user' },
           { status: 500 }
         );
       }
       user = newUser;
     }
 
-    // Award points for wallet confirmation
-    const { error: walletPointsError } = await supabase.from("points").insert({
-      user_id: user.id,
-      fid: parseInt(fid),
-      amount: POINT_VALUES.WALLET_CONFIRMATION,
-      source: "wallet_confirmation",
-      metadata: { description: "Wallet confirmation bonus" },
-      created_at: new Date().toISOString(),
-    });
+    if (userStanding === UserStanding.Good) {
+      // Award points for wallet confirmation
+      const { error: walletPointsError } = await supabase
+        .from('points')
+        .insert({
+          user_id: user.id,
+          fid: parseInt(fid),
+          amount: POINT_VALUES.WALLET_CONFIRMATION,
+          source: 'wallet_confirmation',
+          metadata: { description: 'Wallet confirmation bonus' },
+          created_at: new Date().toISOString(),
+        });
 
-    if (walletPointsError) {
-      console.error(
-        "Error adding wallet confirmation points:",
-        walletPointsError
-      );
+      if (walletPointsError) {
+        console.error(
+          'Error adding wallet confirmation points:',
+          walletPointsError
+        );
+      }
     }
 
     // Check social status and award points automatically
@@ -158,31 +178,43 @@ export async function POST(request: NextRequest) {
     };
 
     try {
-      // Check if user follows BEAMR account
-      const isFollowing = await checkUserFollows(
-        fid,
-        BEAMR_ACCOUNT_FID.toString()
-      );
+      if (userStanding === UserStanding.Good) {
+        // Check if user follows BEAMR account
+        const isFollowing = await checkUserFollows(
+          fid,
+          BEAMR_ACCOUNT_FID.toString()
+        );
 
-      if (isFollowing) {
-        awardedPoints.follow = await awardFollowPoints(user.id, parseInt(fid));
-      }
+        if (isFollowing) {
+          awardedPoints.follow = await awardFollowPoints(
+            user.id,
+            parseInt(fid)
+          );
+        }
 
-      // Check if user is in BEAMR channel
-      const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
-      if (isInChannel) {
-        awardedPoints.channelJoin = await awardChannelJoinPoints(
-          user.id,
-          parseInt(fid)
+        // Check if user is in BEAMR channel
+        const isInChannel = await checkUserInChannel(fid, BEAMR_CHANNEL_NAME);
+        if (isInChannel) {
+          awardedPoints.channelJoin = await awardChannelJoinPoints(
+            user.id,
+            parseInt(fid)
+          );
+        }
+
+        // Check if user has added the miniapp
+        if (miniAppAdded) {
+          awardedPoints.appAdd = await awardAppAddPoints(
+            user.id,
+            parseInt(fid)
+          );
+        }
+      } else {
+        console.log(
+          `User standing too low, skipping social point awards. User Fid: ${user.fid}, Neynar Fid: ${neynarUser.fid} User Score ${neynarUser.score}`
         );
       }
-
-      // Check if user has added the miniapp
-      if (miniAppAdded) {
-        awardedPoints.appAdd = await awardAppAddPoints(user.id, parseInt(fid));
-      }
     } catch (error) {
-      console.error("Error checking social status:", error);
+      console.error('Error checking social status:', error);
       // Continue execution even if social checks fail
     }
 
@@ -191,49 +223,55 @@ export async function POST(request: NextRequest) {
     const finalReferrerFid = referrerFid || user.referrer_fid;
 
     if (finalReferrerFid) {
-      // Award bonus points to the referrer
-      const { data: referrerUser, error: referrerError } = await supabase
-        .from("users")
-        .select("*")
-        .eq("fid", finalReferrerFid)
-        .single();
+      if (userStanding === UserStanding.Good) {
+        // Award bonus points to the referrer
+        const { data: referrerUser, error: referrerError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('fid', finalReferrerFid)
+          .single();
 
-      if (!referrerError && referrerUser) {
-        const { error: referrerPointsError } = await supabase
-          .from("points")
-          .insert({
-            user_id: referrerUser.id,
-            fid: finalReferrerFid,
-            amount: POINT_VALUES.REFERRAL_BONUS,
-            source: "referral",
-            metadata: { description: `Referral bonus for ${fid}` },
-            created_at: new Date().toISOString(),
-          });
+        if (!referrerError && referrerUser) {
+          const { error: referrerPointsError } = await supabase
+            .from('points')
+            .insert({
+              user_id: referrerUser.id,
+              fid: finalReferrerFid,
+              amount: POINT_VALUES.REFERRAL_BONUS,
+              source: 'referral',
+              metadata: { description: `Referral bonus for ${fid}` },
+              created_at: new Date().toISOString(),
+            });
 
-        if (referrerPointsError) {
-          console.error(
-            "Error adding referrer bonus points:",
-            referrerPointsError
-          );
-        } else {
-          referralTransaction = { amount: POINT_VALUES.REFERRAL_BONUS };
+          if (referrerPointsError) {
+            console.error(
+              'Error adding referrer bonus points:',
+              referrerPointsError
+            );
+          } else {
+            referralTransaction = { amount: POINT_VALUES.REFERRAL_BONUS };
+          }
         }
+      } else {
+        console.log(
+          `User standing too low, skipping referral points. User Fid: ${user.fid}, Neynar Fid: ${neynarUser.fid} User Score ${neynarUser.score}`
+        );
       }
     }
 
     // Get updated user data with total points
     const { data: userWithPoints, error: pointsError } = await supabase
-      .from("user_points_total")
-      .select("*")
-      .eq("user_id", user.id)
+      .from('user_points_total')
+      .select('*')
+      .eq('user_id', user.id)
       .single();
 
     const { data: recentTransactions, error: transactionsError } =
       await supabase
-        .from("points")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
+        .from('points')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
         .limit(5);
 
     const totalPoints = userWithPoints?.total_points || 0;
@@ -253,9 +291,9 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error confirming wallet:", error);
+    console.error('Error confirming wallet:', error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
