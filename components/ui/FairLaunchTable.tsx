@@ -1,5 +1,14 @@
 import { useMemo } from 'react';
-import { Box, Group, Loader, Paper, Stack, Table, Text } from '@mantine/core';
+import {
+  Box,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+  Table,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import { useEthPrice } from '@/hooks/use-eth-price';
 
 const tableData = [
@@ -62,6 +71,7 @@ const tableData = [
 ];
 
 const FairLaunchTable = () => {
+  const { colors } = useMantineTheme();
   const { ethPrice, isLoading } = useEthPrice();
 
   const rows = useMemo(() => {
@@ -75,7 +85,8 @@ const FairLaunchTable = () => {
         <Table.Td>${(element.ethPerToken * ethPrice).toFixed(8)}</Table.Td>
         <Table.Td>${(element.newPriceEth * ethPrice).toFixed(8)}</Table.Td>
         <Table.Td>
-          ${Intl.NumberFormat('en', {
+          $
+          {Intl.NumberFormat('en', {
             notation: 'compact',
             maximumFractionDigits: 2,
           }).format(element.fdvEth * ethPrice)}
@@ -88,7 +99,16 @@ const FairLaunchTable = () => {
     <Box>
       <Paper>
         <Stack>
-          <Text fz="lg" fw={500}>
+          <Text
+            fz="lg"
+            fw={500}
+            variant="gradient"
+            gradient={{
+              from: colors.blue[0],
+              to: colors.blue[4],
+              deg: 90,
+            }}
+          >
             Fair Launch Scenarios
           </Text>
           {isLoading ? (

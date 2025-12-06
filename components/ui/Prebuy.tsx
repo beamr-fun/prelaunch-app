@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Group, Image, Paper, Stack, Text } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Group,
+  Image,
+  Paper,
+  Stack,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import Acknowledgement from './Acknowledgement';
 import FairLaunchTable from './FairLaunchTable';
 
 const Prebuy = () => {
   const [hasAcknowledge, setHasAcknowledge] = useState(false);
+
+  const { colors } = useMantineTheme();
 
   useEffect(() => {
     const hasAcknowledge = localStorage.getItem('hasAcknowledge');
@@ -28,8 +39,17 @@ const Prebuy = () => {
         <Box>
           <Paper>
             <Stack>
-              <Text fz="lg" fw={500}>
-                Community First
+              <Text
+                fz="lg"
+                fw={500}
+                variant="gradient"
+                gradient={{
+                  from: colors.blue[0],
+                  to: colors.blue[4],
+                  deg: 90,
+                }}
+              >
+                $BEAMR Fair Launch
               </Text>
               <Text fz="sm">
                 Even in most "fair launches" normal users can't compete with

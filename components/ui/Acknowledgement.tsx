@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Box,
   Button,
   Group,
+  List,
   Paper,
   Stack,
   Text,
@@ -16,59 +17,69 @@ const Acknowledgement = ({
   setHasAcknowledge: () => void;
 }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const [hasAcknowledge] = useState(() => {
+    const hasAcknowledge = localStorage.getItem('hasAcknowledge');
+
+    if (hasAcknowledge) {
+      return true;
+    }
+
+    return false;
+  });
 
   const { colors } = useMantineTheme();
-  console.log(isChecked);
 
   return (
     <Box>
       <Paper>
         <Stack>
-          <Text fz="lg" fw={500}>
-            Details & Acknowledgement
+          <Text
+            fz="lg"
+            fw={500}
+            variant="gradient"
+            gradient={{
+              from: colors.blue[0],
+              to: colors.blue[4],
+              deg: 90,
+            }}
+          >
+            How it works
           </Text>
           <Stack gap="xs">
-            <Text fz="sm" c={colors.gray[3]}>
-              - Deposit ETH to immediately buy $BEAMR from the locked LP created
-              at launch.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - Deposits and withdrawals are open until token launch on December
-              10th (TBA).
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - The total ETH in the batch purchase determines the executed
-              token price.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - This price is uniform for all depositors.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - The deposited ETH (minus standard LP fees) go directly to the
-              $BEAMR LP.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - Fair launch token purchases are locked for 5 days.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - Fair launch participants will receive XP in the Beamr $SUP
-              campaign.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - $BEAMR is a utility token for streaming.
-            </Text>
-            <Text fz="sm" c={colors.gray[3]}>
-              - The Beamr team makes no representations about $BEAMR's value or
-              future development.
-            </Text>
+            <List>
+              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+                Deposit ETH to buy $BEAMR in the first transaction from the new
+                locked LP.
+              </List.Item>
+              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+                Deposits/withdrawals are open until token launch on December
+                11th.
+              </List.Item>
+              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+                All participants get the same price based on total deposits
+                (standard LP fees apply).
+              </List.Item>
+              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+                Tokens are locked 3 days, then linearly streamed out over 7.
+              </List.Item>
+              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+                Participants earn XP in our $SUP campaign.
+              </List.Item>
+            </List>
           </Stack>
           <Checkbox
-            label="I acknowledge the above terms & conditions. No information provided by the Beamr team has been interpreted as financial advice."
+            checked={isChecked || hasAcknowledge}
+            label="I acknowledge: $BEAMR is a utility token for streaming. No representations are made on its value or development. NFA."
+            disabled={hasAcknowledge}
             c={colors.gray[3]}
             onChange={(e) => setIsChecked(e.currentTarget.checked)}
           />
           <Group justify="center">
-            <Button size="lg" disabled={!isChecked} onClick={setHasAcknowledge}>
+            <Button
+              size="lg"
+              disabled={!isChecked && !hasAcknowledge}
+              onClick={setHasAcknowledge}
+            >
               Continue
             </Button>
           </Group>
