@@ -81,11 +81,14 @@ const FairLaunchTable = () => {
 
     return tableData.map((element) => (
       <Table.Tr key={element.ethAmount}>
-        <Table.Td>{element.ethAmount} ETH</Table.Td>
-        <Table.Td>${(element.ethPerToken * ethPrice).toFixed(8)}</Table.Td>
-        <Table.Td>${(element.newPriceEth * ethPrice).toFixed(8)}</Table.Td>
-        <Table.Td>
-          $
+        <Table.Td ta="center">{element.ethAmount}</Table.Td>
+        <Table.Td ta="center">
+          {(element.ethPerToken * ethPrice).toFixed(8)}
+        </Table.Td>
+        <Table.Td ta="center">
+          {(element.newPriceEth * ethPrice).toFixed(8)}
+        </Table.Td>
+        <Table.Td ta="center">
           {Intl.NumberFormat('en', {
             notation: 'compact',
             maximumFractionDigits: 2,
@@ -111,6 +114,12 @@ const FairLaunchTable = () => {
           >
             Fair Launch Scenarios
           </Text>
+          <Text fz="xs" c="gray.5" fs="italic">
+            The following is provided for informational purposes only and should
+            not be interpreted as financial advice. Estimates are best effort
+            based on onchain simulations & an external ETH price API. Other
+            unforeseen factors may apply. Do your own research.
+          </Text>
           {isLoading ? (
             <Group justify="center">
               <Loader color="var(--glass-thick)" />
@@ -119,10 +128,10 @@ const FairLaunchTable = () => {
             <Table>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th>Community Deposit</Table.Th>
-                  <Table.Th>Community Buy Price</Table.Th>
-                  <Table.Th>Open LP Price</Table.Th>
-                  <Table.Th>Implied FDV</Table.Th>
+                  <Table.Th ta="center">Total Deposits (ETH)</Table.Th>
+                  <Table.Th ta="center">Community Price ($)</Table.Th>
+                  <Table.Th ta="center">LP Open ($)</Table.Th>
+                  <Table.Th ta="center">Implied FDV ($)</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>{rows}</Table.Tbody>
