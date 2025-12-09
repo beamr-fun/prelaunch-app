@@ -9,6 +9,7 @@ export const config = createConfig({
     [base.id]: http(),
   },
   connectors: [miniAppConnector()],
+  ssr: true,
 });
 
 const queryClient = new QueryClient();
