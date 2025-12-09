@@ -165,7 +165,38 @@ const Prebuy = () => {
           fit="contain"
         />
         <Box>
-          <Paper>
+          <Paper pos="relative">
+            <Box
+              pos="absolute"
+              top={16}
+              right={16}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <Box
+                w={12}
+                h={12}
+                bg="red"
+                style={{
+                  borderRadius: '50%',
+                  animation: 'pulse 1.5s ease-in-out infinite',
+                }}
+              />
+              <Text fz="md" fw={500}>
+                Live
+              </Text>
+            </Box>
+            <style>
+              {`
+                @keyframes pulse {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.3; }
+                }
+              `}
+            </style>
             <Stack>
               <Text
                 fz="lg"
@@ -180,13 +211,9 @@ const Prebuy = () => {
                 $BEAMR Fair Launch
               </Text>
               <Text fz="sm">
-                Even in most "fair launches" normal users can't compete with
-                snipers.
+                In most "fair launches" normal users can't compete with snipers.
               </Text>
-              <Text fz="sm">
-                That's why we're bundling a community token buy in the $BEAMR
-                launch.
-              </Text>
+              <Text fz="sm">We're doing it differently.</Text>
               {hasAcknowledge && (
                 <Group justify="center">
                   <Button size="lg" onClick={() => setHasAcknowledge(false)}>
