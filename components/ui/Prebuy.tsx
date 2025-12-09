@@ -178,115 +178,117 @@ const Prebuy = () => {
             </Stack>
           </Paper>
         </Box>
-        <Box>
-          <Paper>
-            <Stack align="center" gap={4} mb="md">
-              <Text fz="xl" fw={600}>
-                {formattedTotalBalance} ETH
-              </Text>
-              <Text fz="sm" c="gray.5">
-                Fair Launch Deposit
-              </Text>
-            </Stack>
-            <Box>
-              <Stack>
-                <Paper
-                  style={{
-                    backgroundColor: 'var(--glass-thick)',
-                    padding: '12px',
-                  }}
-                >
-                  <Text fz="sm" c="gray.4" mb={4}>
-                    Deposit
-                  </Text>
-                  <Group justify="space-between" align="center" gap="xs">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="0"
-                      value={depositAmount}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (/^[0-9]*\.?[0-9]*$/.test(value)) {
-                          setDepositAmount(value);
-                        }
-                      }}
-                      style={{
-                        fontSize: '24px',
-                        fontWeight: 500,
-                        background: 'transparent',
-                        border: 'none',
-                        outline: 'none',
-                        color: 'var(--mantine-color-gray-0)',
-                        flex: 1,
-                        width: '100%',
-                        minWidth: 0,
-                      }}
-                    />
-                    <Text fz="lg" fw={500} c="gray.4">
-                      ETH
-                    </Text>
-                  </Group>
-                  <Group justify="space-between" mt={4}>
-                    {isBelowMin ? (
-                      <Text fz="xs" c="red">
-                        ({MIN_DEPOSIT} ETH Minimum)
-                      </Text>
-                    ) : isAboveMax ? (
-                      <Text fz="xs" c="red">
-                        ({MAX_DEPOSIT} ETH Maximum)
-                      </Text>
-                    ) : (
-                      <Text fz="xs" c="gray.5">
-                        ${dollarAmount || '0'}
-                      </Text>
-                    )}
-                    <Text fz="xs" c="gray.5">
-                      Balance: {formattedBalance}
-                    </Text>
-                  </Group>
-                </Paper>
-                <Group wrap="nowrap" align="flex-start" gap="xs">
-                  <Info
-                    size={20}
-                    color="var(--mantine-color-red-5)"
-                    style={{ flexShrink: 0, marginTop: 2 }}
-                  />
-                  <Text fz="xs" c="red">
-                    IMPORTANT: The number of BEAMR you will receive depends on
-                    the total ETH deposited (see estimates below). Your tokens
-                    will be locked when trading opens.
-                  </Text>
-                </Group>
-                <Button
-                  size="lg"
-                  fullWidth
-                  mt="md"
-                  onClick={handleDeposit}
-                  disabled={!isValidAmount}
-                >
-                  Deposit
-                </Button>
-                {successMessage && (
-                  <Text fz="sm" c="green" ta="center">
-                    {successMessage}
-                  </Text>
-                )}
-                {hasUserDeposit && (
-                  <Text
-                    fz="sm"
-                    ta="center"
-                    td="underline"
-                    style={{ cursor: 'pointer' }}
-                    onClick={handleWithdraw}
-                  >
-                    Withdraw Deposit: {formattedUserDeposit} ETH
-                  </Text>
-                )}
+        {hasAcknowledge && (
+          <Box>
+            <Paper>
+              <Stack align="center" gap={4} mb="md">
+                <Text fz="xl" fw={600}>
+                  {formattedTotalBalance} ETH
+                </Text>
+                <Text fz="sm" c="gray.5">
+                  Fair Launch Deposit
+                </Text>
               </Stack>
-            </Box>
-          </Paper>
-        </Box>
+              <Box>
+                <Stack>
+                  <Paper
+                    style={{
+                      backgroundColor: 'var(--glass-thick)',
+                      padding: '12px',
+                    }}
+                  >
+                    <Text fz="sm" c="gray.4" mb={4}>
+                      Deposit
+                    </Text>
+                    <Group justify="space-between" align="center" gap="xs">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={depositAmount}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^[0-9]*\.?[0-9]*$/.test(value)) {
+                            setDepositAmount(value);
+                          }
+                        }}
+                        style={{
+                          fontSize: '24px',
+                          fontWeight: 500,
+                          background: 'transparent',
+                          border: 'none',
+                          outline: 'none',
+                          color: 'var(--mantine-color-gray-0)',
+                          flex: 1,
+                          width: '100%',
+                          minWidth: 0,
+                        }}
+                      />
+                      <Text fz="lg" fw={500} c="gray.4">
+                        ETH
+                      </Text>
+                    </Group>
+                    <Group justify="space-between" mt={4}>
+                      {isBelowMin ? (
+                        <Text fz="xs" c="red">
+                          ({MIN_DEPOSIT} ETH Minimum)
+                        </Text>
+                      ) : isAboveMax ? (
+                        <Text fz="xs" c="red">
+                          ({MAX_DEPOSIT} ETH Maximum)
+                        </Text>
+                      ) : (
+                        <Text fz="xs" c="gray.5">
+                          ${dollarAmount || '0'}
+                        </Text>
+                      )}
+                      <Text fz="xs" c="gray.5">
+                        Balance: {formattedBalance}
+                      </Text>
+                    </Group>
+                  </Paper>
+                  <Group wrap="nowrap" align="flex-start" gap="xs">
+                    <Info
+                      size={20}
+                      color="var(--mantine-color-red-5)"
+                      style={{ flexShrink: 0, marginTop: 2 }}
+                    />
+                    <Text fz="xs" c="red">
+                      IMPORTANT: The number of BEAMR you will receive depends on
+                      the total ETH deposited (see estimates below). Your tokens
+                      will be locked when trading opens.
+                    </Text>
+                  </Group>
+                  <Button
+                    size="lg"
+                    fullWidth
+                    mt="md"
+                    onClick={handleDeposit}
+                    disabled={!isValidAmount}
+                  >
+                    Deposit
+                  </Button>
+                  {successMessage && (
+                    <Text fz="sm" c="green" ta="center">
+                      {successMessage}
+                    </Text>
+                  )}
+                  {hasUserDeposit && (
+                    <Text
+                      fz="sm"
+                      ta="center"
+                      td="underline"
+                      style={{ cursor: 'pointer' }}
+                      onClick={handleWithdraw}
+                    >
+                      Withdraw Deposit: {formattedUserDeposit} ETH
+                    </Text>
+                  )}
+                </Stack>
+              </Box>
+            </Paper>
+          </Box>
+        )}
         {!hasAcknowledge ? (
           <Acknowledgement
             setHasAcknowledge={() => {
