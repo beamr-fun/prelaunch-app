@@ -85,9 +85,8 @@ const Prebuy = () => {
     writeContract(
       {
         address: PREBUY_ADDRESS,
-        abi: parseAbi(['function deposit(uint256) payable']),
+        abi: parseAbi(['function deposit() payable']),
         functionName: 'deposit',
-        args: [amountWei],
         value: amountWei,
         chainId: base.id,
       },
