@@ -119,7 +119,7 @@ const Prebuy = () => {
       setSuccessMessage('Deposit successful!');
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (error) {
-      console.info(error);
+      console.error(error);
     }
   };
 
@@ -141,7 +141,7 @@ const Prebuy = () => {
       setSuccessMessage('Withdrawal successful!');
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (error) {
-      console.info(error);
+      console.error(error);
     }
   };
 
