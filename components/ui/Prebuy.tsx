@@ -15,6 +15,8 @@ import {
   useReadContract,
   useWriteContract,
 } from 'wagmi';
+import { waitForTransactionReceipt } from 'wagmi/actions';
+import { useConfig } from 'wagmi';
 import { formatEther, parseAbi, parseEther } from 'viem';
 import { base } from 'wagmi/chains';
 import Acknowledgement from './Acknowledgement';
@@ -32,23 +34,35 @@ const Prebuy = () => {
   const [successMessage, setSuccessMessage] = useState('');
 
   const { colors } = useMantineTheme();
-  const { writeContract } = useWriteContract();
+  const config = useConfig();
+  const { writeContractAsync } = useWriteContract();
   const { address } = useAccount();
   const { ethPrice } = useEthPrice();
-  const { data: balance } = useBalance({ address, chainId: base.id });
-  const { data: totalBalance } = useReadContract({
+  const { data: balance, refetch: refetchBalance } = useBalance({
+    address,
+    chainId: base.id,
+    query: { enabled: !!address },
+  });
+  const { data: totalBalance, refetch: refetchTotalBalance } = useReadContract({
     address: PREBUY_ADDRESS,
     abi: parseAbi(['function totalBalance() view returns (uint256)']),
     functionName: 'totalBalance',
     chainId: base.id,
   });
-  const { data: userDeposit } = useReadContract({
+  const { data: userDeposit, refetch: refetchUserDeposit } = useReadContract({
     address: PREBUY_ADDRESS,
     abi: parseAbi(['function deposits(address) view returns (uint256)']),
     functionName: 'deposits',
-    args: [address ?? '0x'],
+    args: [address!],
     chainId: base.id,
+    query: { enabled: !!address },
   });
+
+  const refetchAll = () => {
+    refetchBalance();
+    refetchTotalBalance();
+    refetchUserDeposit();
+  };
 
   const formattedTotalBalance = totalBalance
     ? new Intl.NumberFormat('en-US', {
@@ -75,55 +89,60 @@ const Prebuy = () => {
       : null;
   const isBelowMin = depositAmount !== '' && depositValue < MIN_DEPOSIT;
   const isAboveMax = depositValue > MAX_DEPOSIT;
-  const isValidAmount = depositAmount !== '' && !isBelowMin && !isAboveMax;
+  const isInsufficientBalance =
+    balance && depositValue > parseFloat(balance.formatted);
+  const isValidAmount =
+    depositAmount !== '' &&
+    !isBelowMin &&
+    !isAboveMax &&
+    !isInsufficientBalance;
 
-  const handleDeposit = () => {
-    if (!depositAmount) return;
+  const handleDeposit = async () => {
+    if (!depositAmount || !address) return;
 
     const amountWei = parseEther(depositAmount);
 
-    writeContract(
-      {
+    try {
+      const hash = await writeContractAsync({
         address: PREBUY_ADDRESS,
         abi: parseAbi(['function deposit() payable']),
         functionName: 'deposit',
         value: amountWei,
         chainId: base.id,
-      },
-      {
-        onSuccess: () => {
-          setDepositAmount('');
-          setSuccessMessage('Deposit submitted successfully!');
-          setTimeout(() => setSuccessMessage(''), 5000);
-        },
-        onError: (error) => {
-          console.info(error);
-        },
-      }
-    );
+      });
+
+      setDepositAmount('');
+
+      await waitForTransactionReceipt(config, { hash, chainId: base.id });
+
+      refetchAll();
+      setSuccessMessage('Deposit successful!');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error) {
+      console.info(error);
+    }
   };
 
-  const handleWithdraw = () => {
-    if (!userDeposit) return;
+  const handleWithdraw = async () => {
+    if (!userDeposit || !address) return;
 
-    writeContract(
-      {
+    try {
+      const hash = await writeContractAsync({
         address: PREBUY_ADDRESS,
         abi: parseAbi(['function withdraw(uint256 amount)']),
         functionName: 'withdraw',
         args: [userDeposit],
         chainId: base.id,
-      },
-      {
-        onSuccess: () => {
-          setSuccessMessage('Withdrawal submitted successfully!');
-          setTimeout(() => setSuccessMessage(''), 5000);
-        },
-        onError: (error) => {
-          console.info(error);
-        },
-      }
-    );
+      });
+
+      await waitForTransactionReceipt(config, { hash, chainId: base.id });
+
+      refetchAll();
+      setSuccessMessage('Withdrawal successful!');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } catch (error) {
+      console.info(error);
+    }
   };
 
   useEffect(() => {
@@ -236,6 +255,10 @@ const Prebuy = () => {
                       ) : isAboveMax ? (
                         <Text fz="xs" c="red">
                           ({MAX_DEPOSIT} ETH Maximum)
+                        </Text>
+                      ) : isInsufficientBalance ? (
+                        <Text fz="xs" c="red">
+                          (Insufficient Balance)
                         </Text>
                       ) : (
                         <Text fz="xs" c="gray.5">
