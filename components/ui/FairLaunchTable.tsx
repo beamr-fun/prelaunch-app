@@ -154,7 +154,7 @@ const FairLaunchTable = () => {
             <Table>
               <Table.Thead>
                 <Table.Tr>
-                  <Table.Th ta="center">Total Deposits (ETH)</Table.Th>
+                  <Table.Th ta="center">Deposits (ETH)</Table.Th>
                   <Table.Th ta="center">Community Price ($)</Table.Th>
                   <Table.Th ta="center">LP Open ($)</Table.Th>
                   <Table.Th ta="center">Implied FDV ($)</Table.Th>
