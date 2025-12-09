@@ -10,13 +10,10 @@ import {
   Box,
   Button,
   ScrollArea,
-  ActionIcon,
-  Container,
   Loader,
   Flex,
   useMantineTheme,
 } from '@mantine/core';
-import { RefreshCwIcon } from 'lucide-react';
 import { PageLayout } from '../ui/PageLayout';
 import { SfLogo } from '../ui/SFLogo';
 import sdk from '@farcaster/miniapp-sdk';
@@ -106,7 +103,6 @@ export default function Leaderboard() {
                 <TableRow
                   key={entry.fid}
                   pfpUrl={entry.pfpUrl}
-                  flowRate={'?'}
                   points={entry.points}
                   rank={entry.rank}
                   username={entry.username}
@@ -150,13 +146,11 @@ export default function Leaderboard() {
 
 export const TableRow = ({
   pfpUrl,
-  flowRate,
   points,
   rank,
   username,
 }: {
   pfpUrl: string;
-  flowRate: string;
   points: number;
   rank: number;
   username: string;
@@ -172,11 +166,8 @@ export const TableRow = ({
           </Text>
         </Group>
       </Group>
-      <Box w={44} ta="right">
+      <Text w={44} ta="right">
         {points}
-      </Box>
-      <Text w={44} ta="right" mr={16}>
-        {flowRate}
       </Text>
     </Group>
   );
