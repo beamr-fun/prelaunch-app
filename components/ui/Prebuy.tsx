@@ -41,13 +41,14 @@ const Prebuy = () => {
   const { data: balance, refetch: refetchBalance } = useBalance({
     address,
     chainId: base.id,
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 10000 },
   });
   const { data: totalBalance, refetch: refetchTotalBalance } = useReadContract({
     address: PREBUY_ADDRESS,
     abi: parseAbi(['function totalBalance() view returns (uint256)']),
     functionName: 'totalBalance',
     chainId: base.id,
+    query: { refetchInterval: 10000 },
   });
   const { data: userDeposit, refetch: refetchUserDeposit } = useReadContract({
     address: PREBUY_ADDRESS,
@@ -55,7 +56,7 @@ const Prebuy = () => {
     functionName: 'deposits',
     args: [address!],
     chainId: base.id,
-    query: { enabled: !!address },
+    query: { enabled: !!address, refetchInterval: 10000 },
   });
 
   const refetchAll = () => {
@@ -113,7 +114,11 @@ const Prebuy = () => {
 
       setDepositAmount('');
 
-      await waitForTransactionReceipt(config, { hash, chainId: base.id });
+      await waitForTransactionReceipt(config, {
+        hash,
+        chainId: base.id,
+        confirmations: 3,
+      });
 
       refetchAll();
       setSuccessMessage('Deposit successful!');
@@ -135,7 +140,11 @@ const Prebuy = () => {
         chainId: base.id,
       });
 
-      await waitForTransactionReceipt(config, { hash, chainId: base.id });
+      await waitForTransactionReceipt(config, {
+        hash,
+        chainId: base.id,
+        confirmations: 3,
+      });
 
       refetchAll();
       setSuccessMessage('Withdrawal successful!');
