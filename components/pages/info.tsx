@@ -1,15 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Box,
-  Button,
-  Group,
-  List,
-  Paper,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Box, List, Paper, Text, useMantineTheme } from '@mantine/core';
 import Diagram from '../ui/Diagram';
 
 export default function Info() {
@@ -35,6 +27,16 @@ export default function Info() {
           Beamr is the easiest way to sustainably reward the people who make
           your feed worth scrolling:
         </Text>
+        <List type="ordered" mb="lg">
+          <List.Item>You set a continuous token stream rate</List.Item>
+          <List.Item>
+            We dynamically split that stream based on your interactions (likes,
+            comments, follows, etc.)
+          </List.Item>
+          <List.Item>
+            Your favorite Farcasters start earning instantly & consistently
+          </List.Item>
+        </List>
         <Diagram />
       </Paper>
       <Paper>
@@ -51,15 +53,11 @@ export default function Info() {
         >
           Beamr helps you shape your feed:
         </Text>
-        <List type='ordered' mb="lg">
-          <List.Item>You set a continuous token stream rate</List.Item>
-          <List.Item>
-            We dynamically split that stream based on your interactions (likes,
-            comments, follows, etc.)
-          </List.Item>
-          <List.Item>
-            Your favorite Farcasters start earning instantly & consistently
-          </List.Item>
+        <List>
+          <List.Item>{'Relational > Transactional'}</List.Item>
+          <List.Item>{'Intentional > Mindless'}</List.Item>
+          <List.Item>{'Taste > Aggregation'}</List.Item>
+          <List.Item>{'Sustainable > Extractive'}</List.Item>
         </List>
       </Paper>
     </Box>
