@@ -32,6 +32,7 @@ const Prebuy = () => {
   const [hasAcknowledge, setHasAcknowledge] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isDepositing, setIsDepositing] = useState(false);
 
   const { colors } = useMantineTheme();
   const config = useConfig();
@@ -102,6 +103,7 @@ const Prebuy = () => {
     if (!depositAmount || !address) return;
 
     const amountWei = parseEther(depositAmount);
+    setIsDepositing(true);
 
     try {
       const hash = await writeContractAsync({
@@ -121,10 +123,12 @@ const Prebuy = () => {
       });
 
       refetchAll();
+      setIsDepositing(false);
       setSuccessMessage('Deposit successful!');
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (error) {
       console.error(error);
+      setIsDepositing(false);
     }
   };
 
@@ -324,6 +328,7 @@ const Prebuy = () => {
                     mt="md"
                     onClick={handleDeposit}
                     disabled={!isValidAmount}
+                    loading={isDepositing}
                   >
                     Deposit
                   </Button>
