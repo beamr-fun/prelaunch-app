@@ -28,6 +28,48 @@ const PREBUY_ADDRESS = '0xde9c8A89731F2bD7f80d07aF098CFc47bd50352F';
 const MIN_DEPOSIT = 0.01;
 const MAX_DEPOSIT = 100;
 
+function parseLocaleNumber(stringNumber: string) {
+  // 1. Remove all characters that are NOT digits, commas, dots, or minus signs
+  let cleanString = stringNumber.replace(/[^0-9.,-]/g, '');
+
+  // 2. Normalize: Detect if comma is being used as a decimal
+  // If we have a comma and it appears AFTER the last dot (or if there are no dots),
+  // it is likely a decimal separator.
+  if (cleanString.indexOf(',') > -1) {
+    // Check if comma is the last separator
+    const lastDotIndex = cleanString.lastIndexOf('.');
+    const lastCommaIndex = cleanString.lastIndexOf(',');
+
+    if (lastCommaIndex > lastDotIndex) {
+      // European style (e.g. 1.000,50) -> Remove thousands dots, swap comma to dot
+      cleanString = cleanString.replace(/\./g, ''); // strip thousands separators
+      cleanString = cleanString.replace(',', '.'); // turn decimal comma into dot
+    } else {
+      // US/UK style (e.g. 1,000.50) -> Just strip the commas
+      cleanString = cleanString.replace(/,/g, '');
+    }
+  }
+
+  // 3. Parse normally
+  const finalValue = parseFloat(cleanString);
+
+  // Validate
+  return isNaN(finalValue) ? null : finalValue;
+}
+
+const test = () => {
+  console.log('US/UK style: 1,234.56', parseLocaleNumber('1,234.56')); // US/UK style
+  console.log('European style: 1.234,56', parseLocaleNumber('1.234,56')); // European style
+  console.log('No separators: 1234.56', parseLocaleNumber('1234.56')); // No separators
+  console.log('No separators: 1234,56', parseLocaleNumber('1234,56')); // No separators, comma decimal
+  console.log('Invalid input: abc123', parseLocaleNumber('abc123')); // Invalid input
+  console.log('Smaller number: 1.234,56', parseLocaleNumber('1.234,56 EUR')); // Smaller number with currency
+  console.log('Extra small number: 0.0001', parseLocaleNumber('0.0001')); // Extra small number with currency
+  console.log('Extra small euro', parseLocaleNumber('0,001'));
+};
+
+test();
+
 const Prebuy = () => {
   const [hasAcknowledge, setHasAcknowledge] = useState(false);
   const [depositAmount, setDepositAmount] = useState('');
@@ -91,6 +133,9 @@ const Prebuy = () => {
       : null;
   const isBelowMin = depositAmount !== '' && depositValue < MIN_DEPOSIT;
   const isAboveMax = depositValue > MAX_DEPOSIT;
+
+  console.log('isAboveMax', isAboveMax);
+
   const isInsufficientBalance =
     balance && depositValue > parseFloat(balance.formatted);
   const isValidAmount =
@@ -266,10 +311,23 @@ const Prebuy = () => {
                         placeholder="0"
                         value={depositAmount}
                         onChange={(e) => {
-                          const value = e.target.value;
-                          if (/^[0-9]*\.?[0-9]*$/.test(value)) {
-                            setDepositAmount(value);
+                          // 1. Normalize: Treat all commas as dots immediately
+                          let val = e.target.value
+                            .replace(/,/g, '.')
+                            .replace(/\s/g, '');
+
+                          // 2. Guard: Only allow digits and a single dot
+                          // This regex ensures "10..5" or letters cannot be typed.
+                          if (!/^\d*\.?\d*$/.test(val)) {
+                            return;
                           }
+
+                          // 3. Guard: Max Cap (100 ETH)
+                          if (val !== '' && parseFloat(val) > MAX_DEPOSIT) {
+                            return; // Ignore the input if it exceeds 100
+                          }
+
+                          setDepositAmount(val);
                         }}
                         style={{
                           fontSize: '24px',
