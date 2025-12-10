@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
     if (!secretKey || secretKey !== process.env.FLOW_CASTER_SECRET) {
       return NextResponse.json(
-        { error: 'missing castle secret' },
+        { error: 'missing beamr secret' },
         { status: 401 }
       );
     }
