@@ -24,7 +24,7 @@ import FairLaunchTable from './FairLaunchTable';
 import { useEthPrice } from '@/hooks/use-eth-price';
 import { Info } from 'lucide-react';
 
-const PREBUY_ADDRESS = '0x66b2da319db8964f7df6e24bd9695f4a45d6d135' as const;
+const PREBUY_ADDRESS = '0xde9c8A89731F2bD7f80d07aF098CFc47bd50352F';
 const MIN_DEPOSIT = 0.01;
 const MAX_DEPOSIT = 100;
 
