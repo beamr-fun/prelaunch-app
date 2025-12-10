@@ -73,9 +73,7 @@ async function sendTestNotification(fid, notificationDetails) {
       body: JSON.stringify({
         fid,
         notification: {
-          title: "Test Notification",
-          body: "This is a test notification",
-          notificationDetails,
+          ...notificationDetails,
         },
       }),
     });
