@@ -47,25 +47,25 @@ const Acknowledgement = ({
           </Text>
           <Stack gap="xs">
             <List>
-              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+              <List.Item mb="sm" c={colors.gray[3]}>
                 Deposit ETH to buy $BEAMR in the first transaction from its
                 locked LP upon creation.
               </List.Item>
-              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
-                Deposits/withdrawals are open until the token launch on 
-                December 15th.
+              <List.Item mb="sm" c={colors.gray[3]}>
+                Deposits/withdrawals are open until the token launch on December
+                15th.
               </List.Item>
-              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
+              <List.Item mb="sm" c={colors.gray[3]}>
                 All participants get the same price based on total deposits
                 (standard LP fees apply).
               </List.Item>
-              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
-                Fair sale tokens are locked for 24 hours after creation, then 
+              <List.Item mb="sm" c={colors.gray[3]}>
+                Fair sale tokens are locked for 24 hours after creation, then
                 linearly streamed over 7 days.
               </List.Item>
-              <List.Item fz="sm" mb="sm" c={colors.gray[3]}>
-                Participants earn XP in the Beamr $SUP campaign. Earlier deposits 
-                get a higher multiplier.
+              <List.Item mb="sm" c={colors.gray[3]}>
+                Participants earn XP in the Beamr $SUP campaign. Earlier
+                deposits get a higher multiplier.
               </List.Item>
             </List>
           </Stack>

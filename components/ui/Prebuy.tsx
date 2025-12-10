@@ -219,10 +219,10 @@ const Prebuy = () => {
               >
                 $BEAMR Fair Launch
               </Text>
-              <Text fz="sm">
+              <Text>
                 In most "fair launches" normal users can't compete with snipers.
               </Text>
-              <Text fz="sm">We're doing it differently.</Text>
+              <Text>We're doing it differently.</Text>
               {hasAcknowledge && (
                 <Group justify="center">
                   <Button size="lg" onClick={() => setHasAcknowledge(false)}>
