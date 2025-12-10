@@ -155,8 +155,8 @@ const Checklist = ({
                     }
                   </Text>
                   <Text fz="sm">
-                    Make sure you claim stream increases in the Superfluid Claim
-                    App.
+                    Make sure your claim stream increases in the Superfluid
+                    Claim App.
                   </Text>
                 </Box>
               }

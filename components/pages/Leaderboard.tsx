@@ -7,16 +7,13 @@ import {
   Avatar,
   Group,
   Paper,
-  useMantineTheme,
   Box,
   Button,
   ScrollArea,
-  ActionIcon,
-  Container,
   Loader,
   Flex,
+  useMantineTheme,
 } from '@mantine/core';
-import { RefreshCwIcon } from 'lucide-react';
 import { PageLayout } from '../ui/PageLayout';
 import { SfLogo } from '../ui/SFLogo';
 import sdk from '@farcaster/miniapp-sdk';
@@ -39,6 +36,7 @@ interface LeaderboardResponse {
 }
 
 export default function Leaderboard() {
+  const { colors } = useMantineTheme();
   const { user } = useUser();
   const {
     data: response,
@@ -67,7 +65,16 @@ export default function Leaderboard() {
       <Paper mb="lg">
         <Group mb="lg" justify="space-between">
           <Group>
-            <Text fz="lg" fw={500}>
+            <Text
+              fz="lg"
+              fw={500}
+              variant="gradient"
+              gradient={{
+                from: colors.blue[0],
+                to: colors.blue[4],
+                deg: 90,
+              }}
+            >
               Leaderboard
             </Text>
             <SfLogo />
@@ -96,7 +103,6 @@ export default function Leaderboard() {
                 <TableRow
                   key={entry.fid}
                   pfpUrl={entry.pfpUrl}
-                  flowRate={'?'}
                   points={entry.points}
                   rank={entry.rank}
                   username={entry.username}
@@ -107,7 +113,17 @@ export default function Leaderboard() {
         </ScrollArea>
       </Paper>
       <Paper>
-        <Text fz="lg" fw={500} mb="md">
+        <Text
+          fz="lg"
+          fw={500}
+          mb="md"
+          variant="gradient"
+          gradient={{
+            from: colors.blue[0],
+            to: colors.blue[4],
+            deg: 90,
+          }}
+        >
           {"What's SUP?"}
         </Text>
         <Stack gap={12} mb="xl">
@@ -130,13 +146,11 @@ export default function Leaderboard() {
 
 export const TableRow = ({
   pfpUrl,
-  flowRate,
   points,
   rank,
   username,
 }: {
   pfpUrl: string;
-  flowRate: string;
   points: number;
   rank: number;
   username: string;
@@ -152,11 +166,8 @@ export const TableRow = ({
           </Text>
         </Group>
       </Group>
-      <Box w={44} ta="right">
+      <Text w={44} ta="right">
         {points}
-      </Box>
-      <Text w={44} ta="right" mr={16}>
-        {flowRate}
       </Text>
     </Group>
   );
@@ -173,10 +184,7 @@ export const TableHeader = () => {
         </Text>
       </Group>
       <Text w={44} fz="sm" fw={500} ta="right">
-        Sup XP
-      </Text>
-      <Text w={44} fz="sm" fw={500} ta="right" mr={16}>
-        SUP/mo
+        SUP XP
       </Text>
     </Group>
   );
