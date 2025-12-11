@@ -2,110 +2,165 @@
 
 /**
  * Delete bad notification token keys from Redis
- * Usage: node scripts/delete-bad-notification-keys.js <path-to-json-file>
- * Example: node scripts/delete-bad-notification-keys.js scripts/bad-notification-keys-1234567890.json
+ * Usage: node scripts/delete-bad-notification-keys.js
  * 
  * This script:
- * 1. Reads a JSON file containing bad notification keys
- * 2. Extracts FIDs from the keys
+ * 1. Pulls invalid tokens from Redis keys matching beamr:miniapp:invalidtokens:*
+ * 2. Maps tokens to FIDs by checking all user notification details
  * 3. Deletes each key using deleteUserNotificationDetails
  */
 
-const fs = require("fs");
-const path = require("path");
 const jiti = require("jiti")(__filename);
+const path = require("path");
 
 require("dotenv").config();
-
-/**
- * Parse FID from a Redis key
- * Format: beamr:miniapp:user:${fid}
- */
-function parseFidFromKey(key) {
-  const match = key.match(/^beamr:miniapp:user:(\d+)$/);
-  return match ? parseInt(match[1], 10) : null;
-}
 
 /**
  * Main function
  */
 async function main() {
-  const filePath = process.argv[2];
+  // Import required modules
+  const redisPath = path.join(__dirname, "../lib/redis.ts");
+  const { redis } = jiti(redisPath);
 
-  if (!filePath) {
-    console.error("Error: File path is required");
-    console.error("Usage: node scripts/delete-bad-notification-keys.js <path-to-json-file>");
-    console.error("Example: node scripts/delete-bad-notification-keys.js scripts/bad-notification-keys-1234567890.json");
-    process.exit(1);
-  }
-
-  const fullPath = path.isAbsolute(filePath) ? filePath : path.join(process.cwd(), filePath);
-
-  if (!fs.existsSync(fullPath)) {
-    console.error(`Error: File not found: ${fullPath}`);
-    process.exit(1);
-  }
-
-  console.log(`Reading bad keys from: ${fullPath}`);
-  console.log("");
-
-  // Read and parse the JSON file
-  let badKeys;
-  try {
-    const fileContent = fs.readFileSync(fullPath, "utf-8");
-    badKeys = JSON.parse(fileContent);
-  } catch (error) {
-    console.error("Error reading or parsing JSON file:", error.message);
-    process.exit(1);
-  }
-
-  if (!Array.isArray(badKeys)) {
-    console.error("Error: JSON file must contain an array of key objects");
-    process.exit(1);
-  }
-
-  if (badKeys.length === 0) {
-    console.log("No keys to delete.");
-    return;
-  }
-
-  console.log(`Found ${badKeys.length} bad keys to delete`);
-  console.log("");
-
-  // Import the delete function using jiti to handle TypeScript
   const notificationsPath = path.join(__dirname, "../lib/notifications.ts");
   const { deleteUserNotificationDetails } = jiti(notificationsPath);
 
+  if (!redis) {
+    console.error("Error: Redis client is not initialized");
+    console.error("Please ensure REDIS_URL and REDIS_TOKEN environment variables are set");
+    process.exit(1);
+  }
+
+  console.log("Fetching invalid token lists from Redis...");
+  console.log("");
+
+  // Scan for all keys matching beamr:miniapp:invalidtokens:*
+  const invalidTokenKeys = [];
+  let cursor = "0";
+
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: "beamr:miniapp:invalidtokens:*",
+      count: 100,
+    });
+
+    cursor = nextCursor;
+    invalidTokenKeys.push(...keys);
+  } while (cursor !== "0");
+
+  if (invalidTokenKeys.length === 0) {
+    console.log("No invalid token keys found in Redis.");
+    return;
+  }
+
+  console.log(`Found ${invalidTokenKeys.length} invalid token key(s)`);
+  console.log("");
+
+  // Get all invalid token lists
+  const invalidTokenLists = await redis.mget(invalidTokenKeys);
+  
+  // Collect all unique invalid tokens
+  const invalidTokensSet = new Set();
+  for (const tokenList of invalidTokenLists) {
+    if (Array.isArray(tokenList)) {
+      tokenList.forEach((token) => {
+        if (typeof token === "string") {
+          invalidTokensSet.add(token);
+        }
+      });
+    }
+  }
+
+  const invalidTokens = Array.from(invalidTokensSet);
+
+  if (invalidTokens.length === 0) {
+    console.log("No invalid tokens found in the lists.");
+    return;
+  }
+
+  console.log(`Found ${invalidTokens.length} unique invalid token(s)`);
+  console.log("");
+
+  // Get all user notification details to map tokens to FIDs
+  console.log("Fetching all user notification details to map tokens to FIDs...");
+
+  // Scan for all user notification keys
+  const allKeys = [];
+  cursor = "0";
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: "beamr:miniapp:user:*",
+      count: 100,
+    });
+
+    cursor = nextCursor;
+    allKeys.push(...keys);
+  } while (cursor !== "0");
+
+  if (allKeys.length === 0) {
+    console.log("No user notification details found.");
+    return;
+  }
+
+  console.log(`Found ${allKeys.length} user notification detail(s)`);
+  console.log("");
+
+  // Get all notification details
+  const allDetails = await redis.mget(allKeys);
+
+  // Create token to FID mapping
+  const tokenToFidMap = new Map();
+  for (let i = 0; i < allKeys.length; i++) {
+    const key = allKeys[i];
+    const details = allDetails[i];
+    
+    if (details && details.token) {
+      const fidMatch = key.match(/^beamr:miniapp:user:(\d+)$/);
+      if (fidMatch) {
+        const fid = parseInt(fidMatch[1], 10);
+        tokenToFidMap.set(details.token, fid);
+      }
+    }
+  }
+
+  // Find FIDs for invalid tokens
+  const fidToDelete = new Set();
+
+  // Find FIDs for invalid tokens
+  for (const invalidToken of invalidTokens) {
+    const fid = tokenToFidMap.get(invalidToken);
+    if (fid) {
+      fidToDelete.add(fid);
+    }
+  }
+
+  const fidsToDelete = Array.from(fidToDelete);
+
+  if (fidsToDelete.length === 0) {
+    console.log("No matching FIDs found for invalid tokens.");
+    return;
+  }
+
+  console.log(`Found ${fidsToDelete.length} FID(s) to delete`);
+  console.log("");
+
+  // Delete notification details for each FID
   let deleted = 0;
   let failed = 0;
   const failures = [];
 
-  // Process each bad key
-  for (let i = 0; i < badKeys.length; i++) {
-    const entry = badKeys[i];
-    const key = entry.key;
-    let fid = entry.fid;
-
-    // If fid is not in the entry, try to parse it from the key
-    if (!fid && key) {
-      fid = parseFidFromKey(key);
-    }
-
-    if (!fid) {
-      console.log(`[${i + 1}/${badKeys.length}] Skipping invalid entry (no FID):`, entry);
-      failures.push({ entry, reason: "No FID found" });
-      failed++;
-      continue;
-    }
+  for (let i = 0; i < fidsToDelete.length; i++) {
+    const fid = fidsToDelete[i];
 
     try {
-      console.log(`[${i + 1}/${badKeys.length}] Deleting FID ${fid} (key: ${key || "N/A"})...`);
+      console.log(`[${i + 1}/${fidsToDelete.length}] Deleting FID ${fid}...`);
       await deleteUserNotificationDetails(fid);
       console.log(`  ✓ Deleted`);
       deleted++;
     } catch (error) {
       console.log(`  ✗ Failed: ${error.message}`);
-      failures.push({ entry, fid, reason: error.message });
+      failures.push({ fid, reason: error.message });
       failed++;
     }
   }
@@ -114,7 +169,9 @@ async function main() {
   console.log("");
   console.log("=".repeat(50));
   console.log("Summary:");
-  console.log(`  Total keys: ${badKeys.length}`);
+  console.log(`  Invalid token keys found: ${invalidTokenKeys.length}`);
+  console.log(`  Unique invalid tokens: ${invalidTokens.length}`);
+  console.log(`  FIDs to delete: ${fidsToDelete.length}`);
   console.log(`  Deleted: ${deleted}`);
   console.log(`  Failed: ${failed}`);
   console.log("=".repeat(50));
@@ -123,21 +180,8 @@ async function main() {
     console.log("");
     console.log("Failures:");
     failures.forEach((failure) => {
-      console.log(`  - FID ${failure.fid || "N/A"}: ${failure.reason}`);
+      console.log(`  - FID ${failure.fid}: ${failure.reason}`);
     });
-
-    // Optionally write failures to a file
-    const failureFile = path.join(
-      path.dirname(fullPath),
-      `delete-failures-${Date.now()}.json`
-    );
-    fs.writeFileSync(
-      failureFile,
-      JSON.stringify(failures, null, 2),
-      "utf-8"
-    );
-    console.log("");
-    console.log(`Failures written to: ${failureFile}`);
   } else {
     console.log("");
     console.log("All keys deleted successfully!");
