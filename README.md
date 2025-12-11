@@ -76,3 +76,33 @@ node scripts/export-user-points.js 12345
 # Export to file
 node scripts/export-user-points.js 12345 > user-12345-points.csv
 ```
+
+Delete bad notification tokens from redis cache
+
+```bash
+
+node scripts/delete-bad-notification-keys.js
+
+```
+
+Send blast notifications curl
+
+1. create a json file with notification details in the directory you run the curl command
+
+example file blast.json
+```json 
+{
+  "secretKey": "<<SECRETE KEY IN VERCEL ENV>>",
+  "notification": {
+    "title": "$SUP Rewards Stream Alert",
+    "body": "Deposit in the $BEAMR fair launch by 1PM EST for the max $SUP multiplier. Multiple deposits accepted."
+  }
+}
+```
+
+```bash
+curl -X POST https://app.beamr.fun/api/blast \
+  -H "Content-Type: application/json" \
+  -d @blast.json
+
+```

@@ -7,7 +7,8 @@
  * This script:
  * 1. Pulls invalid tokens from Redis keys matching beamr:miniapp:invalidtokens:*
  * 2. Maps tokens to FIDs by checking all user notification details
- * 3. Deletes each key using deleteUserNotificationDetails
+ * 3. Deletes each user notification key using deleteUserNotificationDetails
+ * 4. Deletes the invalid token list keys from Redis
  */
 
 const jiti = require("jiti")(__filename);
@@ -109,6 +110,8 @@ async function main() {
   // Get all notification details
   const allDetails = await redis.mget(allKeys);
 
+  console.log('allDetails length', allDetails)
+
   // Create token to FID mapping
   const tokenToFidMap = new Map();
   for (let i = 0; i < allKeys.length; i++) {
@@ -127,7 +130,6 @@ async function main() {
   // Find FIDs for invalid tokens
   const fidToDelete = new Set();
 
-  // Find FIDs for invalid tokens
   for (const invalidToken of invalidTokens) {
     const fid = tokenToFidMap.get(invalidToken);
     if (fid) {
@@ -165,6 +167,27 @@ async function main() {
     }
   }
 
+  // Delete the invalid token lists from Redis
+  console.log("");
+  console.log(`Deleting ${invalidTokenKeys.length} invalid token list key(s) from Redis...`);
+  let deletedTokenKeys = 0;
+  let failedTokenKeys = 0;
+
+  for (let i = 0; i < invalidTokenKeys.length; i++) {
+    const key = invalidTokenKeys[i];
+    try {
+      await redis.del(key);
+      deletedTokenKeys++;
+    } catch (error) {
+      console.log(`  ✗ Failed to delete ${key}: ${error.message}`);
+      failedTokenKeys++;
+    }
+  }
+
+  if (deletedTokenKeys > 0) {
+    console.log(`  ✓ Deleted ${deletedTokenKeys} invalid token list key(s)`);
+  }
+
   // Output results
   console.log("");
   console.log("=".repeat(50));
@@ -172,8 +195,10 @@ async function main() {
   console.log(`  Invalid token keys found: ${invalidTokenKeys.length}`);
   console.log(`  Unique invalid tokens: ${invalidTokens.length}`);
   console.log(`  FIDs to delete: ${fidsToDelete.length}`);
-  console.log(`  Deleted: ${deleted}`);
-  console.log(`  Failed: ${failed}`);
+  console.log(`  User records deleted: ${deleted}`);
+  console.log(`  User records failed: ${failed}`);
+  console.log(`  Invalid token list keys deleted: ${deletedTokenKeys}`);
+  console.log(`  Invalid token list keys failed: ${failedTokenKeys}`);
   console.log("=".repeat(50));
 
   if (failures.length > 0) {
