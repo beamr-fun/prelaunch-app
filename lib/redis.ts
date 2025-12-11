@@ -58,3 +58,11 @@ export const setNeynarUser = async (fid: string, user: NeynarUser) => {
   const key = `${NEYNAR_USER_PREFIX}${fid}`;
   await redis.set(key, user, { ex: TTL_SECONDS });
 };
+
+export const storeInvalidTokens = async (invalidTokens: string[]) => {
+  if (!redis) return;
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const key = `beamr:miniapp:invalidtokens:${timestamp}`;
+  await redis.set(key, invalidTokens);
+};

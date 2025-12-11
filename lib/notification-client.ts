@@ -8,6 +8,7 @@ import {
   sendNotificationResponseSchema,
 } from "@farcaster/miniapp-sdk";
 import { env } from "./env";
+import { storeInvalidTokens } from "./redis";
 
 const appUrl = env.NEXT_PUBLIC_URL || "";
 
@@ -100,6 +101,15 @@ async function sendNotificationBatch(
 
     if (responseBody.data.result.rateLimitedTokens.length) {
       return { state: "rate_limit" };
+    }
+
+    if (responseBody.data.result.invalidTokens.length) {
+      console.log('responseBody.data.result.invalidTokens', responseBody.data.result.invalidTokens)
+      await storeInvalidTokens(responseBody.data.result.invalidTokens);
+    }
+
+    if (responseBody.data.result.successfulTokens.length) {
+      console.log('responseBody.data.result.successfulTokens', responseBody.data.result.successfulTokens)
     }
 
     console.log(`notification batch sent to ${batch.length} users`);
