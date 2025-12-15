@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Stack, Text, useMantineTheme } from '@mantine/core';
+import { Anchor, Box, Button, Paper, Stack, Text, useMantineTheme } from '@mantine/core';
 import { SwapUI } from './Swap';
 
 const FAIR_LAUNCH_TOTAL_ETH = '9.7055';
@@ -82,7 +82,7 @@ const Trading = () => {
   return (
     <Stack gap="lg">
       <FairLaunchTotal totalEth={FAIR_LAUNCH_TOTAL_ETH} />
-      <Paper>
+      <Paper pb="sm">
         <Stack gap="md">
           <Text
             fz="lg"
@@ -98,6 +98,16 @@ const Trading = () => {
             Buy $BEAMR
           </Text>
           <SwapUI />
+          <Anchor
+            href="https://dexscreener.com/base/0xDd6c3d2cF60Eff29a3b9C27d677D6C97034894A4"
+            target="_blank"
+            ta="center"
+            fz="sm"
+            c="white"
+            underline="always"
+          >
+            View Dexscreener
+          </Anchor>
         </Stack>
       </Paper>
       <UserFairLaunch />
