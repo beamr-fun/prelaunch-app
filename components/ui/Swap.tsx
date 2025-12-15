@@ -1,14 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import classes from '../../styles/swap.module.css';
 import { useDebouncedValue } from '@mantine/hooks';
-import {
-  Box,
-  Button,
-  Flex,
-  Group,
-  Loader,
-  Text,
-} from '@mantine/core';
+import { Box, Button, Flex, Group, Loader, Text } from '@mantine/core';
 import {
   useAccount,
   useBalance,
@@ -16,6 +9,7 @@ import {
   useWaitForTransactionReceipt,
 } from 'wagmi';
 import { formatUnits, parseUnits, Address, Hex } from 'viem';
+import { useEthPrice } from '@/hooks/use-eth-price';
 
 const BEAMR_ADDRESS = '0x3b3cd21242ba44e9865b066e5ef5d1cc1030cc58';
 const NATIVE_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -41,9 +35,10 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
   const [isLoadingQuote, setIsLoadingQuote] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [priceRate, setPriceRate] = useState<number | null>(null); // BEAMR per ETH
+  const [priceRate, setPriceRate] = useState<number | null>(null);
 
   const { address, isConnected } = useAccount();
+  const { ethPrice } = useEthPrice();
 
   const { data: ethBalance, refetch: refetchEthBalance } = useBalance({
     address,
@@ -56,7 +51,11 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
     chainId: BASE_CHAIN_ID,
   });
 
-  const { sendTransaction, data: txHash, isPending: isSending } = useSendTransaction();
+  const {
+    sendTransaction,
+    data: txHash,
+    isPending: isSending,
+  } = useSendTransaction();
 
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash: txHash,
@@ -65,10 +64,12 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
   const [debouncedSellAmount] = useDebouncedValue(sellAmount, 500);
   const [debouncedBuyAmount] = useDebouncedValue(buyAmount, 500);
 
-  // Fetch initial price rate on mount
   useEffect(() => {
     const fetchPriceRate = async () => {
-      if (!address) return;
+      if (!address) {
+        return;
+      }
+
       try {
         const params = new URLSearchParams({
           endpoint: `/swap/permit2/quote`,
@@ -80,15 +81,18 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
         });
         const response = await fetch(`/api/swap?${params.toString()}`);
         const data = await response.json();
+
         if (response.ok && data.buyAmount && data.sellAmount) {
           const sell = parseFloat(formatUnits(BigInt(data.sellAmount), 18));
           const buy = parseFloat(formatUnits(BigInt(data.buyAmount), 18));
+
           setPriceRate(buy / sell);
         }
-      } catch (e) {
-        console.error('Failed to fetch price rate:', e);
+      } catch (err) {
+        console.error('Failed to fetch price rate:', err);
       }
     };
+
     fetchPriceRate();
   }, [address]);
 
@@ -96,20 +100,32 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
     let ethAmount: string;
 
     if (inputMode === 'sell') {
-      if (!debouncedSellAmount || parseFloat(debouncedSellAmount) <= 0 || !address) {
+      if (
+        !debouncedSellAmount ||
+        parseFloat(debouncedSellAmount) <= 0 ||
+        !address
+      ) {
         setQuote(null);
         setBuyAmount('');
+
         return;
       }
+
       ethAmount = debouncedSellAmount;
     } else {
-      if (!debouncedBuyAmount || parseFloat(debouncedBuyAmount) <= 0 || !address || !priceRate) {
+      if (
+        !debouncedBuyAmount ||
+        parseFloat(debouncedBuyAmount) <= 0 ||
+        !address ||
+        !priceRate
+      ) {
         setQuote(null);
         setSellAmount('');
+
         return;
       }
-      // Calculate ETH needed based on price rate
       const beamrWanted = parseFloat(debouncedBuyAmount);
+
       ethAmount = (beamrWanted / priceRate).toFixed(18);
     }
 
@@ -133,20 +149,26 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
 
       if (!response.ok) {
         console.error('Quote error:', data);
-        const errorMsg = data.message || data.error || data.reason || 'Failed to get quote';
+
+        const errorMsg =
+          data.message || data.error || data.reason || 'Failed to get quote';
+
         throw new Error(errorMsg);
       }
 
       if (!data.buyAmount || !data.sellAmount || !data.transaction) {
         console.error('Invalid quote response:', data);
-        throw new Error(data.reason || data.description || 'Invalid quote response');
+
+        throw new Error(
+          data.reason || data.description || 'Invalid quote response'
+        );
       }
 
       setQuote(data);
 
-      // Update price rate from successful quote
       const sell = parseFloat(formatUnits(BigInt(data.sellAmount), 18));
       const buy = parseFloat(formatUnits(BigInt(data.buyAmount), 18));
+
       setPriceRate(buy / sell);
 
       if (inputMode === 'sell') {
@@ -157,8 +179,12 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch quote');
       setQuote(null);
-      if (inputMode === 'sell') setBuyAmount('');
-      else setSellAmount('');
+
+      if (inputMode === 'sell') {
+        setBuyAmount('');
+      } else {
+        setSellAmount('');
+      }
     } finally {
       setIsLoadingQuote(false);
     }
@@ -175,7 +201,9 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
       setQuote(null);
       refetchEthBalance();
       refetchBeamrBalance();
+
       setSuccessMessage('Swap successful!');
+
       setTimeout(() => setSuccessMessage(''), 5000);
     }
   }, [isSuccess, refetchEthBalance, refetchBeamrBalance]);
@@ -189,8 +217,12 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
       sendTransaction({
         to: quote.transaction.to,
         data: quote.transaction.data,
-        value: quote.transaction.value ? BigInt(quote.transaction.value) : BigInt(0),
-        ...(quote.transaction.gas ? { gas: BigInt(quote.transaction.gas) } : {}),
+        value: quote.transaction.value
+          ? BigInt(quote.transaction.value)
+          : BigInt(0),
+        ...(quote.transaction.gas
+          ? { gas: BigInt(quote.transaction.gas) }
+          : {}),
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Swap failed');
@@ -201,10 +233,22 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
     parseFloat(sellAmount) > parseFloat(ethBalance?.formatted || '0');
 
   const getButtonText = () => {
-    if (!isConnected) return 'Connect Wallet';
-    if (isSending) return 'Confirming...';
-    if (isConfirming) return 'Processing...';
-    if (insufficientBalance) return 'Insufficient Balance';
+    if (!isConnected) {
+      return 'Connect Wallet';
+    }
+
+    if (isSending) {
+      return 'Confirming...';
+    }
+
+    if (isConfirming) {
+      return 'Processing...';
+    }
+
+    if (insufficientBalance) {
+      return 'Insufficient Balance';
+    }
+
     return 'Buy BEAMR';
   };
 
@@ -217,6 +261,16 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
     isConfirming ||
     parseFloat(sellAmount) <= 0 ||
     insufficientBalance;
+
+  const sellDollarAmount =
+    sellAmount && ethPrice
+      ? (parseFloat(sellAmount) * parseFloat(ethPrice)).toFixed(2)
+      : null;
+
+  const buyDollarAmount =
+    buyAmount && priceRate && ethPrice
+      ? ((parseFloat(buyAmount) / priceRate) * parseFloat(ethPrice)).toFixed(2)
+      : null;
 
   return (
     <Box>
@@ -231,6 +285,7 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
           value={sellAmount}
           unit="ETH"
           loading={isLoadingQuote && inputMode === 'buy'}
+          dollarAmount={sellDollarAmount}
         />
         <SwapInputCard
           orientation="To"
@@ -242,11 +297,18 @@ export const SwapUI = ({ canSwap = true }: { canSwap?: boolean }) => {
           value={buyAmount}
           unit="BEAMR"
           loading={isLoadingQuote && inputMode === 'sell'}
+          dollarAmount={buyDollarAmount}
         />
       </Flex>
-      {error && <Text c="red" size="sm" mb="md" ta="center">{error}</Text>}
+      {error && (
+        <Text c="red" size="sm" mb="md" ta="center">
+          {error}
+        </Text>
+      )}
       {successMessage && (
-        <Text c="green" size="sm" mb="md" ta="center">{successMessage}</Text>
+        <Text c="green" size="sm" mb="md" ta="center">
+          {successMessage}
+        </Text>
       )}
       <Group justify="center">
         <Button
@@ -270,6 +332,7 @@ type SwapCardProps = {
   unit: string;
   error?: string | null;
   loading?: boolean;
+  dollarAmount?: string | null;
 };
 
 const SwapInputCard = ({
@@ -280,6 +343,7 @@ const SwapInputCard = ({
   unit,
   error,
   loading = false,
+  dollarAmount,
 }: SwapCardProps) => {
   return (
     <div className={classes.wrapper} data-error={error ? 'true' : 'false'}>
@@ -298,9 +362,26 @@ const SwapInputCard = ({
             onChange={onChange}
             placeholder="0"
             onKeyDown={(e) => {
-              const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
-              if (allowedKeys.includes(e.key)) return;
-              if (e.key === '.' && !(e.target as HTMLInputElement).value.includes('.')) return;
+              const allowedKeys = [
+                'Backspace',
+                'Delete',
+                'Tab',
+                'ArrowLeft',
+                'ArrowRight',
+                'Home',
+                'End',
+              ];
+              if (allowedKeys.includes(e.key)) {
+                return;
+              }
+
+              if (
+                e.key === '.' &&
+                !(e.target as HTMLInputElement).value.includes('.')
+              ) {
+                return;
+              }
+
               if (!/^[0-9]$/.test(e.key)) {
                 e.preventDefault();
               }
@@ -309,8 +390,16 @@ const SwapInputCard = ({
         )}
         <p className={classes.unit}>{unit}</p>
       </div>
-      <p className={classes.balance}>Balance: {parseFloat(balance || '0').toFixed(4)}</p>
+      <Flex justify="space-between" align="center">
+        <Text fz="sm" c="gray.5">
+          {dollarAmount ? `$${dollarAmount}` : '$0'}
+        </Text>
+        <p className={classes.balance}>
+          Balance: {parseFloat(balance || '0').toFixed(4)}
+        </p>
+      </Flex>
       {error && <p className={classes.error}>{error}</p>}
     </div>
   );
 };
+
