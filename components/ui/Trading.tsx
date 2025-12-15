@@ -1,7 +1,7 @@
 import { Anchor, Box, Button, Paper, Stack, Text, useMantineTheme } from '@mantine/core';
 import { SwapUI } from './Swap';
 
-const FAIR_LAUNCH_TOTAL_ETH = '9.7055';
+const FAIR_LAUNCH_TOTAL_ETH = '8.6135';
 
 const FairLaunchTotal = ({ totalEth = '0' }: { totalEth?: string }) => {
   return (
