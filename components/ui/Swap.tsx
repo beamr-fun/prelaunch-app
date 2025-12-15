@@ -11,7 +11,7 @@ import {
 import { formatUnits, parseUnits, Address, Hex } from 'viem';
 import { useEthPrice } from '@/hooks/use-eth-price';
 
-const BEAMR_ADDRESS = '0x3b3cd21242ba44e9865b066e5ef5d1cc1030cc58';
+const BEAMR_ADDRESS = '0x22F1cd353441351911691EE4049c7b773abb1ecF';
 const NATIVE_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 const BASE_CHAIN_ID = 8453;
 
