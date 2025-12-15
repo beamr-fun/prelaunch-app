@@ -4,7 +4,7 @@ import { Group, Image, Loader } from '@mantine/core';
 import { useMiniApp } from '@/contexts/miniapp-context';
 import { PageLayout } from '../ui/PageLayout';
 import classes from '@/styles/animation.module.css';
-import Prebuy from '../ui/Prebuy';
+import Trading from '../ui/Trading';
 
 export default function Home() {
   const { isMiniAppReady } = useMiniApp();
@@ -29,7 +29,7 @@ export default function Home() {
 
   return (
     <PageLayout>
-      <Prebuy />
+      <Trading />
     </PageLayout>
   );
 }
