@@ -58,6 +58,18 @@ const UserFairLaunch = () => {
     functionName: 'getUnits',
     args: [address!],
     chainId: base.id,
+    query: {
+      enabled: !!address,
+      placeholderData: (prev) => prev,
+    },
+  });
+
+  const { data: isMemberConnected } = useReadContract({
+    address: GDA_FORWARDER_ADDRESS,
+    abi: gdaForwarderAbi,
+    functionName: 'isMemberConnected',
+    args: [POOL_ADDRESS, address!],
+    chainId: base.id,
     query: { enabled: !!address },
   });
 
@@ -113,9 +125,11 @@ const UserFairLaunch = () => {
             </Text>
           </Box>
         </Group>
-        <Button size="lg" fullWidth onClick={handleConnect} loading={isPending}>
-          Connect to Pool
-        </Button>
+        {!isMemberConnected && (
+          <Button size="lg" fullWidth onClick={handleConnect} loading={isPending}>
+            Connect to Pool
+          </Button>
+        )}
       </Stack>
     </Paper>
   );
