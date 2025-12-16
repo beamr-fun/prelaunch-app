@@ -1,58 +1,49 @@
 'use client';
 
-import { useApiQuery } from '@/hooks/use-api-query';
 import {
   Stack,
   Text,
-  Avatar,
   Group,
   Paper,
-  Box,
   Button,
   ScrollArea,
-  Loader,
-  Flex,
   useMantineTheme,
 } from '@mantine/core';
 import { PageLayout } from '../ui/PageLayout';
 import { SfLogo } from '../ui/SFLogo';
 import sdk from '@farcaster/miniapp-sdk';
-import { useUser } from '@/contexts/user-context';
-import { UserStanding } from '@/lib/constants';
 
 export interface LeaderboardEntry {
-  fid: string;
   username: string;
-  displayName: string;
-  pfpUrl: string;
   points: number;
   rank: number;
 }
 
-interface LeaderboardResponse {
-  success: boolean;
-  data: LeaderboardEntry[];
-  error?: string;
-}
+const leaderboardData: LeaderboardEntry[] = [
+  { rank: 1, username: 'skydao.eth', points: 2502100 },
+  { rank: 2, username: 'toadyhawk.eth', points: 2500000 },
+  { rank: 3, username: '0x3A305C…79468c', points: 2000000 },
+  { rank: 4, username: 'leovido.eth', points: 1600350 },
+  { rank: 5, username: 'costi', points: 1573500 },
+  { rank: 6, username: 'ccalo.eth', points: 1500350 },
+  { rank: 7, username: 'vorcha', points: 1240000 },
+  { rank: 8, username: 'wlrui', points: 1200000 },
+  { rank: 9, username: 'czbanger', points: 1020500 },
+  { rank: 10, username: 'jacketet', points: 960000 },
+  { rank: 11, username: '0xf4F191…F83c83', points: 800000 },
+  { rank: 12, username: 'doldole', points: 522350 },
+  { rank: 13, username: 'skuhl.eth', points: 500600 },
+  { rank: 14, username: 'feez', points: 500000 },
+  { rank: 15, username: 'bsiegz.eth', points: 500000 },
+  { rank: 16, username: 'defipolice.eth', points: 500000 },
+  { rank: 17, username: 'ds8', points: 350000 },
+  { rank: 18, username: 'mvr', points: 345350 },
+  { rank: 19, username: '0xfran', points: 330350 },
+  { rank: 20, username: 'logonaut.eth', points: 325050 },
+];
 
 export default function Leaderboard() {
   const { colors } = useMantineTheme();
-  const { user } = useUser();
-  const {
-    data: response,
-    isLoading,
-    isRefetching,
-  } = useApiQuery<LeaderboardResponse>({
-    url: '/api/leaderboard',
-    queryKey: ['leaderboard'],
-    staleTime: 15000,
-    enabled: user && user.standing === UserStanding.Good,
-  });
-  let leaderboardData = response?.data || [];
-
-  const isLoadingOrRefetching = isLoading || isRefetching;
-
-  const noUsersFound = leaderboardData.length == 0;
 
   const handleSupLink = async () => {
     await sdk.actions.openUrl(
@@ -81,34 +72,16 @@ export default function Leaderboard() {
           </Group>
         </Group>
         <TableHeader />
-        <ScrollArea h={250}>
+        <ScrollArea h={250} scrollbars="y">
           <Stack gap={'md'}>
-            {isLoadingOrRefetching ? (
-              <Flex h={200} align={'center'} justify="center">
-                <Loader color="var(--glass-thick)" />
-              </Flex>
-            ) : noUsersFound ? (
-              <Flex h={200} align={'center'} justify="center">
-                <Box>
-                  <Text fz="lg" fw={500} ta="center">
-                    No Users Found
-                  </Text>
-                  <Text ta="center">
-                    {"There aren't any users with points"}
-                  </Text>
-                </Box>
-              </Flex>
-            ) : (
-              leaderboardData.map((entry) => (
-                <TableRow
-                  key={entry.fid}
-                  pfpUrl={entry.pfpUrl}
-                  points={entry.points}
-                  rank={entry.rank}
-                  username={entry.username}
-                />
-              ))
-            )}
+            {leaderboardData.map((entry) => (
+              <TableRow
+                key={entry.rank}
+                points={entry.points}
+                rank={entry.rank}
+                username={entry.username}
+              />
+            ))}
           </Stack>
         </ScrollArea>
       </Paper>
@@ -145,29 +118,22 @@ export default function Leaderboard() {
 }
 
 export const TableRow = ({
-  pfpUrl,
   points,
   rank,
   username,
 }: {
-  pfpUrl: string;
   points: number;
   rank: number;
   username: string;
 }) => {
   return (
-    <Group>
-      <Group w={140} mr="auto" wrap="nowrap">
-        <Text fz="sm">{rank}</Text>
-        <Group gap={4} wrap="nowrap">
-          <Avatar size={32} radius="xl" src={pfpUrl} />
-          <Text fz="sm" fw={500} lineClamp={1}>
-            {username}
-          </Text>
-        </Group>
-      </Group>
-      <Text w={44} ta="right">
-        {points}
+    <Group wrap="nowrap">
+      <Text fz="sm" w={24}>{rank}</Text>
+      <Text fz="sm" fw={500} lineClamp={1} style={{ flex: 1 }}>
+        {username}
+      </Text>
+      <Text fz="sm" ta="right">
+        {points.toLocaleString()}
       </Text>
     </Group>
   );
@@ -176,14 +142,12 @@ export const TableRow = ({
 export const TableHeader = () => {
   const { colors } = useMantineTheme();
   return (
-    <Group c={colors.gray[0]} mb="16px">
-      <Group w={140} mr="auto" ta="left">
-        <Text fz="sm">#</Text>
-        <Text fz="sm" fw={500}>
-          User
-        </Text>
-      </Group>
-      <Text w={44} fz="sm" fw={500} ta="right">
+    <Group c={colors.gray[0]} mb="16px" wrap="nowrap">
+      <Text fz="sm" w={24}>#</Text>
+      <Text fz="sm" fw={500} style={{ flex: 1 }}>
+        User
+      </Text>
+      <Text fz="sm" fw={500} ta="right">
         SUP XP
       </Text>
     </Group>

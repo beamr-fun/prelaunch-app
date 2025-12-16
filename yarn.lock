@@ -1637,6 +1637,11 @@
     "@noble/hashes" "~1.8.0"
     "@scure/base" "~1.2.5"
 
+"@sfpro/sdk@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@sfpro/sdk/-/sdk-0.1.9.tgz#48af85fae6259b9037fe039800234da399552e0f"
+  integrity sha512-VWyGHUMtjh7V8QrBcZrXUHjW2sp3731U4AqJt0C5jMBVcq7guAR05JvZBFfwfHdNwFKyth5Vf2wV5wntWL3ODA==
+
 "@socket.io/component-emitter@~3.1.0":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz#821f8442f4175d8f0467b9daf26e3a18e2d02af2"
