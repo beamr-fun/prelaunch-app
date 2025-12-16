@@ -1,12 +1,16 @@
+import { useEffect } from 'react';
 import { Anchor, Box, Button, Group, Paper, Stack, Text, useMantineTheme } from '@mantine/core';
 import { gdaPoolAbi, gdaForwarderAbi } from '@sfpro/sdk/abi';
-import { useAccount, useReadContract, useWriteContract } from 'wagmi';
+import { useAccount, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther } from 'viem';
 import { base } from 'viem/chains';
 import { formatSubscriptPrice } from '@/lib/format';
+import { useFlowingAmount } from '@/hooks/use-flowing-amount';
 import { SwapUI } from './Swap';
 
 const FAIR_LAUNCH_TOTAL_ETH = '8.6235';
+const FAIR_LAUNCH_TOTAL_ETH_WEI = BigInt('8623507024144690742');
+const FAIR_LAUNCH_TOTAL_TOKENS = BigInt('35422652331439059664517092298');
 const POOL_ADDRESS = '0x7De8a3e8379d337a1E8888d0175E1211Fe611c01';
 const GDA_FORWARDER_ADDRESS = '0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08';
 const ENTRY_PRICE = 0.00000071638;
@@ -52,28 +56,65 @@ const UserFairLaunch = () => {
   const { colors } = useMantineTheme();
   const { address } = useAccount();
 
-  const { data: units } = useReadContract({
-    address: POOL_ADDRESS,
-    abi: gdaPoolAbi,
-    functionName: 'getUnits',
-    args: [address!],
-    chainId: base.id,
+  const { data, dataUpdatedAt, refetch } = useReadContracts({
+    contracts: [
+      {
+        address: POOL_ADDRESS,
+        abi: gdaPoolAbi,
+        functionName: 'getUnits',
+        args: [address!],
+        chainId: base.id,
+      },
+      {
+        address: GDA_FORWARDER_ADDRESS,
+        abi: gdaForwarderAbi,
+        functionName: 'isMemberConnected',
+        args: [POOL_ADDRESS, address!],
+        chainId: base.id,
+      },
+      {
+        address: POOL_ADDRESS,
+        abi: gdaPoolAbi,
+        functionName: 'getTotalAmountReceivedByMember',
+        args: [address!],
+        chainId: base.id,
+      },
+      {
+        address: POOL_ADDRESS,
+        abi: gdaPoolAbi,
+        functionName: 'getMemberFlowRate',
+        args: [address!],
+        chainId: base.id,
+      },
+    ],
     query: {
       enabled: !!address,
       placeholderData: (prev) => prev,
     },
   });
 
-  const { data: isMemberConnected } = useReadContract({
-    address: GDA_FORWARDER_ADDRESS,
-    abi: gdaForwarderAbi,
-    functionName: 'isMemberConnected',
-    args: [POOL_ADDRESS, address!],
-    chainId: base.id,
-    query: { enabled: !!address },
+  const units = data?.[0]?.result;
+  const isMemberConnected = data?.[1]?.result;
+  const totalReceived = data?.[2]?.result;
+  const memberFlowRate = data?.[3]?.result;
+
+  const unlockedBeamr = useFlowingAmount(
+    totalReceived ?? BigInt(0),
+    dataUpdatedAt ? Math.floor(dataUpdatedAt / 1000) : 0,
+    memberFlowRate ?? BigInt(0),
+  );
+
+  const { writeContract, isPending, data: txHash } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash: txHash,
   });
 
-  const { writeContract, isPending } = useWriteContract();
+  useEffect(() => {
+    if (isConfirmed) {
+      refetch();
+    }
+  }, [isConfirmed, refetch]);
 
   const handleConnect = () => {
     writeContract({
@@ -85,11 +126,14 @@ const UserFairLaunch = () => {
     });
   };
 
+  const isLoading = isPending || (txHash && !isConfirmed);
+
   if (!units || units === BigInt(0)) {
     return null;
   }
 
   const depositEth = formatEther(units);
+  const beamrAllocation = (units * FAIR_LAUNCH_TOTAL_TOKENS) / FAIR_LAUNCH_TOTAL_ETH_WEI;
 
   return (
     <Paper style={{ width: '100%' }}>
@@ -125,8 +169,32 @@ const UserFairLaunch = () => {
             </Text>
           </Box>
         </Group>
-        {!isMemberConnected && (
-          <Button size="lg" fullWidth onClick={handleConnect} loading={isPending}>
+        <Group grow>
+          <Box>
+            <Text fz="sm" c="gray.5">
+              BEAMR Allocation
+            </Text>
+            <Text fz="lg" fw={600}>
+              {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat(formatEther(beamrAllocation)))}
+            </Text>
+          </Box>
+          <Box>
+            <Text fz="sm" c="gray.5">
+              Unlocked BEAMR
+            </Text>
+            <Text fz="lg" fw={600}>
+              {new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat(formatEther(unlockedBeamr)))}
+            </Text>
+          </Box>
+        </Group>
+        {isMemberConnected ? (
+          <Paper bg="dark.7" py="md" px="lg" radius="md" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Text ta="center" fz="md" fw={500} ff="var(--font-kalam)" style={{ lineHeight: 1 }}>
+              Unlock complete at Dec 23, 20:00 UTC
+            </Text>
+          </Paper>
+        ) : (
+          <Button size="lg" fullWidth onClick={handleConnect} loading={isLoading}>
             Connect to Pool
           </Button>
         )}
