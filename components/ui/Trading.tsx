@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { Anchor, Box, Button, Group, Paper, Stack, Text, useMantineTheme } from '@mantine/core';
 import { gdaPoolAbi, gdaForwarderAbi } from '@sfpro/sdk/abi';
-import { useAccount, useReadContracts, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContracts, useWriteContract, useConfig } from 'wagmi';
+import { waitForTransactionReceipt } from 'wagmi/actions';
 import { formatEther } from 'viem';
 import { base } from 'viem/chains';
 import { formatSubscriptPrice } from '@/lib/format';
@@ -55,8 +56,9 @@ const FairLaunchTotal = ({ totalEth = '0' }: { totalEth?: string }) => {
 const UserFairLaunch = () => {
   const { colors } = useMantineTheme();
   const { address } = useAccount();
+  const config = useConfig();
 
-  const { data, dataUpdatedAt, refetch } = useReadContracts({
+  const { data, dataUpdatedAt, refetch, isRefetching } = useReadContracts({
     contracts: [
       {
         address: POOL_ADDRESS,
@@ -104,36 +106,32 @@ const UserFairLaunch = () => {
     memberFlowRate ?? BigInt(0),
   );
 
-  const { writeContract, isPending, data: txHash } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
-    hash: txHash,
-  });
-
-  useEffect(() => {
-    if (isConfirmed) {
-      refetch();
+  const handleConnect = async () => {
+    setIsLoading(true);
+    try {
+      const hash = await writeContractAsync({
+        address: GDA_FORWARDER_ADDRESS,
+        abi: gdaForwarderAbi,
+        functionName: 'connectPool',
+        args: [POOL_ADDRESS, '0x'],
+        chainId: base.id,
+      });
+      await waitForTransactionReceipt(config, { hash, confirmations: 2 });
+      await refetch();
+    } finally {
+      setIsLoading(false);
     }
-  }, [isConfirmed, refetch]);
-
-  const handleConnect = () => {
-    writeContract({
-      address: GDA_FORWARDER_ADDRESS,
-      abi: gdaForwarderAbi,
-      functionName: 'connectPool',
-      args: [POOL_ADDRESS, '0x'],
-      chainId: base.id,
-    });
   };
-
-  const isLoading = isPending || (txHash && !isConfirmed);
 
   if (!units || units === BigInt(0)) {
     return null;
   }
 
-  const depositEth = formatEther(units);
-  const beamrAllocation = (units * FAIR_LAUNCH_TOTAL_TOKENS) / FAIR_LAUNCH_TOTAL_ETH_WEI;
+  const depositEth = formatEther(units ?? BigInt(0));
+  const beamrAllocation = ((units ?? BigInt(0)) * FAIR_LAUNCH_TOTAL_TOKENS) / FAIR_LAUNCH_TOTAL_ETH_WEI;
 
   return (
     <Paper style={{ width: '100%' }}>
@@ -188,11 +186,9 @@ const UserFairLaunch = () => {
           </Box>
         </Group>
         {isMemberConnected ? (
-          <Paper bg="dark.7" py="md" px="lg" radius="md" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Text ta="center" fz="md" fw={500} ff="var(--font-kalam)" style={{ lineHeight: 1 }}>
-              Unlock complete at Dec 23, 20:00 UTC
-            </Text>
-          </Paper>
+          <Button size="lg" fullWidth disabled fz="sm">
+            Unlock complete at Dec 23, 20:00 UTC
+          </Button>
         ) : (
           <Button size="lg" fullWidth onClick={handleConnect} loading={isLoading}>
             Connect to Pool
