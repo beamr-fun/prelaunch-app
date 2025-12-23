@@ -187,7 +187,7 @@ const UserFairLaunch = () => {
         </Group>
         {isMemberConnected ? (
           <Button size="lg" fullWidth disabled fz="sm">
-            Unlock complete at Dec 23, 20:00 UTC
+            Unlock Complete
           </Button>
         ) : (
           <Button size="lg" fullWidth onClick={handleConnect} loading={isLoading}>
